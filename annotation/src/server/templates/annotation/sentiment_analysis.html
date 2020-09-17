@@ -1,0 +1,113 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block annotation-area %}
+<div
+  class="card vld-parent"
+  xmlns:v-slot="http://www.w3.org/1999/XSL/Transform"
+>
+  <loading :active.sync="isLoading" :can-cancel="true">
+    <template v-slot:before>
+      <p>[[ loadingMsg ]]</p>
+    </template>
+  </loading>
+  <nl-modal
+    v-if="explanationPopup && explanationType === 2"
+    :current-explanations="annotationDocs[pageNumber].getNlExplanations(lastAnnotationId)"
+    :last-annotation-id="lastAnnotationId"
+    :docid="annotationDocs[pageNumber].id"
+    :selected-words="selectedWords"
+    :project-type="projectType"
+    @close="explanationPopup = false"
+    @refresh-nl-explanations="refreshNlExplanations"
+  >
+    <sentence-label-display
+      :label-color="currSelectedLabel.text_color"
+      :label-background-color="currSelectedLabel.background_color"
+      :label-text="currSelectedLabel.text"
+      :text="annotationDocs[pageNumber].text"
+    />
+  </nl-modal>
+  <trigger-modal
+    v-if="explanationPopup && explanationType === 3"
+    @close="explanationPopup = false"
+    @refresh-triggers="refreshTriggers"
+    :current-triggers="annotationDocs[pageNumber].getTriggers(lastAnnotationId)"
+    :last-annotation-id="lastAnnotationId"
+    :docid="annotationDocs[pageNumber].id"
+    :trigger-labels="triggerLabels"
+    :text="annotationDocs[pageNumber].text"
+    :original-selections="[]"
+  >
+    <sentence-label-display
+      :label-color="currSelectedLabel.text_color"
+      :label-background-color="currSelectedLabel.background_color"
+      :label-text="currSelectedLabel.text"
+      :text="annotationDocs[pageNumber].text"
+    />
+  </trigger-modal>
+  <header class="card-header">
+    <div
+      class="card-header-title has-background-royalblue"
+      style="padding:1.5rem;"
+    >
+      <div class="field is-grouped is-grouped-multiline">
+        <div
+          class="control"
+          v-for="label in sortedLabels"
+          :class="{ 'recommended-label': isRecommended(label) }"
+        >
+          <div class="tags has-addons">
+            <a
+              class="tag is-medium"
+              :style="getLabelStyle(label)"
+              v-on:click="addAnnotation(label)"
+              v-shortkey.once="replaceNull(label.shortcut)"
+              @shortkey="addAnnotation(label)"
+            >
+              [[ label.text ]]
+            </a>
+            <span class="tag is-medium"
+              ><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="card-content">
+    {% comment %} <span class="tag" v-if="confidence"
+      >confidence : [[ confidenceElement ]]</span
+    > {% endcomment %}
+    <!-- Text Section -->
+    <span class="tag">Text</span>
+    <div class="content" v-if="pageNumber in annotationDocs">
+      <span class="text-sequence">[[ annotationDocs[pageNumber].text ]]</span>
+    </div>
+    <!-- Selected Labels Section -->
+    <span class="tag" v-if="pageNumber in annotationDocs">Selected Labels</span>
+    <div class="field is-grouped is-grouped-multiline">
+      <div class="control" v-for="annotation in saAnnotations">
+        <div class="tags has-addons">
+          <span
+            class="tag is-medium"
+            :style="{
+            color: annotation.label.text_color,
+            backgroundColor: annotation.label.background_color
+          }" 
+          >
+            <span v-if="explanationType > 1" class="annotation-label-text" v-on:click="toggleExplanation(annotation)">
+              [[ annotation.label.text ]]
+            </span>
+            <span v-else>[[ annotation.label.text ]]</span>
+            <button class="delete is-small" @click="removeAnnotation(annotation)" />
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+{% render_bundle bundle_name 'js' %}
+{% endblock %}

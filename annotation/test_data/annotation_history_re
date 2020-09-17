@@ -1,0 +1,18 @@
+{
+  "data": [
+      {
+        "word_1" : "Louis Armstrong",
+        "word_2" : "trumpet player",
+        "label" : "per:occupation"
+      },
+      {
+        "word_1" : "Louis Armstrong",
+        "word_2" : "Corona",
+        "label" : "died-in"
+      },
+      {
+        "word_2" : "Corona",
+        "label" : "died-in"
+      }
+  ]
+}

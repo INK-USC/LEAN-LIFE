@@ -1,0 +1,212 @@
+{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+<div class="columns" id="upload-file">
+  <div class="column is-12">
+    <div class="modal" v-bind:class="{ 'is-active': isNewlyCreated }">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Upload Dataset</p>
+        </header>
+        <section class="modal-card-body">
+          <p>Your Project has been created!</p>
+          <p>You can always go back and edit your project setup on the Project Page</p>
+          <p>You must now upload a dataset for your project.</p>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" @click="isNewlyCreated=!isNewlyCreated">OK</button>
+        </footer>
+      </div>
+    </div>
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          ${title}
+        </p>
+      </header>
+      <div class="card-content">
+        <p v-html="intro"></p>
+        <p>We accept datasets in the following formats:</p>
+        <ul style="list-style-type:disc; list-style-position:outside; margin-left:1em;">
+          <li>
+            <b>JSON (recommended)</b>
+            <br /><u>Format:</u>
+            <pre>
+              <code v-if="projectType !== 3">
+{
+  "data" : [
+    {
+      "text" : "Louis Armstrong the great trumpet player lived in Corona.",
+      "foo" : "bar",
+      "bar" : "foo"
+    },
+    {
+      "text" : "Spanish Farm Minister Loyola de Palacio had earlier accused Fischler at
+                an EU farm ministers' meeting of causing unjustified alarm through
+                dangerous generalisation.",
+      "foo" : "bar",
+      "bar" : "foo"
+    },
+    ...
+  ]
+}
+              </code>
+              <code v-if="projectType === 3">
+{
+  "data": [
+      {
+            "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+            "annotations": [
+                {
+                      "label": "LOC",
+                      "start_offset": 52,
+                      "end_offset": 58
+                }
+                ...
+            ],
+            "metadata": {"foo" : "bar"}
+      }
+      ...
+  ]
+}
+              </code>
+            </pre>
+            Each entry within <i>data</i> must have a key <i><b>text</b></i>. All other keys will be saved in a metadata
+            dictionary associated
+            with the text
+          </li>
+          {% comment %} v-if below put in for now, as we haven't built the import for BIO format for RE {% endcomment %}
+          <li v-if="projectType !== 3">
+            <b>CSV</b>--<u v-if="projectType !== 3">Two formats are acceptable (but file must be using utf-8
+              encoding):</u>
+            <u v-else>BIO tagged data required</u>
+            <ul style="list-style-type:disc; margin-left:1em;">
+              <li v-if="projectType !== 3">
+                1. With a header row, a column name must be <i><b>text</b></i>. All other columns will be saved in a
+                metadata dictionary
+                associated with the text
+              </li>
+              <table style="width:100%" v-if="projectType !== 3">
+                <u>Example 1:</u>
+                <tr>
+                  <th>text</th>
+                  <th>foo</th>
+                  <th>bar</th>
+                </tr>
+                <tr>
+                  <td>Louis Armstrong the great trumpet player lived in Corona.</td>
+                  <td>bar</td>
+                  <td>foo</td>
+                </tr>
+                <tr>
+                  <td>Spanish Farm Minister Loyola de Palacio had earlier accused Fischler at an EU farm ministers'
+                    meeting of causing unjustified alarm through dangerous generalisation.</td>
+                  <td>bar</td>
+                  <td>foo</td>
+                </tr>
+              </table>
+              <p v-if="projectType === 3">Needed Fields are: <b>word</b>, <b>label</b></p>
+              <table style="width:100%" v-if="projectType === 3">
+                <tr>
+                  <th>document_id</th>
+                  <th>word</th>
+                  <th>label</th>
+                  <th>foo</th>
+                  <th>bar</th>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Louis</td>
+                  <td>B-PER</td>
+                  <td>bar</td>
+                  <td>foo</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Armstrong</td>
+                  <td>I-PER</td>
+                  <td>bar</td>
+                  <td>foo</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>the</td>
+                  <td>O</td>
+                  <td>bar</td>
+                  <td>foo</td>
+                </tr>
+              </table>
+              <u v-if="projectType !== 3">Example 2:</u>
+              <li v-if="projectType !== 3">2. No header, single column file with just text</li>
+              <table style="width:100%" v-if="projectType !== 3">
+                <tr>
+                  <td>Louis Armstrong the great trumpet player lived in Corona.</th>
+                </tr>
+                <tr>
+                  <td>Spanish Farm Minister Loyola de Palacio had earlier accused Fischler at an EU farm ministers'
+                    meeting of causing unjustified alarm through dangerous generalisation.</th>
+                </tr>
+              </table>
+              <li>
+                <b>No commas can be in your text, which is why we strongly recommend using our json import process</b>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- method="post" -->
+        <form enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="section">
+            <div class="control">
+              <label v-if="projectType !== 3" class="radio mb10">
+                <input type="radio" name="format" value="json" v-model="format" v-bind:value="'json'" /> Upload a JSON
+                file from your computer<br />
+                <input type="radio" name="format" value="csv" v-model="format" v-bind:value="'csv'" /> Upload a CSV file
+                from your computer<br />
+              </label>
+              <label v-else class="radio mb10">
+                <input type="radio" name="format" value="json" v-model="format" v-bind:value="'json'" /> Upload a JSON
+                file from your computer<br />
+              </label>
+              <div class="file has-name is-small mb20">
+                <label class="file-label">
+                  <input class="file-input" type="file" ref="file" v-on:change="updateFileName()" />
+                  <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label">
+                      Select a file…
+                    </span>
+                  </span>
+                  <span class="file-name">
+                    ${fileName}
+                  </span>
+                </label>
+              </div>
+              <p v-if="errorMessage" style="color:red;"> ${errorMessage} </p>
+            </div>
+          </div>
+
+          <div class="field is-grouped">
+            <button type=button class="button is-primary" v-bind:disabled="disable" v-on:click="uploadFile()">
+              ${button_name}
+            </button>
+          </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %} {% block footer %}
+<script src="{% static 'bundle/upload.js' %}"></script>
+{% endblock %}

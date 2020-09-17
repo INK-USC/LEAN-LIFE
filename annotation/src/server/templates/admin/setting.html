@@ -1,0 +1,209 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+</head>
+
+<div class="modal" :class="{ 'is-active': newlyCreated }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Configuring Optional Annotation Settings</p>
+        </header>
+        <section class="modal-card-body">
+            <p>Great now annotators have documents to annotate and labels to apply!</p>
+            <p>There are some remaining optional settings you can set here.</p>
+            <p>As you are the project creator, what you decide here will be the default for all annotators,
+                though annotators may override if they wish to.</p>
+            <p><b>Hover over the question marks</b> to understand what each setting means!</p>
+            <p>When you are finished, hit the save button to save your selections.</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" @click="newlyCreated=!newlyCreated">OK</button>
+        </footer>
+    </div>
+</div>
+
+<div class="modal" :class="{ 'is-active': prompt}">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Are You Sure?</p>
+        </header>
+        <section class="modal-card-body">
+            <p>You're about to navigate away from the settings page.</p>
+            <p>Your current setting selections will be saved, and you will be brought to the Historical Annotation page</p>
+            <p>Please confirm below if that is what you want, or hit cancel</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" @click="save('{% url 'annotation_history' view.kwargs.project_id %}')">Confirm</button>
+            <button class="button is-danger" @click="prompt=false">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+<div class="card">
+    <header class="card-header">
+        <div class="model__content">
+            <h2><span>Annotation Settings</span></h2>
+        </div>
+    </header>
+
+    <div class="card-content model__content ">
+        <div class="field is-horizontal top-row">
+            <div class="tooltip-content column is-3 mb0" v-if="projectType!=1">
+                <label class="label column mb0">Recommendations</label>
+                <div class="help-tip">
+                    <p>Recommendation options to help in the annotation process, multiple options can be selected at
+                        once.</p>
+                </div>
+            </div>
+            <div class="is-narrow column is-3 mb0" v-if="projectType==2">
+                <input class="is-checkradio" type="checkbox" id="nounChunk" v-model="nounChunk">
+                <label for="nounChunk"><kbd>Noun Chunk</kbd>
+                    <div class="help-tip" style="left: 12px">
+                        <p>Highlight Noun Phrases as possible Named Entity Spans</p>
+                    </div>
+                </label>
+            </div>
+            <div class="is-narrow column is-3 mb0" v-if="false">
+                <input class="is-checkradio" type="checkbox" id="modelBackedRecs" v-model="modelBackedRecs">
+                <label for="modelBackedRecs"><kbd>Backend Model</kbd></label>
+                <div class="help-tip" style="left: 12px">
+                    <p></p>
+                </div>
+            </div>
+            <div class="is-narrow column is-5 mb0" v-if="projectType!=1">
+                <input class="is-checkradio" type="checkbox" id="history" v-model="history">
+                <label for="history"><kbd>Historical</kbd>
+                    <div class="help-tip" style="left: 12px">
+                        <p>Previous annotations will be cached and applied when appropriate as recommenations.
+                            <br><br>
+                            You can upload your own list of annotations as an initial seed on the Historical page
+                            (accessible by checking this box and clicking the button below)
+                        </p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row tooltip-content">
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Acquire size</label>
+                <div class="help-tip">
+                    <p>Number of documents that should be retrieved for annotations when the annotator has completed
+                        current batch.
+                        {% comment %} <br><br> {% endcomment %}
+                        {% comment %} If you select an Active Learning strategy below, we will use the strategy to
+                        acquire the number of documents chosen here.</p> {% endcomment %}
+                </div>
+            </div>
+
+            <div class="control column is-3">
+                <input class="active input" type="number" v-model.number="acquire">
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row" v-if="false">
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Online Learning</label>
+                <div class="help-tip ">
+                    <p>Would you like a backend model to be continuously updated as annotations are provided?</p>
+                </div>
+            </div>
+            <div class="is-narrow column is-9 mb0">
+                <div class="field">
+                    <input id="isOnlineOn" type="checkbox" v-model="isOnlineOn" class="switch is-success is-medium">
+                    <label for="isOnlineOn"><kbd>Off/On</kbd></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row" v-if="false">
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Encoding Strategy</label>
+                <div class="help-tip">
+                    <p>How would you like us to encode text when training a backend model?</p>
+                </div>
+            </div>
+
+            <div class="control column is-narrow">
+                <div class="select">
+                    <select v-model="encodingStrategy" :disabled="isOnlineOn == false">
+                        <option value="1">Glove (default)</option>
+                        <option value="2">Word2Vec</option>
+                        <option value="3">FastText</option>
+                        <option value="4">Bert</option>
+                        <option value="5">Elmo</option>
+                        <option value="6">GPT</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row tooltip-content" v-if="false">
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Batch Size</label>
+                <div class="help-tip">
+                    <p>How many examples should be collected before retraining?</p>
+                </div>
+            </div>
+
+            <div class="control column is-3">
+                <input class="input" type="number" v-model.number="batch" :disabled="isOnlineOn == false">
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row tooltip-content" v-if="false">
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Epoch per batch</label>
+                <div class="help-tip">
+                    <p>How many iterations should the newest training data be run through to update the model's
+                        parameters?</p>
+                </div>
+            </div>
+
+            <div class="control column is-3">
+                <input class="active input" type="number" v-model.number="epoch" :disabled="isOnlineOn == false">
+            </div>
+        </div>
+
+        <div class="field is-horizontal bordered-row tooltip-content" v-if="false">
+
+            <div class="tooltip-content column is-3 mb0">
+                <label class="label column mb0">Active learning Strategy</label>
+                <div class="help-tip">
+                    <p>What Active Learning staregy should be used to retrieve documents to be annotated?</p>
+                </div>
+            </div>
+
+            <div class="control column is-narrow">
+                <div class="select">
+                    <select v-model="activeLearningStrategy">
+                        <option value="1">None</option>
+                        <option value="2">Random</option>
+                        <option value="3">Maximum Normalized Log-Probability</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-grouped bordered-row">
+            <div class="control column is-3">
+                <button class="button is-primary is-fullwidth" @click="save()">SAVE</button>
+            </div>
+            <div class="control column is-2">
+                <button class="button is-danger is-fullwidth" @click="reset()">RESET</button>
+            </div>
+            <div v-if="history" class="control column is-4">
+                <button class="button is-info is-fullwidth" @click="prompt=true">Upload Historical Annotations</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/setting.js' %}"></script>
+{% endblock %}

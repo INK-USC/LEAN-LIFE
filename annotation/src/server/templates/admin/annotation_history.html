@@ -1,0 +1,135 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+<div class="card" id="annotation-history">
+  <header class="card-header">
+    <p style="padding-left: 1em">
+      <span class="subtitle"><b>Historical Annotations</b></span>
+      <br>
+      <br>
+      <a href="{% url 'setting' view.kwargs.project_id %}">Cancel</a>
+    </p>
+  </header>
+  <div class="card-content">
+    <ul>
+      <li>You can upload a json file of seed annotations to be matched to current unlabled examples as recommendations for the annotator.</li>
+      <li>You can choose to <b>merge</b> your uploaded file or <b>replace</b> all previously uploaded annotations. <b>Note:</b> this will not delete previous annotator 
+      provided annotations, just the previously uploaded annotations from this process.</li>
+      <li>It is <b>imperative</b> that the label names match the label space you created. We will lower case and match names, so case-sensitivity is not needed.</li>
+      <li>The format of the file you must upload is as follows:</li>
+    </ul>
+    <pre>
+      <code v-if="projectType === 2">
+{
+  "data" : [
+    {
+      "word" : "Louis Armstrong",
+      "label" : "PER"
+    },
+    {
+      "word" : "Corona",
+      "label" : "LOC"
+    },
+    ...
+  ]
+}
+      </code>
+      <code v-if="projectType === 3">
+{
+  "data": [
+      {
+        "word_1" : "Louis Armstrong",
+        "word_2" : "trumpet player",
+        "label" : "per:occupation"
+      },
+      ...
+  ]
+}
+      </code>
+    </pre>
+    <div class="field" style="display: inline-block">
+      <div class="file is-small has-name">
+        <label class="file-label">
+          <input id="file-upload" class="file-input" type="file" ref="file" name="dataset" v-on:change="updateFileName()">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Upload Annotations
+            </span>
+          </span>
+          <span class="file-name">
+            ${fileName}
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="buttons" style="display: inline-block">
+      <button class="button is-small is-success" v-bind:disabled="!canUpload" v-on:click="uploadFile('merge')">Merge</button>
+      <button class="button is-small is-warning" v-bind:disabled="!canUpload" v-on:click="uploadFile('replace')">Replace</button>
+      <button class="button is-small is-primary" style="font-size: 0.8rem" v-show="leadUserToAnnotation" v-on:click="goToAnnotations()"><b>Continue To Annotations</b></button>
+    </div>
+
+    <table class="table is-fullwidth is-hoverable">
+      <thead>
+        <tr v-if="projectType === 2">
+          <th>#</th>
+          <th>Word</th>
+          <th>Label</th>
+          <th>User Uploaded</th>
+        </tr>
+        <tr v-else>
+          <th>#</th>
+          <th>Subject</th>
+          <th>Relation</th>
+          <th>Object</th>
+          <th>User Uploaded</th>
+        </tr>
+      </thead>
+      <tbody v-if="projectType === 2">
+        <tr v-for="(history, index) in currentPageHistory">
+          <td>${ index + 1 }</td>
+          <td>${ history.word }</td>
+          <td>${ currentLabels[history.label] }</td>
+          <td>${ history.user_provided }</td>
+          <td class="is-vertical"><a id='delete' class="has-text-danger"
+              @click="deleteAnnotation(history.id, index)">Delete</a></td>
+        </tr>
+      </tbody>
+      <tbody v-else>
+        <tr v-for="(history, index) in currentPageHistory">
+          <td>${ index + 1 }</td>
+          <td>${ history.word_1 }</td>
+          <td>${ currentLabels[history.label] }</td>
+          <td>${ history.word_2 }</td>
+          <td>${ history.user_provided }</td>
+          <td class="is-vertical"><a id='delete' class="has-text-danger"
+              @click="deleteAnnotation(history.id, index)">Delete</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="level mt30">
+      <a class="button level-left" v-if="prevPageUrl !== null" v-on:click="previousPage()">
+        <span class="icon">
+          <i class="fas fa-chevron-left"></i>
+        </span>
+        <span>Prev</span>
+      </a>
+      <div class="level-right">
+        <div>
+          <a class="button level-right" v-if="nextPageUrl !== null" v-on:click="nextPage()">
+            <span>Next</span>
+            <span class="icon">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script type="module" src="{% static 'bundle/annotationHistory.js' %}"></script>
+{% endblock %}

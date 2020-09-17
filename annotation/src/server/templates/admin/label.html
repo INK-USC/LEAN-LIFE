@@ -1,0 +1,147 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+{% comment %} Not ideal, but for now this will do {% endcomment %}
+
+<head>
+  <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+</head>
+
+<div class="modal" :class="{ 'is-active': newlyCreated }">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Creating Labels</p>
+    </header>
+    <section class="modal-card-body">
+      <p>Great now annotators have documents to annotate!</p>
+      <p>Now its time to create the set of possible labels an annotator may use to annotate your uploaded documents.</p>
+      <p>You must create <b>at least one</b> label before navigating away from this page.</p>
+      <p>We highly recommend giving your labels a shorcut key, so that annotators can annotate quickly.</p>
+      <p>To save a created label, please hit "Save Label"</p>
+      <p>When you are finished creating your label space, please hit "Done"</p>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" @click="newlyCreated=!newlyCreated">OK</button>
+    </footer>
+  </div>
+</div>
+
+<div class="card">
+  <header class="card-header">
+    <div class="model__content">
+      <h2><span>Label Space Creation</span></h2>
+    </div>
+  </header>
+
+  <div class="card-content model__content">
+    <div class="field is-grouped is-grouped-multiline has-text-weight-bold pbrem075 is-horizontal top-row">
+      <div class="tooltip-content column is-3 mb0">
+        <label class="label">Current Label Space</label>
+        <div class="help-tip">
+          <p>Available labels for annotators to pick from when annotating.</p>
+        </div>
+      </div>
+
+      <div class="control columns is-6" v-for="label in labels">
+        <div class="tags has-addons has-text-weight-bold">
+          <span class="tag is-medium"
+            v-bind:style="{ color: label.text_color, 'background-color': label.background_color }">
+            <button class="delete is-small tweaked-margin" @click="removeLabel(label)"></button>
+            [[ label.text ]]
+          </span>
+          <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal sub-top-row">
+      <label class="label column is-3 mb0">Label Preview</label>
+      <div class="control column is-6">
+        <div class="tags has-addons has-text-weight-bold">
+          <a class="tag is-medium" v-bind:style="{ color: textColor, backgroundColor: backgroundColor }">
+            [[ labelText ]]
+          </a>
+          <span class="tag is-medium"><kbd>[[ combineKeys | simpleShortcut ]]</kbd></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal bordered-row">
+      <div class="column is-3 mb0">
+        <label class="label mb0">Label Name</label>
+        {#          <p class="is-small has-text-grey">required</p>#}
+      </div>
+      <div class="control column is-6">
+        <input class="input" type="text" placeholder="Labels must be named to be saved" v-model="labelText">
+      </div>
+    </div>
+
+    <p v-if="errorMessage" style="color:red;"> &nbsp; [[ errorMessage ]]</p>
+
+    <div class="field is-horizontal bordered-row">
+      <div class="column is-3 mb0">
+        <label class="label mb0">Shortcut Key</label>
+        {#          <p class="is-small has-text-grey">optional</p>#}
+      </div>
+      <div class="control column is-narrow">
+        <div class="select">
+          <select v-model="selectedKey">
+            <option disabled value="">Please select one</option>
+            {% for ch in 'abcdefghijklmnopqrstuvwxyz' %}
+            <option>{{ ch }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="is-narrow">
+        <input class="is-checkradio" type="checkbox" id="ctrl" value="ctrl" v-model="checkedKey">
+        <label for="ctrl"><kbd>C: Ctrl</kbd></label>
+      </div>
+      <div class="is-narrow">
+        <input class="is-checkradio" type="checkbox" id="shift" value="shift" v-model="checkedKey">
+        <label for="shift"><kbd>S: Shift</kbd></label>
+      </div>
+    </div>
+
+    <div class="field is-horizontal bordered-row">
+      <div class="column is-3 mb0">
+        <label class="label mb0">Background Color</label>
+        {#          <p class="is-small has-text-grey">optional</p>#}
+      </div>
+      <div class="control column is-6">
+        <input class="input" type="color" v-model="backgroundColor">
+      </div>
+    </div>
+
+    <div class="field is-horizontal bordered-row">
+      <div class="column is-3 mb0">
+        <label class="label mb0">Text Color</label>
+        {#          <p class="is-small has-text-grey">optional</p>#}
+      </div>
+      <div class="control column is-6">
+        <input class="input" type="color" v-model="textColor">
+      </div>
+    </div>
+
+    <div class="field is-grouped bordered-row">
+      <div class="control">
+        <button class="button is-primary" @click="addLabel()" :disabled="labelText.length === 0">Save Label</button>
+      </div>
+      {#          <div class="control">#}
+      {#              <button class="button is-text" @click="reset()">RESET</button>#}
+      {#          </div>#}
+      <div class="control">
+        <button class="button is-danger" @click="reset()" :disabled="!labelCreationStarted">Reset Current Label</button>
+      </div>
+      <div class="control">
+        <button class="button is-success" @click="done()" :disabled="labels.length === 0">Done</button>
+      </div>
+    </div>
+    {#    </div>#}
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/label.js' %}"></script>
+{% endblock %}

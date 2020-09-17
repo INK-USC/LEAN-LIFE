@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+
+<head>
+  <script type="text/javascript" src="{% static 'js/newscript.js' %}"></script>
+  <title>LEAN-LIFE</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+
+  <!-- For event dropdown -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css">
+
+  <!-- For spinner -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.js"></script>
+  <link rel="stylesheet" href="https://spin.js.org/spin.css">
+  <script type="text/javascript" src="{% static 'js/clientside.js' %}"></script>
+</head>
+
+
+<div id="projects_root" v-cloak>
+<section class="hero banner banner--hero">
+<div class="banner--hero__content">
+    <h1><span><b>Hello, {{ user.get_username | title }}.</b></span></h1>
+  <h3><span>I hope you are having a great day!</span></h3>
+  <div class="banner--hero__cta-container">
+          {% if user.is_superuser %}
+          <a class="btn" @click="isCreate=!isCreate">Create Project</a>
+          {% endif %}
+         </div>
+
+</div>
+</section>
+
+  <!-- Modal card for creating project. -->
+  <div class="modal" :class="{ 'is-active': isCreate }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Create Project</p>
+        <button class="delete" aria-label="close" @click="isCreate=!isCreate"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="content">
+          <form id="create_form" action="/projects/" method="post" @submit="setFormProject()">
+            {% csrf_token %}
+              <div class="field">
+                <label for="{{ form.name.id_for_label }}">Name:</label><br>
+                {% render_field form.name class+="select-height" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.description.id_for_label }}">Discription:</label><br>
+                {% render_field form.description class+="select-height" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.task.id_for_label }}">Task:</label><br>
+                {% render_field form.task class+="select-height" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.explanation_type.id_for_label }}">Explanation Type: 
+                  <div class="help-tip" style="left: 400px">
+                    <p>
+                      What type of explanations would you like to be associated with this project's
+                      annotations? For more information click 
+                      <a href="http://inklab.usc.edu/leanlife/" target="_blank">here</a>.
+                    </p>
+                  </div>
+                </label>
+                <br>
+                {% render_field form.explanation_type class+="select-height" %}  
+              </div>
+              <div class="field">
+                <label for="{{ form.users.id_for_label }}">Users:</label><br>
+                {% render_field form.users class+="select-height" %}
+              </div>
+              <!-- {% for field in form.visible_fields %}
+              <div class="field">
+                {{ field.label_tag }}
+                <div class="control">
+                  {% render_field field class="input select-height"%}
+                </div>
+                {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+              </div>
+              {% endfor %} -->
+          </form>
+        </div>
+      </section>
+        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+          <button type="submit" form="create_form" class="button is-primary">Create</button>
+          <button class="button" @click="isCreate=!isCreate">Cancel</button>
+        </footer>
+    </div>
+  </div>
+
+  <!-- Modal card for updating project. -->
+  <div class="modal" :class="{ 'is-active': isUpdate }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Update Project</p>
+        <button class="delete" aria-label="close" onclick="window.location.href='/projects/'"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="content">
+          <form id="update_form" method="post" @submit="">
+            {% csrf_token %}
+            <div class="field">
+                <label for="{{ form.name.id_for_label }}">Name:</label><br>
+                {% render_field form.name class+="select-height" id="update_name" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.description.id_for_label }}">Discription:</label><br>
+                {% render_field form.description class+="select-height" id="update_description" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.task.id_for_label }}">Task:</label><br>
+                {% render_field form.task class+="select-height" id="update_task" %}
+              </div>
+              <div class="field">
+                <label for="{{ form.explanation_type.id_for_label }}">
+                  Explanation Type:
+                  <div class="help-tip" style="left: 400px">
+                    <p>
+                      What type of explanations would you like to be associated with this project's
+                      annotations? For more information click 
+                      <a href="http://inklab.usc.edu/leanlife/" target="_blank">here</a>.
+                    </p>
+                  </div>
+                </label>
+                <br>
+                {% render_field form.explanation_type class+="select-height" id="update_explanation_type" %}  
+              </div>
+              <div class="field">
+                <label for="{{ form.users.id_for_label }}">Users:</label><br>
+                {% render_field form.users class+="select-height" id="update_users" %}
+              </div>
+          </form>
+        </div>
+      </section>
+        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+          <button type="submit" form="update_form" class="button is-primary" @click="checkUpdate()">Update</button>
+          <button class="button" onclick="window.location.href='/projects/'">Cancel</button>
+        </footer>
+    </div>
+  </div>
+  <div class="modal" v-bind:class="{ 'is-active': isWarningUpdate }">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Are you sure?</p>
+          <button class="delete" aria-label="close" @click="isWarningUpdate=!isWarningUpdate"></button>
+        </header>
+        <section class="modal-card-body">
+          <p> Are you sure you want to save these changes?</p>
+          <p v-if="isTaskChange === true">You are changing the project's task, when rendering annotations we will not show or export previous annotations.</p>
+          <p v-if="isExplChange === true">You are changing the explanation type, when rendering explanations we will not show or export previous explanations.</p>
+          <p>You can always retrieve your previous explanations by switching back and exporting.</p>
+        </section>
+        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+          <button class="button" @click="submitUpdateForm()">Update</button>
+          <button class="button" @click="isWarningUpdate=!isWarningUpdate">Cancel</button>
+        </footer>
+      </div>
+    </div>
+
+  <div class="modal" :class="{ 'is-active': isDelete }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Delete Project</p>
+        <button class="delete" aria-label="close" @click="isDelete=!isDelete"></button>
+      </header>
+      <section class="modal-card-body">
+        Are you sure you want to delete project?
+      </section>
+      <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+        <button class="button is-danger" @click="deleteProject()">Delete</button>
+        <button class="button" @click="isDelete=!isDelete">Cancel</button>
+      </footer>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-10 is-offset-1">
+      <div class="card events-card">
+        <header class="card-header">
+          <p class="card-header-title">
+            [[ items.length ]] Projects
+          </p>
+          <div class="field card-header-icon">
+            <div class="control">
+              <div class="select">
+                <select v-model="selected">
+                  <option selected>All Project</option>
+                  <option>Named Entity Recognition</option>
+                  <option>Relation Extraction</option>
+                  <option>Sentiment Analysis</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="card-table">
+          <div class="content">
+            <table class="table is-fullwidth">
+              <tbody>
+                <tr v-for="project in selectedProjects">
+                  <td class="pl15r">
+                    <div class="dataset-item__main is-vertical">
+                      <div class="dataset-item__main-title">
+                        <div class="dataset-item__main-title-link dataset-item__link">
+                          <a v-bind:href="'/projects/' + project.id + '/docs'" class="has-text-black" @click="setProject(project)">[[ project.name ]]</a>
+                        </div>
+                      </div>
+                      <div class="dataset-item__main-subtitle">
+                        [[ project.description ]]
+                      </div>
+                      <div class="dataset-item__main-info">
+                        <span class="dataset-item__main-update">updated <span>[[ getDaysAgo(project.updated_at) ]] days ago</span></span></div>
+                    </div>
+                  </td>
+                  <td class="is-vertical">
+                    <span class="tag is-normal" v-if="project.task === 1">Sentiment Analysis Task</span>
+                    <span class="tag is-normal" v-if="project.task === 2">Named Entity Recognition Task</span>
+                    <span class="tag is-normal" v-if="project.task === 3">Relation Extraction Task</span>
+                  </td>
+                  {% if user.is_superuser %}
+                  <td class="is-vertical"><a @click="setProject(project, 2)">Edit</a></td>
+                  <td class="is-vertical"><a class="has-text-danger" @click="setProject(project, 0)">Delete</a></td>
+                  {% endif %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/projects.js' %}"></script>
+{% endblock %}

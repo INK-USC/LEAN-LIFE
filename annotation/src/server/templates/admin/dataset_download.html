@@ -1,0 +1,195 @@
+{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+<div class="columns" id="download-file">
+  <div class="column is-12">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          Create and Export a dataset with current Annotations
+        </p>
+      </header>
+      <div class="card-content">
+        <p>The following download options are possible:</p>
+        <ul style="list-style-type:disc; list-style-position:outside; margin-left:2em;">
+          <li>
+            <b>JSON(Recommended)</b>
+            <pre>
+              <code v-if="projectType === 1">
+{
+  "data": [
+      {
+            "doc_id": 1,
+            "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+            "annotations": [
+                {
+                      "annotation_id": 18,
+                      "label": "postive",
+                      "explanation": [
+                          "The word 'great' appears in the sentence."
+                      ]
+                }
+                ...
+            ],
+            "user": 4,
+            "metadata": {"foo" : "bar"}
+      }
+      ...
+  ]
+}
+              </code>
+              <code v-if="projectType === 2">
+{
+  "data": [
+      {
+            "doc_id": 1,
+            "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+            "annotations": [
+                {
+                      "annotation_id": 18,
+                      "label": "LOC",
+                      "start_offset": 52,
+                      "end_offset": 58,
+                      "explanation": [
+                          "lived in"
+                      ]
+                }
+                ...
+            ],
+            "user": 4,
+            "metadata": {"foo" : "bar"}
+      }
+      ...
+  ]
+}
+              </code>
+              <code v-if="projectType === 3">
+{
+     "data": [
+          {
+               "doc_id": 1,
+               "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+               "annotations": [
+                    {
+                         "annotation_id": 18,
+                         "label": "per:occupation",
+                         "sbj_start_offset": 0,
+                         "sbj_end_offset": 15,
+                         "obj_start_offset": 27,
+                         "obj_end_offset": 41,
+                         "explanation": [
+                              "The token  ','  appears between 'Louis Armstrong' and 'trumpet player'", 
+                              "The token ',' appears to the right of 'trumpet player' by no more than 2 words",
+                              "There are no more than 5 words between 'Louis Armstrong' and 'trumpet player'"
+                         ]
+                    }
+                    ...
+               ],
+               "user": 4,
+               "metadata": {"foo" : "bar"}
+          }
+          ...
+     ]
+}
+              </code>
+            </pre>
+          </li>
+          <li v-if="projectType !== 1">
+            <b>CSV</b>
+            <p></p>
+            <table style="width:100%" v-if="projectType === 2">
+                <tr>
+                  <th>document_id</th>
+                  <th>word</th>
+                  <th>label</th>
+                  <th>metadata</th>
+                  <th>explanation</th>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Louis</td>
+                  <td>B-PER</td>
+                  <td>{}</td>
+                  <td>, the great trumpet player,:*:*:lived in</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Armstrong</td>
+                  <td>I-PER</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>,</td>
+                  <td>O</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </table>
+              <table style="width:100%" v-if="projectType === 3">
+                <tr>
+                  <th>document_id</th>
+                  <th>entity_1</th>
+                  <th>entity_2</th>
+                  <th>label</th>
+                  <th>metadata</th>
+                  <th>explanation</th>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Louis Armstrong</td>
+                  <td>trumpet player</td>
+                  <td>per:occupation</td>
+                  <td>{}</td>
+                  <td>The token ',' appears between 'Louis Armstrong' and 'trumpet player':*:*:The token ',' ...</td>
+                </tr>
+              </table>
+              <p>If needed <u>we will use <b>":*:*:"</b> as a separator</u> to split up the string in the explanation column. A workaround for the problem of splitting on ","</p>
+          </li>
+        </ul>
+        <form
+          action="{% url 'download_file' view.kwargs.project_id %}"
+          method="get"
+        >
+          <div class="section">
+            <ul>
+              <li>
+                <a class="control">
+                  <button
+                    type="submit"
+                    class="button is-primary button-margin "
+                    name="format"
+                    value="json"
+                  >
+                    Download JSON File
+                  </button>
+                </a>
+              </li>
+              <li v-if="projectType !== 1">
+                <a class="control">
+                  <button
+                    type="submit"
+                    class="button is-primary button-margin "
+                    name="format"
+                    value="csv"
+                  >
+                    Download CSV File
+                  </button>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'bundle/download.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block annotation-area %}
+<div
+  class="card vld-parent"
+  xmlns:v-slot="http://www.w3.org/1999/XSL/Transform"
+>
+  <loading :active.sync="isLoading" :can-cancel="true">
+    <template v-slot:before>
+      <p>[[ loadingMsg ]]</p>
+    </template>
+  </loading>
+  <nl-modal
+    v-if="explanationPopup && explanationType === 2"
+    :current-explanations="annotationDocs[pageNumber].getNlExplanations(lastAnnotationId)"
+    :last-annotation-id="lastAnnotationId"
+    :docid="annotationDocs[pageNumber].id"
+    :selected-words="selectedWords"
+    :project-type="projectType"
+    @close="explanationPopup = false"
+    @refresh-nl-explanations="refreshNlExplanations"
+  >
+    <div>
+      <span class="tag">Text</span>
+      <sentence-highlight-display
+        :label-positions="annotationDocs[pageNumber].getNerInfoFromRelationAnnotation(lastAnnotationId)"
+        :labels="labels"
+        :text="annotationDocs[pageNumber].text"
+      ></sentence-highlight-display>
+      <span class="tag">Relation</span>
+      <relation-display
+        :subject="subject.text"
+        :object="object.text"
+        :relation="relation.text"
+        :relation-color="relation.background_color"
+      ></relation-display>
+    </div>
+  </nl-modal>
+  <trigger-modal
+    v-if="explanationPopup && explanationType === 3"
+    @close="explanationPopup = false"
+    @refresh-triggers="refreshTriggers"
+    :current-triggers="annotationDocs[pageNumber].getTriggers(lastAnnotationId)"
+    :last-annotation-id="lastAnnotationId"
+    :docid="annotationDocs[pageNumber].id"
+    :trigger-labels="triggerLabels"
+    :text="annotationDocs[pageNumber].text"
+    :original-selections="annotationDocs[pageNumber].getNerInfoFromRelationAnnotation(lastAnnotationId)"
+  >
+    <div>
+      <span class="tag">Text</span>
+      <sentence-highlight-display
+        :label-positions="annotationDocs[pageNumber].getNerInfoFromRelationAnnotation(lastAnnotationId)"
+        :labels="labels"
+        :text="annotationDocs[pageNumber].text"
+      ></sentence-highlight-display>
+      <span class="tag">Relation</span>
+      <relation-display
+        :subject="subject.text"
+        :object="object.text"
+        :relation="relation.text"
+        :relation-color="relation.background_color"
+      ></relation-display>
+    </div>
+  </trigger-modal>
+  <header class="card-header">
+    <div
+      class="card-header-title has-background-royalblue"
+      style="padding:1.5rem;"
+    >
+      <div class="field is-grouped is-grouped-multiline">
+        <div class="control" v-for="label in labels">
+          <div class="tags has-addons">
+            <a
+              class="tag is-medium"
+              :class="{
+                noselect: !labelsEnabled
+              }"
+              v-bind:style="getLabelStyle(label)"
+              v-on:click="addAnnotation(label)"
+              v-shortkey.once="replaceNull(label.shortcut)"
+              @shortkey="addAnnotation(label)"
+            >
+              [[ label.text ]]
+            </a>
+            <span class="tag is-medium"
+              ><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="card-content">
+    {% comment %} <span class="tag" v-if="confidence"
+      >confidence : [[ confidenceElement ]]</span
+    > {% endcomment %}
+    <span class="tag">Text</span>
+    <div class="content" v-if="pageNumber in annotationDocs">
+      <relation-extraction-annotator
+        ref="annotator"
+        v-bind:labels="labels"
+        v-bind:annotations="annotationDocs[pageNumber].getAnnotationList()"
+        v-bind:text="annotationDocs[pageNumber].text"
+        v-bind:page-number="pageNumber"
+        @disable-labels="disableLabels"
+        @enable-labels="enableLabels"
+      />
+    </div>
+  </div>
+  <div class="card-content">
+    <span class="tag">Relations</span>
+    <div v-for="({subject, object, relation, base_ann_id}, i) in reRelations" :style="{position: 'relative'}">
+      <span v-on:click="toggleExplanations(subject, object, relation, base_ann_id)">
+        <relation-display
+          :subject="subject.text"
+          :object="object.text"
+          :relation="relation.text"
+          :relation-color="relation.background_color"
+        ></relation-display>
+      </span>
+      <a-icon
+        class="dynamic-delete-button"
+        type="minus-circle-o"
+        :style="{
+          position: 'absolute',
+          top: '40%',
+          right: '0'
+        }"
+        @click="() => removeSelectedRelation(i)"
+      ></a-icon>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+{% render_bundle bundle_name 'js' %}
+{% endblock %}

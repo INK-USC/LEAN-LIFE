@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+{% block navigation %}
+<span id="headers">
+<a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-user-edit"></i>
+  </span>
+  {% comment %} <div id="headers"> {% endcomment %}
+    <b>[[ annotationHeading ]]</b>
+  {% comment %} </div> {% endcomment %}
+</a>
+<a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-upload"></i>
+  </span>
+  {% comment %} <div id="headers"> {% endcomment %}
+    <b>[[ importDataHeading ]]</b>
+  {% comment %} </div> {% endcomment %}
+</a>
+<a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-download"></i>
+  </span>
+  <b>Export Annotations</b>
+</a>
+</span>
+{% endblock %}
+{% block content %}
+<div class="columns mr0" id="mail-app" v-cloak>
+  <aside class="column is-2 aside">
+    <div>
+      <div class="main" id="left_nav">
+        <a href="{% url 'dataset' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-inbox"></i>
+          </span>
+          <span class="name">Corpus</span>
+        </a>
+        <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-star"></i>
+          </span>
+          <span class="name">Labels</span>
+        </a>
+        {% comment %} <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-signal"></i>
+          </span>
+          <span class="name">Statistics</span>
+        </a> {% endcomment %}
+        <a href="{% url 'setting' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-cog"></i>
+          </span>
+          <span class="name">Settings</span>
+        </a>
+        {% comment %} <a href="{% url 'dictionary' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-book"></i>
+          </span>
+          <span class="name">Historical</span>
+        </a> {% endcomment %}
+      </div>
+    </div>
+  </aside>
+  <div class="column is-10 messages hero is-fullheight" id="message-feed">
+    {% if messages %}
+      <div>
+        <article class='message is-danger'>
+          <div class='message-body'>
+            <ul>
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </article>
+      </div>
+    {% endif %}
+    {% block content-area %}{% endblock %}
+  </div>
+</div>
+<script src="{% static 'bundle/headers.js' %}"></script>
+{% endblock %}

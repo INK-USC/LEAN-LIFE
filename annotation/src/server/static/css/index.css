@@ -1,0 +1,24 @@
+
+.contact_name {
+  color: black;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.contact {
+  border-radius: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.contact_name:hover {
+  color: gray;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.thumbnail:hover {
+  transform: scale(1.5);
+  position: relative;
+  z-index: 1;
+}

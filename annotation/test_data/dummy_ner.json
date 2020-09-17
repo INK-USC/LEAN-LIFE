@@ -1,0 +1,12 @@
+{
+  "data" : [
+    {
+      "word" : "Bill",
+      "label" : "PER"
+    },
+    {
+      "word" : "Queens",
+      "label" : "LOC"
+    }
+  ]
+}

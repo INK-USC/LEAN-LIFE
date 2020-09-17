@@ -1,0 +1,103 @@
+{
+ "data": [
+  {
+   "doc_id": 1,
+   "text": "EU rejects German call to boycott British lamb.",
+   "annotations": [
+    {
+     "annotation_id": 1,
+     "label": "label_1",
+     "start_offset": 0,
+     "end_offset": 2
+    },
+    {
+     "annotation_id": 3,
+     "label": "label_1",
+     "start_offset": 34,
+     "end_offset": 47
+    },
+    {
+     "annotation_id": 2,
+     "label": "label_2",
+     "start_offset": 11,
+     "end_offset": 22
+    }
+   ],
+   "user": 1,
+   "metadata": {}
+  },
+  {
+   "doc_id": 2,
+   "text": "The European Commission said on Thursday it disagreed with German advice to consumers to shun British lamb until scientists determine whether mad cow disease can be transmitted to sheep.",
+   "annotations": [
+    {
+     "annotation_id": 4,
+     "label": "label_1",
+     "start_offset": 4,
+     "end_offset": 23
+    },
+    {
+     "annotation_id": 6,
+     "label": "label_1",
+     "start_offset": 142,
+     "end_offset": 149
+    },
+    {
+     "annotation_id": 5,
+     "label": "label_2",
+     "start_offset": 94,
+     "end_offset": 106
+    }
+   ],
+   "user": 1,
+   "metadata": {}
+  },
+  {
+   "doc_id": 3,
+   "text": "Germany's representative to the European Union's veterinary committee Werner Zwingmann said on Wednesday consumers should buy sheepmeat from countries other than Britain until the scientific advice was clearer.",
+   "annotations": [
+    {
+     "annotation_id": 7,
+     "label": "label_1",
+     "start_offset": 32,
+     "end_offset": 48
+    },
+    {
+     "annotation_id": 9,
+     "label": "label_1",
+     "start_offset": 95,
+     "end_offset": 104
+    },
+    {
+     "annotation_id": 8,
+     "label": "label_2",
+     "start_offset": 162,
+     "end_offset": 169
+    }
+   ],
+   "user": 1,
+   "metadata": {}
+  },
+  {
+   "doc_id": 4,
+   "text": "We don't support any such recommendation because we don't see any grounds for it.",
+   "annotations": [],
+   "user": 1,
+   "metadata": {}
+  },
+  {
+   "doc_id": 5,
+   "text": "He said a proposal last month by EU Farm Commissioner Franz Fischler to ban sheep brains, spleens and spinal cords from the human and animal food chains was a highly specific and precautionary move to protect human health.",
+   "annotations": [],
+   "user": 1,
+   "metadata": {}
+  },
+  {
+   "doc_id": 6,
+   "text": "Fischler proposed EU-wide measures after reports from Britain and France that under laboratory conditions sheep could contract Bovine Spongiform Encephalopathy (BSE) -- mad cow disease.",
+   "annotations": [],
+   "user": 1,
+   "metadata": {}
+  }
+ ]
+}

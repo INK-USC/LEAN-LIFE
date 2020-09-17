@@ -1,0 +1,30 @@
+{
+ "data": [
+  {
+   "doc_id": 1,
+   "text": "Billy Mays, the bearded, boisterous pitchman who, as the undisputed king of TV yell and sell, became an unlikely pop culture icon, died at his home in Tampa on Sunday.",
+   "annotations": [
+    {
+     "annotation_id": 10,
+     "label": "PER",
+     "start_offset": 0,
+     "end_offset": 10
+    },
+    {
+     "annotation_id": 11,
+     "label": "LOC",
+     "start_offset": 151,
+     "end_offset": 156
+    },
+    {
+     "annotation_id": 12,
+     "label": "MISC",
+     "start_offset": 36,
+     "end_offset": 44
+    }
+   ],
+   "user": 1,
+   "metadata": {}
+  }
+ ]
+}
