@@ -6,6 +6,7 @@
 
 ### Contents:
 * [Quick Intro](#quick-intro)
+* [Release Plan](#release-plan)
 * [Installation Instructions](#installation-instructions)
 * [Set Up Instructions](#set-up-instructions)
 * [How To Use](#how-to-use)
@@ -13,13 +14,13 @@
 * [Citation](#citation)
 
 # Quick Intro:
-LEAN-LIFE is an annotation framework for Named Entity Recognition (NER), Relation Extraction (RE) and Multi-Class/Sentiment Analysis (SA) Document Classification. LEAN-LIFE additionally enable the capture and use of explanations during the annotation process. Explanations can be seen as enhanced supervision, providing reasoning behind the labeling decision.
+LEAN-LIFE is an annotation framework for Named Entity Recognition (NER), Relation Extraction (RE) and Sentiment Analysis (SA)/Multi-Class Document Classification. LEAN-LIFE additionally enable the capture and use of explanations during the annotation process. Explanations can be seen as enhanced supervision, providing reasoning behind the labeling decision.
 
 Our initial frontend code is based on the [Doccano](https://github.com/chakki-works/doccano) project and the [AlpacaTag](https://github.com/INK-USC/AlpacaTag) project however we differentiate ourselves in these ways:
 
 * **Triplet Capture**: Allows the building of a dataset that is (datapoint, label, explanation), unlike the standard (datapoint, label) tuple.
 
-* **Explanation Supported Recommendations**: A backend soft-matching model is updated in a batch fashion to provide recommendations to the user.
+* **Explanation Supported Recommendations**: A backend soft-matching model is updated in a batch fashion to provide recommendations to the user. (coming soon)
 
 * **Relation Extraction Task Supported**: Using the output of the Named Entity Extraction task, our system allows for the creation of relation extraction datasets.
 
@@ -27,15 +28,24 @@ Due to refactoring efforts and a desire to create a more stable framework the fo
 
 * **Active intelligent recommendation**: Instead of just using explanations, we will be training an appropriate backend model for the selected task using explanations and labels to both provide enhanced annotations to the user and ensure users are not asked to provide annotations on documents that the model already understands.
 
-* **Real-time model deployment**: Users can extract the trained recommendation model at any point for deployment purposes, without having to wait till all documents are labeled. (AlpacaTag Supports this)
+* **Real-time model deployment**: Users can extract the trained recommendation model at any point for deployment purposes, without having to wait till all documents are labeled.
 
 * **User Roles**: Differentiating between a project creator and project annotators, allowing for a creator to set up a project, while allowing annotators to configure more local settings like what types of recommendations they would like, and how often their backend model should be trained.
 
 Our initial model training code is also based on the [Bert-As-Service](https://github.com/hanxiao/bert-as-service) project. We are obviously different as our project is also an annotation framework.
 
-You can check out our [Trello Board](https://trello.com/invite/b/Ytw731gY/c609d1d64aa743227f8bb9209dc9da64/acl-demo-work) if you'd like to keep track of our progress / help out.
-
 Please reference our [website](http://inklab.usc.edu/leanlife/) for more information.
+
+# Release Plan:
+**Next Release's Goals:**
+
+* Goal 1
+* Goal 2
+* Goal 3
+
+**Release 1** (Date: fill-this-in)
+
+This release focuses on providing a Web-UI to annotate sets of documents. As mentioned the user can create annotations for three tasks (NER, SA, RE), as well as provide explanations for those annotations in two different ways. We support various import/export formats, and take advantage of two recommendation strategies for NER (Noun phrase chunking--powered by spaCy, Historical Annotation Application) and one for RE (Historical Annotation Application). A project owner can upload a set of (x,y) pairs as "Historical" annotations, and we will apply these pairs as recommendations for un-annotated documents.
  
 # Installation Instructions:
 
@@ -45,7 +55,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 * Please intall [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
      * Make sure you have the command `psql` now available (`which psql` should return a path) -- should be the result of a proper install.
 * Ensure nothing else is listening on port 5432 (default postrges port)
-* Clone this repo: `git clone fill-this-in`
+* Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
 * Create a virtual environment using:
      * annaconda: `conda create -n leanlife python==3.6.5`
      * virtualenv:
@@ -56,7 +66,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
      * virtualenv: `source leanlife/bin/activate`
      * Make sure no other environment is also activated... annaconda often has the `base` environment active, please make sure that isn't the case before activating.
 * `pip install -r requirements.txt` (These are requirements for the annotation framework)
-* `python -m spacy download en` (or whatever version you'd like, just make sure to update this in [utils.py](fill-this-in))
+* `python -m spacy download en` (or whatever version you'd like, just make sure to update this in [utils.py](https://github.com/INK-USC/LEAN-LIFE/blob/master/annotation/src/server/utils.py#L8))
 
 # Set Up Instructions:
 
@@ -69,7 +79,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 5. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`
      * Inside the `app` folder, navigate to [settings.py](fill-this-in) (We are setting up the postgres connection)
           * Find the `DATABASES` dictionary, and set a `PASSWORD` to your liking
-6. `./setup.sh PASSWORD-YOU-JUST-SET`
+6. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run `./setup.sh PASSWORD-YOU-JUST-SET`
      * you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
 7. `python manage.py runserver 0.0.0.0:8000`
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
@@ -83,16 +93,34 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 3. Fill Project Fields
      * Choose the Project type (NER, RE, SA)
      * Explanation Type (Natural Language or Trigger)
-          * Note: While we support the capture of both forms of explanations, recommendations-via-explanations are supported for the following `Project Type, Explanation Type` pairs: (NER, Trigger), (RE, NL), (SA, NL)
      * Assigned Users
      * Name, Description
 4. Upload documents per the presented format (csv and JSON formats supported, JSON is preferred for text parsing reasons, splitting on `,` isn't great)
 5. Create the desired labels
 6. Set Annotation Settings
-     * Recommendation Type (Historical (NER, RE), Noun Phrase (NER), Explanation Soft Matching (NER, RE, SA))
-     * Online Training On/Off (Currently Not Supported)
-     * Active Learning On/Off (Currently Not Supported)
-     * Word Embeddings to use (N/A right now)
+     * Recommendation Type (Historical (NER, RE), Noun Phrase (NER))
+     * Acquire Size (How many documents should be gotten from the db at a time)
+7. (Optional) Upload annotations to be used as recommendations to annotators when appropraite, `Historical` recommendations
+8. Start Annotating
+
+### How to create addtional users:
+Superuser
+
+1. `cd annotation/src`
+2. `python manage.py createsuperuser`
+
+Normal User
+
+1. `cd annotation/src`
+2. `python manage.py shell`
+     
+     (a shell will pop up now, enter these commands)
+
+     ```
+     from django.contrib.auth.models import User
+     user=User.objects.create_user('fill-username-in',  password='fill-password-in')
+     user.save()
+     ```
 
 ### How to annotate for the NER Task:
 
@@ -107,7 +135,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 * Select two entities, the first entity is the **Subject** of the Relation (the entity that is more central to the relation), while the second entity is the **Object** of the Relation (the entity that is associated with the subject). 
      * Example: **John** (Subject) is born in **May** (Object).
 
-* At this point if recommendations are turned on a recommended label will be provided to you (if one exists). Else just select the appropriate relation label.
+* At this point if recommendations are turned on, recommended labels are highlighted in red. Else just select the appropriate relation label.
 
 * If you have an explanation type set, the appropriate pop-up will appear to capture the explanation.
 
@@ -229,13 +257,29 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 ### RE:
 
 **Import:**
-* In oder to create an RE Project, you must have already have annotated the Named Entities in your documents.
+* In order to create an RE Project, you must have already have annotated the Named Entities in your documents.
 
 * JSON:
-     * Export of NER project
-
-* CSV: (Not Supported Yet)
-     * Export of NER project
+     - Essentially the output of an NER Project
+     ```
+     {
+       "data": [
+           {
+                 "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+                 "annotations": [
+                     {
+                           "label": "LOC",
+                           "start_offset": 52,
+                           "end_offset": 58
+                     }
+                     ...
+                 ],
+                 "metadata": {"foo" : "bar"}
+           }
+           ...
+       ]
+     }
+     ```
 
 **Export:**
  * JSON:
@@ -305,7 +349,6 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
           ]
     }
      ```
-* CSV (will not be supported)
 
 # Citation
 ```
