@@ -11,6 +11,7 @@
 * [Set Up Instructions](#set-up-instructions)
 * [How To Use](#how-to-use)
 * [Supported Data Formats](#supported-data-formats)
+* [Contributing](#contributing)
 * [Citation](#citation)
 
 # Quick Intro:
@@ -32,9 +33,9 @@ Due to refactoring efforts and a desire to create a more stable framework the fo
 
 * **User Roles**: Differentiating between a project creator and project annotators, allowing for a creator to set up a project, while allowing annotators to configure more local settings like what types of recommendations they would like, and how often their backend model should be trained.
 
-Our initial model training code is also based on the [Bert-As-Service](https://github.com/hanxiao/bert-as-service) project. We are obviously different as our project is also an annotation framework.
-
 Please reference our [website](http://inklab.usc.edu/leanlife/) for more information.
+
+We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
 # Release Plan:
 **Next Release's Goals:**
@@ -49,24 +50,44 @@ This release focuses on providing a Web-UI to annotate sets of documents. As men
  
 # Installation Instructions:
 
-Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly. We will dockerize this project soon as well.
+Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly.
 
 * Please install [Python 3.6.5](https://www.python.org/downloads/release/python-365/) (if you use `conda` you can ignore this step)
 * Please intall [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
-     * Make sure you have the command `psql` now available (`which psql` should return a path) -- should be the result of a proper install.
-* Ensure nothing else is listening on port 5432 (default postrges port)
 * Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
 * Create a virtual environment using:
-     * annaconda: `conda create -n leanlife python==3.6.5`
+     * annaconda: `conda create -n leanlife python==3.6` (annaconda doesn't have a stable 3.6.5 version)
      * virtualenv:
           1. `python3.6.5 -m pip install virtualenv`
           2. `python3.6.5 -m venv leanlife`
 * Activate your environment:
      * annaconda: `conda activate leanlife`
      * virtualenv: `source leanlife/bin/activate`
-     * Make sure no other environment is also activated... annaconda often has the `base` environment active, please make sure that isn't the case before activating.
-* `pip install -r requirements.txt` (These are requirements for the annotation framework)
+* `pip install -r requirements.txt` 
 * `python -m spacy download en` (or whatever version you'd like, just make sure to update this in [utils.py](https://github.com/INK-USC/LEAN-LIFE/blob/master/annotation/src/server/utils.py#L8))
+
+-----
+
+#### Potential Errors:
+  * Postgres is not installed:
+    - To check: Open up terminal and exectue `which psql`. This should return a path.
+    - To solve: Please follow the example [provided](http://postgresguide.com/setup/install.html)
+  * Some other application is listening on port 5432
+    * To check: (Unix, Linux): `sudo lsof -i:5432`, (Windows): `netstat -tulpn | grep 5432`
+      - [Useful Link](https://www.cyberciti.biz/faq/unix-linux-check-if-port-is-in-use-command/)
+    * To solve: Get the Process ID of the application running on the port and kill the process.
+      * [Windows](https://www.revisitclass.com/networking/how-to-kill-a-process-which-is-using-port-8080-in-windows/)
+      * [Unix, Linux––2nd Answer](https://stackoverflow.com/questions/3855127/find-and-kill-process-locking-port-3000-on-mac)
+  * Wrong version of python is being used.
+    * To check: if you're getting installation errors, it could be that your machine is running the wrong version of python and/or installed packages. To check run `which python` and make sure the returned folder is the path to the `leanlife` virtual environment folder. To check that python is looking in the right places check this example [here](https://bic-berkeley.github.io/psych-214-fall-2016/sys_path.html#python-looks-for-modules-in-sys-path). Again the path should be the site-packages folder in your `leanlife` virtual environment
+    * To Fix: Re-create virtual environment:
+      - `deactivate leanlife`
+      - `rm -rf leanlife`
+      - make sure no other virtualenvs are running
+        + open up terminal/command prompt and see if there are paranthesis at the start of each line, ex: `(base) user@...`
+        + if this is the case deactivate that environment: `deactivate environment-name`, in the above example it would be `deactivate base`
+      - Go to step 4 of installation instructions
+
 
 # Set Up Instructions:
 
@@ -349,6 +370,10 @@ Normal User
           ]
     }
      ```
+
+# Contributing
+
+We love contributions, so thank you for taking the time! Pusing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
 
 # Citation
 ```
