@@ -98,7 +98,7 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
 class SettingView(LoginRequiredMixin, TemplateView):
     template_name = 'admin/setting.html'
-# TODO: Add ability to upload BiLSTMCRF document for RE
+
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_upload.html'
     class ImportFileError(Exception):

@@ -1,0 +1,194 @@
+{
+  "data": [
+    {
+      "text": "The period of tumor shrinkage after radiation therapy is often long and varied (mean months).",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 14,
+          "end_offset": 29
+        },
+        {
+          "label": "",
+          "start_offset": 30,
+          "end_offset": 47
+        }
+      ]
+    },
+    {
+      "text": "Cinnamon oil is distilled from bark chips and used to alleviate stomach upsets.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 0,
+          "end_offset": 12
+        },
+        {
+          "label": "",
+          "start_offset": 31,
+          "end_offset": 41
+        },
+        {
+          "label": "",
+          "start_offset": 64,
+          "end_offset": 78
+        }
+      ]
+    },
+    {
+      "text": "Earplugs relieve the discomfort from traveling with a cold allergy or sinus condition",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 21,
+          "end_offset": 31
+        },
+        {
+          "label": "",
+          "start_offset": 37,
+          "end_offset": 46
+        },
+        {
+          "label": "",
+          "start_offset" : 54,
+          "end_offset" : 66
+        },
+        {
+          "label": "",
+          "start_offset" : 70,
+          "end_offset" : 85
+        }
+      ]
+    },
+    {
+      "text": "Immediately after the court is opened, the judge removes his wig and counsel are expected to follow suit.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 22,
+          "end_offset": 27
+        },
+        {
+          "label": "",
+          "start_offset": 43,
+          "end_offset": 48
+        },
+        {
+          "label": "",
+          "start_offset" : 61,
+          "end_offset" : 64
+        }
+      ]
+    },
+    {
+      "text": "Well, this footballer kicked the ball the hardest he could and hit me.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 11,
+          "end_offset": 21
+        },
+        {
+          "label": "",
+          "start_offset": 33,
+          "end_offset": 37
+        }
+      ]
+    },
+    {
+      "text": "Surrounding each neuron there was a group of cells of the glial type (satellite cells), which together with the collagen fibres composed the glial capsule.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 17,
+          "end_offset": 23
+        },
+        {
+          "label": "",
+          "start_offset": 112,
+          "end_offset": 127
+        },
+        {
+          "label": "",
+          "start_offset": 141,
+          "end_offset": 154
+        }
+      ]
+    },
+    {
+      "text": "The soft brown and beige tones in the decoration provide a tranquil mood.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 25,
+          "end_offset": 30
+        },
+        {
+          "label": "",
+          "start_offset": 59,
+          "end_offset": 72
+        }
+      ]
+    },
+    {
+      "text": "The port scanner is a utility to scan a system to get the status of the TCP.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 4,
+          "end_offset": 8
+        },
+        {
+          "label": "",
+          "start_offset": 9,
+          "end_offset": 16
+        },
+        {
+          "label": "",
+          "start_offset": 72,
+          "end_offset": 75
+        }
+      ]
+    },
+    {
+      "text": "Habitat degradation from within stream channels, loss of riparian vegetation, and reductions in water quality degrade and also limit the population.",
+      "annotations": [
+          {
+            "label": "",
+            "start_offset": 0,
+            "end_offset": 19
+          },
+          {
+            "label": "",
+            "start_offset": 32,
+            "end_offset": 47
+          },
+          {
+            "label": "",
+            "start_offset" : 57,
+            "end_offset" : 76
+          },
+          {
+            "label": "",
+            "start_offset" : 82,
+            "end_offset" : 109
+          }
+      ]
+    },
+    {
+      "text": "By capillary action, a thin line of blood will spread along the edge of the spreader.",
+      "annotations": [
+        {
+          "label": "",
+          "start_offset": 64,
+          "end_offset": 68
+        },
+        {
+          "label": "",
+          "start_offset": 76,
+          "end_offset": 84
+        }
+      ]
+    }
+  ]
+}

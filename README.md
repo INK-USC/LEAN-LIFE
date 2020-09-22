@@ -9,9 +9,8 @@
 * [Release Plan](#release-plan)
 * [Installation Instructions](#installation-instructions)
 * [Set Up Instructions](#set-up-instructions)
-* [How To Use](#how-to-use)
-* [Supported Data Formats](#supported-data-formats)
 * [Contributing](#contributing)
+* [Misc](#misc)
 * [Citation](#citation)
 
 # Quick Intro:
@@ -38,25 +37,30 @@ Please reference our [website](http://inklab.usc.edu/leanlife/) for more informa
 We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
 # Release Plan:
-**Next Release's Goals:**
+**Next Release Goals:** 4-6 Weeks
 
-* Goal 1
-* Goal 2
-* Goal 3
+* API for training of a downstream model (NER, RE, SA):
+  * with natural language explanations, a fixed NExT parser to generate weak labels (RE, SA)
+  * with triggers to train a TriggerNER model (NER)
+  * without explanations (NER, RE, SA)
+* UI to allow for training and downloading of mentioned models after annotations are complete (or whenever the project owner would like)
 
-**Release 1** (Date: fill-this-in)
+**Release 1** (Date: 9/29/20)
 
-This release focuses on providing a Web-UI to annotate sets of documents. As mentioned the user can create annotations for three tasks (NER, SA, RE), as well as provide explanations for those annotations in two different ways. We support various import/export formats, and take advantage of two recommendation strategies for NER (Noun phrase chunking--powered by spaCy, Historical Annotation Application) and one for RE (Historical Annotation Application). A project owner can upload a set of (x,y) pairs as "Historical" annotations, and we will apply these pairs as recommendations for un-annotated documents.
+This release focuses on providing a Web-UI to annotate sets of documents. As mentioned the user can create annotations for three tasks (NER, SA, RE), as well as provide explanations for those annotations in two different ways. We support various import/export formats, and take advantage of two recommendation strategies for NER (Noun phrase chunking--powered by spaCy, Historical Annotation Application) and one for RE (Historical Annotation Application). To further enable Historical Annotation Application, a project owner can upload a set of (x,y) pairs as "Historical" annotations, and we will apply these pairs as recommendations for un-annotated documents (sort of like distant learning).
  
 # Installation Instructions:
 
 Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly.
 
 * Please install [Python 3.6.5](https://www.python.org/downloads/release/python-365/) (if you use `conda` you can ignore this step)
-* Please intall [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
+* Please install [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
+* If on linux, please make sure to start postgres `sudo service postgresql start`
+  - if you use the installation guide above for unix or windows you shouldn't have to do this
+* Open a new terminal window after installing the above
 * Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
 * Create a virtual environment using:
-     * annaconda: `conda create -n leanlife python==3.6` (annaconda doesn't have a stable 3.6.5 version)
+     * annaconda: `conda create -n leanlife python=3.6` (annaconda doesn't have a stable 3.6.5 version, so we use 3.6)
      * virtualenv:
           1. `python3.6.5 -m pip install virtualenv`
           2. `python3.6.5 -m venv leanlife`
@@ -97,283 +101,36 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 2. Navigate to the `server` folder inside `annotation/src`, `cd LEAN-LIFE/annotation/src/server`
 3. `npm install`
 4. `npm run build`
-5. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`
-     * Inside the `app` folder, navigate to [settings.py](fill-this-in) (We are setting up the postgres connection)
-          * Find the `DATABASES` dictionary, and set a `PASSWORD` to your liking
-6. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run `./setup.sh PASSWORD-YOU-JUST-SET`
-     * you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
+5. We will now setup the postgres connection. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`.
+     * Inside the `app` folder, navigate to [settings.py](https://github.com/INK-USC/LEAN-LIFE/blob/master/annotation/src/app/settings.py#L100)
+          * Find the `DATABASES` dictionary, and replace the `PASSWORD` "fill-this-in" with your own password
+6. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run:
+    * `./setup.sh PASSWORD-YOU-JUST-SET` <- (passing your password in as an argument)
+    * you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
 7. `python manage.py runserver 0.0.0.0:8000`
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
 
-# How To Use:
-
-### How to create a Project:
-
-1. Log in using the user you created in step 6 of the set up.
-2. Hit the *Create Project* button
-3. Fill Project Fields
-     * Choose the Project type (NER, RE, SA)
-     * Explanation Type (Natural Language or Trigger)
-     * Assigned Users
-     * Name, Description
-4. Upload documents per the presented format (csv and JSON formats supported, JSON is preferred for text parsing reasons, splitting on `,` isn't great)
-5. Create the desired labels
-6. Set Annotation Settings
-     * Recommendation Type (Historical (NER, RE), Noun Phrase (NER))
-     * Acquire Size (How many documents should be gotten from the db at a time)
-7. (Optional) Upload annotations to be used as recommendations to annotators when appropraite, `Historical` recommendations
-8. Start Annotating
-
-### How to create addtional users:
-Superuser
-
-1. `cd annotation/src`
-2. `python manage.py createsuperuser`
-
-Normal User
-
-1. `cd annotation/src`
-2. `python manage.py shell`
-     
-     (a shell will pop up now, enter these commands)
-
-     ```
-     from django.contrib.auth.models import User
-     user=User.objects.create_user('fill-username-in',  password='fill-password-in')
-     user.save()
-     ```
-
-### How to annotate for the NER Task:
-
-* Option 1: Highlight a word/phrase (span) in the presented text and select one of the Project's labels appearing just above the text.
-
-* Option 2: Click on the provided recommendations in the `Recommendation Section`. These recommendations can be for both span detection and the appropriate label for the span (Historical, Explanation Soft Matching), or just span detection (Noun Phrase).
-
-* If you have an explanation type set, the appropriate pop-up will appear to capture the explanation.
-
-### How to annotate for the RE Task:
-
-* Select two entities, the first entity is the **Subject** of the Relation (the entity that is more central to the relation), while the second entity is the **Object** of the Relation (the entity that is associated with the subject). 
-     * Example: **John** (Subject) is born in **May** (Object).
-
-* At this point if recommendations are turned on, recommended labels are highlighted in red. Else just select the appropriate relation label.
-
-* If you have an explanation type set, the appropriate pop-up will appear to capture the explanation.
-
-### How to annotate for the SA Task:
-
-* If recommendations are turned on, recommended labels are highlighted in red, otherwise simply select a label for the provided text.
-
-* If you have an explanation type set, the appropriate pop-up will appear to capture the explanation.
-
-### How to provide a Trigger Explanation:
-
-* Triggers can be seen as an extractive form of explanations, where you select spans from the text that informs a person when they make a labeling decision.
-
-* Per annotation we allow for the capture of up to 4 triggers
-     * Triggers cannot overlap though
-
-* Per trigger, spans do not have to be consecutive
-
-* If you have selected the Trigger Explanation Type for your Project, the Trigger popup will appear after you make an annotation.
-     * If you do not choose to leave an explanation for this annotation, you may hit the `x` button at the top right
-     * If you do wish to leave an explanation, select the spans of text that helped you make your labeling decision
-     * Once you have completed the first trigger, you can hit the plus button to create a new trigger
-     * Distinct phrases/clues should appear as different triggers
-          * Ex: "had dinner at", "the food", "spicy" should be three separate triggers for the example text: "I had a fantastic dinner at Xi'an Famous Foods, the food is always fresh and spicy!". These triggers would be associated with the annotation that "Xi'an Famous Foods" is a `restaurant`. 
-
-* Another Example:
-     * Text: Louis Armstrong, the great trumpet player, lived in Corona. 
-     * Annotation: Corona is a LOC(ation)
-     * Trigger: "lived in"
-
-### How to provide a Natural Language Explanation:
-
-* Natural Language Explanations are written out reasons as to why you made a certain labeling decision. These reasons though must be parsable by the [NExT](https://github.com/INK-USC/NExT) parser, but we provide appropriate examples per task to help users write usable explanations.
-
-* Per annotation we allow for the capture of up to 4 NL explanations
-
-* If you have selected the Natural Language Explanation Type for your Project, the NL popup will appear after you make an annotation.
-     * If you do not choose to leave an explanation for this annotation, you may hit the `x` button at the top right
-     * If you do wish to leave an explanation, look through the available templates and fill in the blanks as you see fit
-     * Once you have completed the first explanation, you can hit the plus button to create a new explanation
-     * Distinct ideas/clues should appear as different nl explanations
-          * If you want to use AND in your explanation, we request that you create another explanation instead
-
-* Example:
-     * Text: Louis Armstrong, the great trumpet player, lived in Corona.
-     * Annotation: **Louis Armstrong**'s occupation is a **trumpet player**
-     * NL Explanation: 
-          1. The token  ','  appears between 'Louis Armstrong' and 'trumpet player'
-          2. The token ',' appears to the right of 'trumpet player' by no more than 2 words
-          3. There are no more than **5** words between 'Louis Armstrong' and 'trumpet player'
-     
-# Supported Data Formats
-
-### NER:
-
-**Import**
-
-* JSON (recommended):
-     ```
-     {
-          "data" : [
-               {
-                    "text" : "abcd",
-                    "foo" : "bar"
-               },
-               {
-                    "text" : "efgh",
-                    "foo" : "man"
-               },
-               ...
-          ]
-     }
-     ```
-     * Each entry within `data` must have a key `text`. All other keys will be saved in a metadata dictionary associated with the text
-* CSV:
-     * Two formats are acceptable (but file must be using utf-8 encoding):
-          1. With a header row, a column name must be text. All other columns will be saved in a metadata dictionary associated with the text
-          2. No header, single column file with just text
-
-     *  No commas can be in your text, which is why we strongly recommend using our json import process
-
-**Export:**
-* JSON:
-     ```
-     {
-          "data": [
-               {
-                    "doc_id": 25,
-                    "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
-                    "annotations": [
-                         {
-                              "annotation_id": 18,
-                              "label": "LOC",
-                              "start_offset": 52,
-                              "end_offset": 58,
-                              "explanation": [
-                                   "lived in"
-                              ]
-                         }
-                         ...
-                    ],
-                    "user": 4,
-                    "metadata": {"foo" : "bar"}
-               }
-               ...
-          ]
-    }
-     ```
-* CSV:
-
-     * Extended BIO format
-     
-     | document_id | word      | label | metadata | explanation                 |
-     |-------------|-----------|-------|----------|-----------------------------|
-     | 1           | Louis     | B-PER | {}       | , the great trumpet player, |
-     | 1           | Armstrong | I-PER |          |                             |
-     | 1           | ,         | O     |          |                             |
-
-### RE:
-
-**Import:**
-* In order to create an RE Project, you must have already have annotated the Named Entities in your documents.
-
-* JSON:
-     - Essentially the output of an NER Project
-     ```
-     {
-       "data": [
-           {
-                 "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
-                 "annotations": [
-                     {
-                           "label": "LOC",
-                           "start_offset": 52,
-                           "end_offset": 58
-                     }
-                     ...
-                 ],
-                 "metadata": {"foo" : "bar"}
-           }
-           ...
-       ]
-     }
-     ```
-
-**Export:**
- * JSON:
-     ```
-     {
-          "data": [
-               {
-                    "doc_id": 25,
-                    "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
-                    "annotations": [
-                         {
-                              "annotation_id": 18,
-                              "label": "per:occupation",
-                              "sbj_start_offset": 0,
-                              "sbj_end_offset": 15,
-                              "obj_start_offset": 27,
-                              "obj_end_offset": 41,
-                              "explanation": [
-                                   "The token  ','  appears between 'Louis Armstrong' and 'trumpet player'", 
-                                   "The token ',' appears to the right of 'trumpet player' by no more than 2 words",
-                                   "There are no more than 5 words between 'Louis Armstrong' and 'trumpet player'"
-                              ]
-                         }
-                         ...
-                    ],
-                    "user": 4,
-                    "metadata": {"foo" : "bar"}
-               }
-               ...
-          ]
-    }
-     ```
-* CSV:
-     
-| document_id | entity_1        | entity_2       | label          | metadata | explanation                                                                                     |
-|-------------|-----------------|----------------|----------------|----------|-------------------------------------------------------------------------------------------------|
-| 1           | Louis Armstrong | trumpet player | per:occupation | {}       | The token  ','  appears between 'Louis Armstrong' and 'trumpet player':\*:\*:The token ',' ... |
-|             |                 |                |                |          |                                                                                                 |
-* Where ":\*:\*:" is a separator to split up the string in the explanation column. A workaround for the problem of splitting on ","
-
-### SA
-**Import**
-* Same as NER formats
-
-**Export**
-* JSON:
-     ```
-     {
-          "data": [
-               {
-                    "doc_id": 25,
-                    "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
-                    "annotations": [
-                         {
-                              "annotation_id": 18,
-                              "label": "postive",
-                              "explanation": [
-                                   "The word 'great' appears in the sentence."
-                              ]
-                         }
-                         ...
-                    ],
-                    "user": 4,
-                    "metadata": {"foo" : "bar"}
-               }
-               ...
-          ]
-    }
-     ```
-
 # Contributing
 
-We love contributions, so thank you for taking the time! Pusing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
+We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
+
+# Misc.
+
+### Feedback
+Feedback is definitely encouraged, please feel free to create an issue and document what you're seeing/wanting to see.
+
+### Mailing List
+To get notifications of major updates to this project, you can join our mailing list [here](https://groups.google.com/forum/#!forum/leanlife)
+
+### Twitter
+For updates on this project and other nlp projects being done at USC, please follow [@nlp_usc](https://twitter.com/nlp_usc)
+
+### Additional Information
+Please look at our [wiki](https://github.com/INK-USC/LEAN-LIFE/wiki) for information on how to use the annotation framework and supported data formats
+
+### Contributors
+Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong
+
 
 # Citation
 ```
