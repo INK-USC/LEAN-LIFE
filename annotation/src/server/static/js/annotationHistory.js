@@ -18,6 +18,7 @@ const vm = new Vue({
     canUpload: false,
     isNewlyCreated: false,
     leadUserToAnnotation: false,
+    errorMessage: "",
   },
 
   created() {
@@ -106,7 +107,7 @@ const vm = new Vue({
         formData.append("history", this.annotations);
         formData.append("action", action);
         formData.append("task", this.projectType);
-        HTTP.post(`history/seed/`, formData).then(() => {
+        HTTP.post(`history/seed/`, formData).then((response) => {
           this.fileName = "";
           this.annotations = null;
           document.getElementById('file-upload').value = "";
@@ -123,11 +124,19 @@ const vm = new Vue({
             this.nextPageUrl = responseData.next;
             this.prevPageUrl = responseData.previous;
             this.currentPageHistory = responseData.results;
-            console.log(this.isNewlyCreated);
             if (this.isNewlyCreated) {
               this.leadUserToAnnotation = true;
             }
           });
+        }).catch((err) => {
+          console.log("here")
+          if (err.response.status == "500") {
+            this.fileName = "";
+            this.annotations = null;
+            document.getElementById('file-upload').value = "";
+            this.canUpload = false;
+            this.errorMessage = "Sorry, the file you uploaded is not in the right format. Please look above, for the correct format.";
+          }
         });
       }
     },

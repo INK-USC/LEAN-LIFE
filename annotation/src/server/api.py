@@ -363,16 +363,15 @@ class AnnotationHistoryFileUpload(APIView):
     def _process_ner(self, data, all_labels, user, project, max_batch=500):
         history = []
         for entry in data:
-            if "label" in entry and "word" in entry:
-                label_info = entry["label"].lower()
-                if label_info in all_labels:
-                    obj = NamedEntityAnnotationHistory(user=user, project=project,\
-                                                    word=entry["word"], label=all_labels[label_info],\
-                                                    user_provided=True)
-                    history.append(obj)
-                if len(history) == max_batch:
-                    NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-                    history = []
+            label_info = entry["label"].lower()
+            if label_info in all_labels:
+                obj = NamedEntityAnnotationHistory(user=user, project=project,\
+                                                word=entry["word"], label=all_labels[label_info],\
+                                                user_provided=True)
+                history.append(obj)
+            if len(history) == max_batch:
+                NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+                history = []
         
         if len(history):
             NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
@@ -381,16 +380,15 @@ class AnnotationHistoryFileUpload(APIView):
     def _process_re(self, data, all_labels, user, project, max_batch=500):
         history = []
         for entry in data:
-            if "label" in entry and "word_1" in entry and "word_2" in entry:
-                label_info = entry["label"].lower()
-                if label_info in all_labels:
-                    obj = RelationExtractionAnnotationHistory(user=user, project=project,\
-                                                            word_1=entry["word_1"], word_2=entry["word_2"],\
-                                                            label=all_labels[label_info], user_provided=True)
-                    history.append(obj)
-                if len(history) == max_batch:
-                    RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-                    history = []
+            label_info = entry["label"].lower()
+            if label_info in all_labels:
+                obj = RelationExtractionAnnotationHistory(user=user, project=project,\
+                                                        word_1=entry["word_1"], word_2=entry["word_2"],\
+                                                        label=all_labels[label_info], user_provided=True)
+                history.append(obj)
+            if len(history) == max_batch:
+                RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+                history = []
         
         if len(history):
             RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
@@ -429,13 +427,12 @@ class AnnotationHistoryFileUpload(APIView):
                         self._process_ner(data, all_labels, user, project)
                     else:
                         self._process_re(data, all_labels, user, project)
+
+                    return Response(status=204)
             except:
-                raise ImportFileError("Annotation History Document is not formatted correctly")
                 return Response(status=500)
         except:
             raise ImportFileError("No file was uploaded")
-        
-        return Response(status=204)
 
 class RecommendationList(APIView):
     pagination_class = None
