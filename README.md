@@ -56,7 +56,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 * Please intall [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
 * Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
 * Create a virtual environment using:
-     * annaconda: `conda create -n leanlife python==3.6` (annaconda doesn't have a stable 3.6.5 version)
+     * annaconda: `conda create -n leanlife python=3.6` (annaconda doesn't have a stable 3.6.5 version)
      * virtualenv:
           1. `python3.6.5 -m pip install virtualenv`
           2. `python3.6.5 -m venv leanlife`
