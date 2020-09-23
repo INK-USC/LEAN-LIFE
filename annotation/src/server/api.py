@@ -532,7 +532,7 @@ class RecommendationList(APIView):
 
         if opt_n:
             noun_phrases = SPACY_WRAPPER.get_noun_phrases(document.text)
-            recs = self.create_ner_recommendation(doc_id, noun_phrases)
+            recs = self.create_ner_recommendations(doc_id, noun_phrases)
             for key in recs:
                 recommendations[key] = recs[key]
             

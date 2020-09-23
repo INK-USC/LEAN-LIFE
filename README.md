@@ -97,11 +97,12 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 2. Navigate to the `server` folder inside `annotation/src`, `cd LEAN-LIFE/annotation/src/server`
 3. `npm install`
 4. `npm run build`
-5. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`
-     * Inside the `app` folder, navigate to [settings.py](fill-this-in) (We are setting up the postgres connection)
-          * Find the `DATABASES` dictionary, and set a `PASSWORD` to your liking
-6. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run `./setup.sh PASSWORD-YOU-JUST-SET`
-     * you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
+5. We will now setup the postgres connection. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`.
+     * Inside the `app` folder, navigate to [settings.py](https://github.com/INK-USC/LEAN-LIFE/blob/master/annotation/src/app/settings.py#L100)
+          * Find the `DATABASES` dictionary, and replace the `PASSWORD` "fill-this-in" with your own password
+6. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run:
+    * `./setup.sh PASSWORD-YOU-JUST-SET` <- (passing your password in as an argument)
+    * you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
 7. `python manage.py runserver 0.0.0.0:8000`
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
 
