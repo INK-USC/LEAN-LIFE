@@ -12,6 +12,7 @@
 * [How To Use](#how-to-use)
 * [Supported Data Formats](#supported-data-formats)
 * [Contributing](#contributing)
+* [Misc](#misc)
 * [Citation](#citation)
 
 # Quick Intro:
@@ -38,11 +39,13 @@ Please reference our [website](http://inklab.usc.edu/leanlife/) for more informa
 We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
 # Release Plan:
-**Next Release's Goals:**
+**Next Release's Goals:** 4-6 Weeks
 
-* Goal 1
-* Goal 2
-* Goal 3
+* API for training of a downstream model (NER, RE, SA):
+  * with natural language explanations, a fixed NExT parser to generate weak labels (RE, SA)
+  * with triggers to train a TriggerNER model (NER)
+  * without explanations (NER, RE, SA)
+* UI to allow for training and downloading of mentioned models after annotations are complete (or whenever the project owner would like)
 
 **Release 1** (Date: fill-this-in)
 
@@ -54,6 +57,7 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 
 * Please install [Python 3.6.5](https://www.python.org/downloads/release/python-365/) (if you use `conda` you can ignore this step)
 * Please intall [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
+* Open a new terminal window after intsalling the above
 * Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
 * Create a virtual environment using:
      * annaconda: `conda create -n leanlife python=3.6` (annaconda doesn't have a stable 3.6.5 version, so we use 3.6)
@@ -374,7 +378,22 @@ Normal User
 
 # Contributing
 
-We love contributions, so thank you for taking the time! Pusing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
+We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
+
+# Misc.
+
+### Feedback
+Feedback is definitely encouraged, please feel free to create an issue and document what you're seeing/wanting to see.
+
+### Mailing List
+To get notifications of major updates to this project, you can join our mailing list [here](https://groups.google.com/forum/#!forum/leanlife)
+
+### Twitter
+For updates on this project and other nlp projects being done at USC, please follow [@nlp_usc](https://twitter.com/nlp_usc)
+
+### Contributors
+Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong
+
 
 # Citation
 ```
