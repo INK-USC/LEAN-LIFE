@@ -1,7 +1,5 @@
 import json
 from django.db import models
-# from django.db import connection
-
 from django.db.models import Prefetch
 from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
 from .utils import convert_task_name_to_annotation_type, convert_explanation_int_to_explanation_type, SPACY_WRAPPER
@@ -208,7 +206,4 @@ class DocumentManager(models.Manager):
         project_docs = queryset.filter(project_id=project_id) \
                                .prefetch_related("annotations__label", 
                                                  "annotations__user")
-        # project_docs = queryset.filter(project_id=project_id) \
-        #                        .prefetch_related("annotations__label__text", 
-        #                                          "annotations__user__username")
         return project_docs

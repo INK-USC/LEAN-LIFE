@@ -12,10 +12,13 @@
   </header>
   <div class="card-content">
     <ul>
-      <li>You can upload a json file of seed annotations to be matched to current unlabled examples as recommendations for the annotator.</li>
-      <li>You can choose to <b>merge</b> your uploaded file or <b>replace</b> all previously uploaded annotations. <b>Note:</b> this will not delete previous annotator 
-      provided annotations, just the previously uploaded annotations from this process.</li>
-      <li><b>It is imperative</b> that the <b>label names match the label space</b> you created. We will lower case and match names, so case-sensitivity is not needed.</li>
+      <li>You can upload a json file of seed annotations to be matched to current unlabled examples as recommendations
+        for the annotator.</li>
+      <li>You can choose to <b>merge</b> your uploaded file or <b>replace</b> all previously uploaded annotations.
+        <b>Note:</b> this will not delete previous annotator
+        provided annotations, just the previously uploaded annotations from this process.</li>
+      <li><b>It is imperative</b> that the <b>label names match the label space</b> you created. We will lower case and
+        match names, so case-sensitivity is not needed.</li>
       <li>The format of the file you must upload is as follows:</li>
     </ul>
     <pre>
@@ -50,7 +53,8 @@
     <div class="field" style="display: inline-block">
       <div class="file is-small has-name">
         <label class="file-label">
-          <input id="file-upload" class="file-input" type="file" ref="file" name="dataset" v-on:change="updateFileName()">
+          <input id="file-upload" class="file-input" type="file" ref="file" name="dataset"
+            v-on:change="updateFileName()">
           <span class="file-cta">
             <span class="file-icon">
               <i class="fas fa-upload"></i>
@@ -66,9 +70,12 @@
       </div>
     </div>
     <div class="buttons" style="display: inline-block">
-      <button class="button is-small is-success" v-bind:disabled="!canUpload" v-on:click="uploadFile('merge')">Merge</button>
-      <button class="button is-small is-warning" v-bind:disabled="!canUpload" v-on:click="uploadFile('replace')">Replace</button>
-      <button class="button is-small is-primary" style="font-size: 0.8rem" v-show="leadUserToAnnotation" v-on:click="goToAnnotations()"><b>Continue To Annotations</b></button>
+      <button class="button is-small is-success" v-bind:disabled="!canUpload"
+        v-on:click="uploadFile('merge')">Merge</button>
+      <button class="button is-small is-warning" v-bind:disabled="!canUpload"
+        v-on:click="uploadFile('replace')">Replace</button>
+      <button class="button is-small is-primary" style="font-size: 0.8rem" v-show="leadUserToAnnotation"
+        v-on:click="goToAnnotations()"><b>Continue To Annotations</b></button>
     </div>
     <div v-show="errorMessage.length > 0">
       ${errorMessage}

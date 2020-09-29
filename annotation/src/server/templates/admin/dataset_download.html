@@ -104,82 +104,70 @@
             <b>CSV</b>
             <p></p>
             <table style="width:100%" v-if="projectType === 2">
-                <tr>
-                  <th>document_id</th>
-                  <th>word</th>
-                  <th>label</th>
-                  <th>metadata</th>
-                  <th>explanation</th>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Louis</td>
-                  <td>B-PER</td>
-                  <td>{}</td>
-                  <td>, the great trumpet player,:*:*:lived in</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Armstrong</td>
-                  <td>I-PER</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>,</td>
-                  <td>O</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </table>
-              <table style="width:100%" v-if="projectType === 3">
-                <tr>
-                  <th>document_id</th>
-                  <th>entity_1</th>
-                  <th>entity_2</th>
-                  <th>label</th>
-                  <th>metadata</th>
-                  <th>explanation</th>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Louis Armstrong</td>
-                  <td>trumpet player</td>
-                  <td>per:occupation</td>
-                  <td>{}</td>
-                  <td>The token ',' appears between 'Louis Armstrong' and 'trumpet player':*:*:The token ',' ...</td>
-                </tr>
-              </table>
-              <p>If needed <u>we will use <b>":*:*:"</b> as a separator</u> to split up the string in the explanation column. A workaround for the problem of splitting on ","</p>
+              <tr>
+                <th>document_id</th>
+                <th>word</th>
+                <th>label</th>
+                <th>metadata</th>
+                <th>explanation</th>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Louis</td>
+                <td>B-PER</td>
+                <td>{}</td>
+                <td>, the great trumpet player,:*:*:lived in</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Armstrong</td>
+                <td>I-PER</td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>,</td>
+                <td>O</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
+            <table style="width:100%" v-if="projectType === 3">
+              <tr>
+                <th>document_id</th>
+                <th>entity_1</th>
+                <th>entity_2</th>
+                <th>label</th>
+                <th>metadata</th>
+                <th>explanation</th>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Louis Armstrong</td>
+                <td>trumpet player</td>
+                <td>per:occupation</td>
+                <td>{}</td>
+                <td>The token ',' appears between 'Louis Armstrong' and 'trumpet player':*:*:The token ',' ...</td>
+              </tr>
+            </table>
+            <p>If needed <u>we will use <b>":*:*:"</b> as a separator</u> to split up the string in the explanation
+              column. A workaround for the problem of splitting on ","</p>
           </li>
         </ul>
-        <form
-          action="{% url 'download_file' view.kwargs.project_id %}"
-          method="get"
-        >
+        <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
           <div class="section">
             <ul>
               <li>
                 <a class="control">
-                  <button
-                    type="submit"
-                    class="button is-primary button-margin "
-                    name="format"
-                    value="json"
-                  >
+                  <button type="submit" class="button is-primary button-margin " name="format" value="json">
                     Download JSON File
                   </button>
                 </a>
               </li>
               <li v-if="projectType !== 1">
                 <a class="control">
-                  <button
-                    type="submit"
-                    class="button is-primary button-margin "
-                    name="format"
-                    value="csv"
-                  >
+                  <button type="submit" class="button is-primary button-margin " name="format" value="csv">
                     Download CSV File
                   </button>
                 </a>

@@ -41,7 +41,7 @@ class Project(models.Model):
     def get_documents(self):
         return self.documents.all()
 
-    # # don't love this, the need to update annotated, but I conceed here
+    # don't love this, the need to update annotated, but I conceed here
     def get_annotated_documents(self):
         docs = self.documents.all()
         docs = docs.filter(annotated=True)
@@ -80,10 +80,6 @@ class Project(models.Model):
     def get_dataset_for_user(self, user_id, explanation, explanation_type):
         if self.task.name == NAMED_ENTITY_RECOGNITION_VALUE:
             return Document.objects.export_ner_project_user_documents(self.id, user_id, explanation, explanation_type)
-    
-    # TODO: add ability to get dataset by project
-    # def get_data_set(self):
-    #     Annotation.objects.raw()
 
     def __str__(self):
         return self.name
@@ -259,7 +255,6 @@ class NamedEntityAnnotation(models.Model):
     start_offset = models.PositiveIntegerField()
     end_offset = models.PositiveIntegerField()
 
-    # TODO: need to make sure start and end are less than length
     def clean(self):
         if self.start_offset >= self.end_offset:
             raise ValidationError('start_offset is after end_offset')
@@ -302,7 +297,6 @@ class SentimentAnalysisAnnotation(models.Model):
     annotation = models.OneToOneField(to=Annotation, on_delete=models.CASCADE, related_name='sentiment_analysis_annotation', primary_key=True)
     
 
-# TODO: phrases per trigger must be sorted by start_offset before insertion
 class TriggerExplanation(models.Model):
     annotation = models.ForeignKey(to=Annotation, on_delete=models.CASCADE, related_name='trigger_explanations')
     trigger_id = models.PositiveIntegerField()

@@ -5,28 +5,28 @@
 {% endblock %}
 {% block navigation %}
 <span id="headers">
-<a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
-  <span class="icon">
-    <i class="fas fa-user-edit"></i>
-  </span>
-  {% comment %} <div id="headers"> {% endcomment %}
-    <b>[[ annotationHeading ]]</b>
-  {% comment %} </div> {% endcomment %}
-</a>
-<a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
-  <span class="icon">
-    <i class="fas fa-upload"></i>
-  </span>
-  {% comment %} <div id="headers"> {% endcomment %}
-    <b>[[ importDataHeading ]]</b>
-  {% comment %} </div> {% endcomment %}
-</a>
-<a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
-  <span class="icon">
-    <i class="fas fa-download"></i>
-  </span>
-  <b>Export Annotations</b>
-</a>
+  <a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
+    <span class="icon">
+      <i class="fas fa-user-edit"></i>
+    </span>
+    {% comment %} <div id="headers"> {% endcomment %}
+      <b>[[ annotationHeading ]]</b>
+      {% comment %} </div> {% endcomment %}
+  </a>
+  <a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
+    <span class="icon">
+      <i class="fas fa-upload"></i>
+    </span>
+    {% comment %} <div id="headers"> {% endcomment %}
+      <b>[[ importDataHeading ]]</b>
+      {% comment %} </div> {% endcomment %}
+  </a>
+  <a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
+    <span class="icon">
+      <i class="fas fa-download"></i>
+    </span>
+    <b>Export Annotations</b>
+  </a>
 </span>
 {% endblock %}
 {% block content %}
@@ -69,17 +69,17 @@
   </aside>
   <div class="column is-10 messages hero is-fullheight" id="message-feed">
     {% if messages %}
-      <div>
-        <article class='message is-danger'>
-          <div class='message-body'>
-            <ul>
-              {% for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </article>
-      </div>
+    <div>
+      <article class='message is-danger'>
+        <div class='message-body'>
+          <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </article>
+    </div>
     {% endif %}
     {% block content-area %}{% endblock %}
   </div>
