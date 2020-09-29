@@ -32,7 +32,9 @@ Due to refactoring efforts and a desire to create a more stable framework the fo
 
 * **User Roles**: Differentiating between a project creator and project annotators, allowing for a creator to set up a project, while allowing annotators to configure more local settings like what types of recommendations they would like, and how often their backend model should be trained.
 
-Please reference our [website](http://inklab.usc.edu/leanlife/) for more information.
+Reference our [website](http://inklab.usc.edu/leanlife/) for more information.
+
+For information on how to use the annotation framework and supported data formats, please look at our [wiki](https://github.com/INK-USC/LEAN-LIFE/wiki) 
 
 We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
@@ -45,7 +47,7 @@ We strongly encourage community engagement, please refer to our [contribution se
   * without explanations (NER, RE, SA)
 * UI to allow for training and downloading of mentioned models after annotations are complete (or whenever the project owner would like)
 
-**Release 1** (Date: 9/29/20)
+**Release 0.1-alpha** (Date: 9/28/20)
 
 This release focuses on providing a Web-UI to annotate sets of documents. As mentioned the user can create annotations for three tasks (NER, SA, RE), as well as provide explanations for those annotations in two different ways. We support various import/export formats, and take advantage of two recommendation strategies for NER (Noun phrase chunking--powered by spaCy, Historical Annotation Application) and one for RE (Historical Annotation Application). To further enable Historical Annotation Application, a project owner can upload a set of (x,y) pairs as "Historical" annotations, and we will apply these pairs as recommendations for un-annotated documents (sort of like distant learning).
  
@@ -124,9 +126,6 @@ To get notifications of major updates to this project, you can join our mailing 
 
 ### Twitter
 For updates on this project and other nlp projects being done at USC, please follow [@nlp_usc](https://twitter.com/nlp_usc)
-
-### Additional Information
-Please look at our [wiki](https://github.com/INK-USC/LEAN-LIFE/wiki) for information on how to use the annotation framework and supported data formats
 
 ### Contributors
 Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong
