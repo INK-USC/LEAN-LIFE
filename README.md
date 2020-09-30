@@ -14,21 +14,23 @@
 * [Citation](#citation)
 
 # Quick Intro:
-LEAN-LIFE is an annotation framework for Named Entity Recognition (NER), Relation Extraction (RE) and Sentiment Analysis (SA)/Multi-Class Document Classification. LEAN-LIFE additionally enable the capture and use of explanations during the annotation process. Explanations can be seen as enhanced supervision, providing reasoning behind the labeling decision.
+LEAN-LIFE is an annotation framework for Named Entity Recognition (NER), Relation Extraction (RE) and Sentiment Analysis (SA)/Multi-Class Document Classification. LEAN-LIFE additionally enables the capture and use of explanations during the annotation process. Explanations can be seen as enhanced supervision, providing reasoning behind the labeling decision, and thus help speed up model training in low-resource environments.
 
 Our initial frontend code is based on the [Doccano](https://github.com/chakki-works/doccano) project and the [AlpacaTag](https://github.com/INK-USC/AlpacaTag) project however we differentiate ourselves in these ways:
 
 * **Triplet Capture**: Allows the building of a dataset that is (datapoint, label, explanation), unlike the standard (datapoint, label) tuple.
 
-* **Explanation Supported Recommendations**: A backend soft-matching model is updated in a batch fashion to provide recommendations to the user. (coming soon)
+* **Explanation Supported Model Training**: Taining of both [TriggerNER](https://github.com/INK-USC/TriggerNER) and [NExT](https://github.com/INK-USC/NExT) models, for both model deployment and recommendations (coming soon)
 
 * **Relation Extraction Task Supported**: Using the output of the Named Entity Extraction task, our system allows for the creation of relation extraction datasets.
 
 Due to refactoring efforts and a desire to create a more stable framework the following features are not supported yet, but will be supported soon:
 
-* **Active intelligent recommendation**: Instead of just using explanations, we will be training an appropriate backend model for the selected task using explanations and labels to both provide enhanced annotations to the user and ensure users are not asked to provide annotations on documents that the model already understands.
+* **Active intelligent recommendation**: Iteratively train an appropriate backend model for the selected task using explanations and labels to both provide enhanced annotations to annotators and ensure annotators are not asked to provide annotations on documents that the model already understands.
 
-* **Real-time model deployment**: Users can extract the trained recommendation model at any point for deployment purposes, without having to wait till all documents are labeled.
+* **Real-time model extraction**: Users can extract the trained recommendation model at any point for deployment purposes, without having to wait till all documents are labeled.
+
+* **Model Interaction API**: Seperate API for model training (batch), prediction(online and batch), and extraction--this functionality will be built seperately from our annotation framework
 
 * **User Roles**: Differentiating between a project creator and project annotators, allowing for a creator to set up a project, while allowing annotators to configure more local settings like what types of recommendations they would like, and how often their backend model should be trained.
 
