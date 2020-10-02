@@ -26,7 +26,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    # TODO: would like to see what the users field looks like
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'task', 'image', 'updated_at', 'explanation_type')
@@ -40,7 +39,6 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'shortcut', 'background_color', 'text_color')
 
 
-# # TODO: Strange that this is for a group of docs
 class DocumentSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         many = kwargs.pop('many', True)
@@ -68,8 +66,6 @@ class CreateBaseAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Annotation
-        # fields = ('id', 'prob', 'via_recommendation', 'task', 'document', 'user', 'label',
-        #           'extended_annotation', 'raw_explanations', 'formatted_explanations')
         fields = ('id', 'via_recommendation', 'label')
 
 

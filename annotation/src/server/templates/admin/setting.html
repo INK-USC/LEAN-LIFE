@@ -34,11 +34,13 @@
         </header>
         <section class="modal-card-body">
             <p>You're about to navigate away from the settings page.</p>
-            <p>Your current setting selections will be saved, and you will be brought to the Historical Annotation page</p>
+            <p>Your current setting selections will be saved, and you will be brought to the Historical Annotation page
+            </p>
             <p>Please confirm below if that is what you want, or hit cancel</p>
         </section>
         <footer class="modal-card-foot">
-            <button class="button is-success" @click="save('{% url 'annotation_history' view.kwargs.project_id %}')">Confirm</button>
+            <button class="button is-success"
+                @click="save('{% url 'annotation_history' view.kwargs.project_id %}')">Confirm</button>
             <button class="button is-danger" @click="prompt=false">Cancel</button>
         </footer>
     </div>

@@ -2,99 +2,58 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 {% block annotation-area %}
-<div
-  class="card vld-parent"
-  xmlns:v-slot="http://www.w3.org/1999/XSL/Transform"
->
+<div class="card vld-parent" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <loading :active.sync="isLoading" :can-cancel="true">
     <template v-slot:before>
       <p>[[ loadingMsg ]]</p>
     </template>
   </loading>
-  <nl-modal
-    v-if="explanationPopup && explanationType === 2"
-    @close="explanationPopup = false"
-    @refresh-nl-explanations="refreshNlExplanations"
-    :last-annotation-id="lastAnnotationId"
-    :docid="annotationDocs[pageNumber].id"
-    :selected-words="selectedWords"
-    :project-type="projectType"
-  >
-    <sentence-highlight-display
-      :label-positions="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
-      :labels="labels"
-      :text="annotationDocs[pageNumber].text"
-    />
+  <nl-modal v-if="explanationPopup && explanationType === 2" @close="explanationPopup = false"
+    @refresh-nl-explanations="refreshNlExplanations" :last-annotation-id="lastAnnotationId"
+    :docid="annotationDocs[pageNumber].id" :selected-words="selectedWords" :project-type="projectType">
+    <sentence-highlight-display :label-positions="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
+      :labels="labels" :text="annotationDocs[pageNumber].text" />
   </nl-modal>
-  <trigger-modal
-    v-if="explanationPopup && explanationType === 3"
-    @close="explanationPopup = false"
-    @refresh-triggers="refreshTriggers"
-    :current-triggers="annotationDocs[pageNumber].getTriggers(lastAnnotationId)"
-    :trigger-labels="triggerLabels"
-    :text="annotationDocs[pageNumber].text"
-    :docid="annotationDocs[pageNumber].id"
+  <trigger-modal v-if="explanationPopup && explanationType === 3" @close="explanationPopup = false"
+    @refresh-triggers="refreshTriggers" :current-triggers="annotationDocs[pageNumber].getTriggers(lastAnnotationId)"
+    :trigger-labels="triggerLabels" :text="annotationDocs[pageNumber].text" :docid="annotationDocs[pageNumber].id"
     :last-annotation-id="lastAnnotationId"
-    :original-selections="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
-  >
-    <sentence-highlight-display
-      :label-positions="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
-      :labels="labels"
-      :text="annotationDocs[pageNumber].text"
-    />
+    :original-selections="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])">
+    <sentence-highlight-display :label-positions="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
+      :labels="labels" :text="annotationDocs[pageNumber].text" />
   </trigger-modal>
   <header class="card-header">
-    <div
-      class="card-header-title has-background-royalblue"
-      style="padding:1.5rem;"
-    >
+    <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
       <div class="field is-grouped is-grouped-multiline">
         <div class="control" v-for="label in labels">
           <div class="tags has-addons">
-            <a
-              class="tag is-medium"
-              v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
+            <a class="tag is-medium" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
               v-shortkey.once="replaceNull(label.shortcut)"
               v-on:click="addAnnotation(label.id, startOffset, endOffset, false)"
-              @shortkey="addAnnotation(label.id, startOffset, endOffset, false)"
-            >
+              @shortkey="addAnnotation(label.id, startOffset, endOffset, false)">
               [[ label.text ]]
             </a>
-            <span class="tag is-medium"
-              ><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span
-            >
+            <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
           </div>
         </div>
       </div>
     </div>
   </header>
   <div class="card-content">
-    {% comment %} <span class="tag" v-if="confidence"
-      >confidence : [[ confidenceElement ]]</span
-    > {% endcomment %}
+    {% comment %} <span class="tag" v-if="confidence">confidence : [[ confidenceElement ]]</span> {% endcomment %}
     <span class="tag">Text</span>
     <div class="content" v-if="pageNumber in annotationDocs">
-      <annotator
-        ref="annotator"
-        v-bind:labels="labels"
-        v-bind:entity-positions="nerAnnotations"
-        v-bind:text="annotationDocs[pageNumber].text"
-        @remove-annotation="removeAnnotation"
-        @toggle-explanations="toggleExplanations"
-        @set-selection="setSelection"
-      ></annotator>
+      <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="nerAnnotations"
+        v-bind:text="annotationDocs[pageNumber].text" @remove-annotation="removeAnnotation"
+        @toggle-explanations="toggleExplanations" @set-selection="setSelection"></annotator>
     </div>
   </div>
   <div class="card-content">
     <span class="tag">Recommendation section</span>
     <div class="content" v-if="pageNumber in annotationDocs && annotationDocs[pageNumber].hasRecommendations">
-      <recommender
-        ref="recommender"
-        v-bind:labels="labels"
-        v-bind:text="annotationDocs[pageNumber].text"
-        v-bind:recommend-positions="annotationDocs[pageNumber].recommendations"
-        @add-annotation="addAnnotation"
-      ></recommender>
+      <recommender ref="recommender" v-bind:labels="labels" v-bind:text="annotationDocs[pageNumber].text"
+        v-bind:recommend-positions="annotationDocs[pageNumber].recommendations" @add-annotation="addAnnotation">
+      </recommender>
     </div>
   </div>
 </div>
