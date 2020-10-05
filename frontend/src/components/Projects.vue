@@ -37,7 +37,7 @@
 import CreateProjectModal from "@/components/CreateProjectModal";
 
 export default {
-	name: "Welcome",
+	name: "Projects",
 	components: {CreateProjectModal},
 	data() {
 		return {

@@ -36,13 +36,13 @@ export default {
 	methods: {
 		login() {
 			this.$axios.get(`${process.env.BASE_URL}/api/login`).then((res) => {
-				res
+				console.log(res)
 			}).catch(e => {
 				this.error.push(e)
 			})
 			console.log("my form", this.form)
 			this.$store.commit("login", this.form);
-			this.$router.push({name: "Welcome"})
+			this.$router.push({name: "Projects"})
 		}
 	}
 }

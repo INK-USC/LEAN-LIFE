@@ -2,8 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "@/components/Login";
-import Welcome from "@/components/Welcome";
 import UploadFile from "@/components/createProject/UploadFile";
+import Projects from "@/components/Projects";
 // import store from "@/store";
 
 Vue.use(VueRouter);
@@ -24,9 +24,9 @@ const routes = [
 	// 			import(/* webpackChunkName: "about" */ "../views/About.vue")
 	// },
 	{
-		path: "/welcome",
-		name: "Welcome",
-		component: Welcome,
+		path: "/projects",
+		name: "Projects",
+		component: Projects,
 	},
 	{
 		path: "/login",
