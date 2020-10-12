@@ -4,7 +4,7 @@ import Home from "../views/Home.vue";
 import Login from "@/components/Login";
 import UploadFile from "@/components/createProject/UploadFile";
 import Projects from "@/components/Projects";
-// import store from "@/store";
+import Logout from "@/components/Logout";
 
 Vue.use(VueRouter);
 
@@ -33,7 +33,7 @@ const routes = [
 		name: "Login",
 		component: Login
 	},
-	{path: "/logout", redirect: "/"},
+	{path: "/logout", component: Logout},
 	{path: "/create/update", name: "CreateProject", component: UploadFile}
 ];
 

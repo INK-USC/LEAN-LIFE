@@ -47,8 +47,7 @@
 						<el-radio v-model="fileForm.fileType" label="CSV">CSV file</el-radio>
 					</el-form-item>
 					<el-form-item label="">
-						<el-upload :http-request="uploadFile" drag accept="text/json" ref="uploadInput"
-						           action="">
+						<el-upload :http-request="uploadFile" drag accept="text/json" ref="uploadInput" action="">
 							<i class="el-icon-upload"></i>
 							<div class="el-upload__text">Drop file here or <em>click to upload</em></div>
 						</el-upload>
@@ -77,7 +76,7 @@ export default {
 		uploadFile(file) {
 			console.log("upload file", file.file)
 			this.fileForm.file.append("files", file.file);
-			
+
 		},
 	}
 }

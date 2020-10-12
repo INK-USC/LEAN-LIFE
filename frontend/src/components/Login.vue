@@ -5,8 +5,7 @@
 				<el-input prefix-icon="el-icon-user" v-model="form.name"/>
 			</el-form-item>
 			<el-form-item label="Password" class="bold-label">
-				<el-input prefix-icon="el-icon-lock"
-				          v-model="form.password"/>
+				<el-input prefix-icon="el-icon-lock" v-model="form.password"/>
 			</el-form-item>
 			<el-form-item>
 				<el-checkbox label="Remember me" v-model="form.rememberMe"/>
@@ -35,11 +34,13 @@ export default {
 	},
 	methods: {
 		login() {
-			this.$axios.get(`${process.env.BASE_URL}/api/login`).then((res) => {
-				console.log(res)
-			}).catch(e => {
-				this.error.push(e)
-			})
+			//TODO connect to backend
+			// this.$axios.get(`${process.env.BASE_URL}/api/login`).then((res) => {
+			// 	console.log(res)
+			// }).catch(e => {
+			// 	// this.error.push(e)
+			// 	console.error(e)
+			// })
 			console.log("my form", this.form)
 			this.$store.commit("login", this.form);
 			this.$router.push({name: "Projects"})

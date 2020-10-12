@@ -1,5 +1,5 @@
 <template>
-	<el-menu :default-active="$route.path" mode="horizontal" @select="handleSelect" router>
+	<el-menu :default-active="$route.path" mode="horizontal" @select="handleSelect" :router="true">
 		<el-menu-item index="/">
 			<!--			<router-link to="/">-->
 			<el-image :src="require('../assets/logo.png')" style="width: 58px; height: 58px"/>
@@ -10,11 +10,12 @@
 		<el-menu-item index="/projects" v-if="$store.getters.getUserInfo">
 			Projects
 		</el-menu-item>
-		<!--		<el-menu-item index="3" disabled>Info</el-menu-item>-->
-		<el-menu-item index="/login" v-if="!$store.getters.getUserInfo" class="dock-right">
-			Login
+
+		<el-menu-item :index="!$store.getters.getUserInfo? '/login': '/logout'" class="dock-right">
+			<el-button @click="loginClicked($event)" jest="logBtn">
+				{{ !this.$store.getters.getUserInfo ? "Login" : "Logout" }}
+			</el-button>
 		</el-menu-item>
-		<el-menu-item index="/logout" v-else class="dock-right" onclick="this.logout">Logout</el-menu-item>
 	</el-menu>
 </template>
 
@@ -25,21 +26,23 @@ export default {
 	components: {},
 	data() {
 		return {
-			activeIndex: '1',
-			activeIndex2: '1',
 			showLogin: false,
 			isLoggedIn: false
 		};
 	},
 	methods: {
 		handleSelect(key, keyPath) {
-			console.log(key, keyPath);
-			if (key === "/logout") {
-				this.$store.commit("logout");
-				this.$message({message: "Logout Successfully", type: "warning"});
-			}
+			console.log(key, keyPath)
 		},
+		loginClicked() {
+			if (!this.$store.getters.getUserInfo) {
+				this.$router.push("/login")
+			} else {
+				this.$router.push("/logout")
+			}
+		}
 	},
+
 }
 </script>
 
