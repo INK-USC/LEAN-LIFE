@@ -5,8 +5,23 @@ import Login from "@/components/Login";
 import UploadFile from "@/components/createProject/UploadFile";
 import Projects from "@/components/Projects";
 import Logout from "@/components/Logout";
+import store from "@/store";
 
 Vue.use(VueRouter);
+
+const guardRoute = (to, from, next) => {
+	let isAuthenticated = false;
+	if (store.getters.getUserInfo) {
+		isAuthenticated = true;
+	} else {
+		isAuthenticated = false;
+	}
+	if (isAuthenticated) {
+		next();
+	} else {
+		next("/login");
+	}
+}
 
 const routes = [
 	{
@@ -26,6 +41,7 @@ const routes = [
 	{
 		path: "/projects",
 		name: "Projects",
+		beforeEnter: guardRoute,
 		component: Projects,
 	},
 	{

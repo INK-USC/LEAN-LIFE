@@ -1,51 +1,65 @@
 <template>
 	<div style="display: flex; justify-content: center">
-		<el-form style="width:30%">
-			<el-form-item label="Username" class="bold-label">
-				<el-input prefix-icon="el-icon-user" v-model="form.name"/>
-			</el-form-item>
-			<el-form-item label="Password" class="bold-label">
-				<el-input prefix-icon="el-icon-lock" v-model="form.password"/>
-			</el-form-item>
-			<el-form-item>
-				<el-checkbox label="Remember me" v-model="form.rememberMe"/>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" @click="login" style="width: 100%">
-					Login
-				</el-button>
-			</el-form-item>
-
-		</el-form>
+		<el-col :span="6" v-loading="isLoading">
+			<el-form :model="loginForm" :rules="rules" ref="loginForm">
+				<el-form-item label="Username" prop="username" class="bold-label">
+					<el-input prefix-icon="el-icon-user" v-model="loginForm.username"/>
+				</el-form-item>
+				<el-form-item label="Password" prop="password" class="bold-label">
+					<el-input type="password" prefix-icon="el-icon-lock" v-model="loginForm.password"/>
+				</el-form-item>
+				<el-form-item>
+					<el-checkbox label="Remember me" v-model="loginForm.rememberMe"/>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="login" :disabled=this.isValid style="width: 100%">
+						Login
+					</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
 	</div>
 </template>
 
 <script>
+
 export default {
 	name: "Login",
 	data() {
 		return {
-			form: {
-				name: '',
+			loginForm: {
+				username: '',
 				password: '',
 				rememberMe: false,
 			},
+			rules: {
+				username: [{required: true, message: "Please input username", trigger: 'blur'}],
+				password: [{required: true, message: "Please input password", trigger: 'blur'}]
+			},
+			isLoading: false,
+			isValid: false,
 		}
 	},
 	methods: {
 		login() {
 			//TODO connect to backend
-			// this.$axios.get(`${process.env.BASE_URL}/api/login`).then((res) => {
-			// 	console.log(res)
-			// }).catch(e => {
-			// 	// this.error.push(e)
-			// 	console.error(e)
-			// })
-			console.log("my form", this.form)
-			this.$store.commit("login", this.form);
-			this.$router.push({name: "Projects"})
+			this.$refs['loginForm'].validate(isValid => {
+				if (isValid) {
+					this.isLoading = true;
+					this.$http.post(`/login`, this.loginForm).then(
+							res => {
+								console.log(res)
+								this.$store.commit("login", this.loginForm);
+							}, () => {
+								this.isLoading = false;
+							})
+
+				} else {
+					return false;
+				}
+			});
 		}
-	}
+	},
 }
 </script>
 

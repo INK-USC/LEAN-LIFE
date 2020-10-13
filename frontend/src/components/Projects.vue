@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h1>
-			Hello, {{ this.$store.getters.getUserInfo.name |capitalize }}
+			Hello, {{ this.$store.getters.getUserInfo.username |capitalize }}
 		</h1>
 		<el-row>
 			<el-button type="primary" @click="dialogVisible = true">CREATE PROJECT</el-button>

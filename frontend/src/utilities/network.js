@@ -1,6 +1,18 @@
 import axios from 'axios';
+import ElementUI from 'element-ui';
 
-axios.interceptors.response.use(
+console.log("env ", process.env)
+axios.defaults.baseURL = process.env.VUE_APP_API_ENDPOINT
+const api = axios.create({
+	// baseURL: process.env.VUE_APP_API_ENDPOINT,
+	headers: {
+		'Accept': 'application/json',
+		'Content-Type': 'application/json',
+		"Access-Control-Allow-Origin": process.env.VUE_APP_API_ENDPOINT
+	}
+})
+
+api.interceptors.response.use(
 		res => {
 			// Any status code that lie within the range of 2xx cause this function to trigger
 			// Do something with response data
@@ -8,20 +20,21 @@ axios.interceptors.response.use(
 		},
 		err => {
 			// Any status codes that falls outside the range of 2xx cause this function to trigger
-			// Do something with response error
-			console.error(err);
-			this.$message.error("response err: " + err);
+			// Do something with response error;
+			ElementUI.Notification.error(err.toString())
 			return Promise.reject(err)
 		})
 
-axios.interceptors.request.use(
+api.interceptors.request.use(
 		res => {
 			// Do something before request is sent
 			return res;
 		},
 		err => {
 			// Do something with request error
-			console.error(err);
-			this.$message.error("request err: " + err);
+			ElementUI.Notification.error(err.toString())
+			// Message.error("request err: " + err);
 			return Promise.reject(err)
 		})
+
+export default api;

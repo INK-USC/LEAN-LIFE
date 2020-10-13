@@ -7,15 +7,18 @@ import store from "./store";
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faUserSecret} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-import axios from 'axios';
+import Vuex from "vuex";
+import api from "@/utilities/network";
 
-Vue.prototype.$axios = axios;
+Vue.prototype.$http = api;
 
 library.add(faUserSecret);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.devtools = true;
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(Vuex, api);
+
 
 Vue.filter('capitalize', (val) => {
 	if (!val) return '';
@@ -28,3 +31,6 @@ new Vue({
 	store,
 	render: h => h(App)
 }).$mount("#app");
+
+
+

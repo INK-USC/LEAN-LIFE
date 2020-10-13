@@ -8,7 +8,6 @@ export default {
 	created() {
 		this.$store.commit("logout", {});
 		this.$message({message: "Logout Successfully", type: "warning"});
-		this.$router.push("/")
 	}
 }
 </script>
