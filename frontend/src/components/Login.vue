@@ -1,6 +1,8 @@
 <template>
 	<div style="display: flex; justify-content: center">
 		<el-col :span="6" v-loading="isLoading">
+			<el-alert title="Invalid username/password" type="error" show-icon
+			          :style="{display: showLoginFailed }"></el-alert>
 			<el-form :model="loginForm" :rules="rules" ref="loginForm">
 				<el-form-item label="Username" prop="username" class="bold-label">
 					<el-input prefix-icon="el-icon-user" v-model="loginForm.username"/>
@@ -38,6 +40,7 @@ export default {
 			},
 			isLoading: false,
 			isValid: false,
+			showLoginFailed: "none",
 		}
 	},
 	methods: {
@@ -52,8 +55,9 @@ export default {
 								this.$store.commit("login", this.loginForm);
 							}, () => {
 								this.isLoading = false;
+								this.showLoginFailed = "";
 							})
-
+					
 				} else {
 					return false;
 				}

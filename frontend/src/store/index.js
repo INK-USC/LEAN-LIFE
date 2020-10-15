@@ -5,6 +5,7 @@ import createPersistedState from "vuex-persistedstate";
 import api from "@/utilities/network";
 
 Vue.use(Vuex, api);
+//if need to use axios, use api.get/post
 
 const store = new Vuex.Store({
 	state: {
@@ -14,9 +15,6 @@ const store = new Vuex.Store({
 	},
 	mutations: {
 		login(state, loginCredential) {
-			api.post("login", {}).then(() => {
-//TODO extract from login into here
-			})
 			state.userInfo = loginCredential;
 			router.push({name: "Projects"}).then(r => r);
 		},
