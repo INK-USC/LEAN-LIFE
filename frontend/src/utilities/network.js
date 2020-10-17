@@ -1,14 +1,14 @@
 import axios from 'axios';
 import ElementUI from 'element-ui';
 
-console.log("env ", process.env)
 axios.defaults.baseURL = process.env.VUE_APP_API_ENDPOINT
+
 const api = axios.create({
 	// baseURL: process.env.VUE_APP_API_ENDPOINT,
 	headers: {
 		'Accept': 'application/json',
 		'Content-Type': 'application/json',
-		"Access-Control-Allow-Origin": process.env.VUE_APP_API_ENDPOINT
+		"X-CSRFToken": ""
 	}
 })
 

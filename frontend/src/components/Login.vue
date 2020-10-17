@@ -49,10 +49,10 @@ export default {
 			this.$refs['loginForm'].validate(isValid => {
 				if (isValid) {
 					this.isLoading = true;
-					this.$http.post(`/login`, this.loginForm).then(
+					this.$http.post("/auth/obtain_token/", this.loginForm).then(
 							res => {
 								console.log(res)
-								this.$store.commit("login", this.loginForm);
+								this.$store.commit("login", {...res.data, username: this.loginForm.username});
 							}, () => {
 								this.isLoading = false;
 								this.showLoginFailed = "";

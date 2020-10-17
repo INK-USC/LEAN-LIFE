@@ -1,5 +1,7 @@
+from django.conf.urls import url
 from django.urls import path
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from .views import LoginRedirectView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, SettingView, AnnotationHistoryView
@@ -13,6 +15,9 @@ router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
 
 urlpatterns = [
+    url(r'^api/auth/obtain_token/', obtain_jwt_token),
+    url(r'^api/auth/refresh_token/', refresh_jwt_token),
+
     path('', LoginRedirectView.as_view(), name='index'),
     path('api/projects/<int:project_id>', ProjectRetrieveView.as_view(), name='project-info'),
     path('api/projects/<int:project_id>/heading_status', ProjectStatsAPI.as_view(), name='project_menu_headers'),
