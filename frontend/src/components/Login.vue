@@ -52,12 +52,11 @@ export default {
 					this.$http.post("/auth/obtain_token/", this.loginForm).then(
 							res => {
 								console.log(res)
-								this.$store.commit("login", {...res.data, username: this.loginForm.username});
+								this.$store.commit("login", {...res, username: this.loginForm.username});
 							}, () => {
 								this.isLoading = false;
 								this.showLoginFailed = "";
 							})
-					
 				} else {
 					return false;
 				}

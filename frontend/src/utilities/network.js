@@ -8,15 +8,19 @@ const api = axios.create({
 	headers: {
 		'Accept': 'application/json',
 		'Content-Type': 'application/json',
-		"X-CSRFToken": ""
+		// 'access-control-allow-origin': 'http://0.0.0.0:8000/',
+		// "X-CSRFToken": "me9PA22XbQHxfIrCXA8d0f2AIc279g2eiYK1vQdu00sxSVExzXAx2YAFdF4fVbna",
+		"X-CSRFToken": "",
+		"Authorization": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6ImppbSIsImV4cCI6MTYwMzIzMjM3OSwiZW1haWwiOiIiLCJvcmlnX2lhdCI6MTYwMzIxNzk3OX0.mxEzxA-qGszb5gsrVOq_PM2XNwBQpPh8etS6eQBcK18"
 	}
 })
+
 
 api.interceptors.response.use(
 		res => {
 			// Any status code that lie within the range of 2xx cause this function to trigger
 			// Do something with response data
-			return res
+			return res.data
 		},
 		err => {
 			// Any status codes that falls outside the range of 2xx cause this function to trigger

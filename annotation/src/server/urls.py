@@ -15,10 +15,11 @@ router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
 
 urlpatterns = [
-    url(r'^api/auth/obtain_token/', obtain_jwt_token),
-    url(r'^api/auth/refresh_token/', refresh_jwt_token),
+    url('api/auth/obtain_token/', obtain_jwt_token),
+    url('api/auth/refresh_token/', refresh_jwt_token),
 
     path('', LoginRedirectView.as_view(), name='index'),
+    path('api/projects', ProjectRetrieveView.as_view(),name="get-all-project"),
     path('api/projects/<int:project_id>', ProjectRetrieveView.as_view(), name='project-info'),
     path('api/projects/<int:project_id>/heading_status', ProjectStatsAPI.as_view(), name='project_menu_headers'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),

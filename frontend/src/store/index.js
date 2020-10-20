@@ -16,6 +16,7 @@ const store = new Vuex.Store({
 	mutations: {
 		login(state, loginCredential) {
 			state.userInfo = loginCredential;
+			api.defaults.headers['Authorization'] = `JWT ${loginCredential.token}`
 			router.push({name: "Projects"}).then(r => r);
 		},
 		logout(state) {

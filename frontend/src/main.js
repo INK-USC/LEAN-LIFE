@@ -9,6 +9,7 @@ import {faUserSecret} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import Vuex from "vuex";
 import api from "@/utilities/network";
+import locale from 'element-ui/lib/locale/lang/en'
 
 Vue.prototype.$http = api;
 
@@ -16,7 +17,7 @@ library.add(faUserSecret);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.devtools = true;
 Vue.config.productionTip = false;
-Vue.use(ElementUI);
+Vue.use(ElementUI, {locale});
 Vue.use(Vuex, api);
 
 
