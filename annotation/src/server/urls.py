@@ -9,8 +9,8 @@ from .views import edit_form, DataDownload, DataDownloadFile
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
-    HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload
-    
+    HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload, UserRetrieveAPIView, TaskRetrieveAPIView
+
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
 
@@ -19,7 +19,7 @@ urlpatterns = [
     url('api/auth/refresh_token/', refresh_jwt_token),
 
     path('', LoginRedirectView.as_view(), name='index'),
-    path('api/projects', ProjectRetrieveView.as_view(),name="get-all-project"),
+    path('api/projects', ProjectRetrieveView.as_view(), name="get-all-project"),
     path('api/projects/<int:project_id>', ProjectRetrieveView.as_view(), name='project-info'),
     path('api/projects/<int:project_id>/heading_status', ProjectStatsAPI.as_view(), name='project_menu_headers'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
@@ -43,6 +43,8 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/nl/<int:pk>', ExplanationDestroyView.as_view(), name='delete_nl_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/trigger/<int:pk>', ExplanationDestroyView.as_view(), name='delete_trigger_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/recommendations/<int:task_id>/', RecommendationList.as_view(), name='recommendations'),
+    path('api/users/', UserRetrieveAPIView.as_view({'get': 'list'}), name="get_users"),
+    path('api/tasks/', TaskRetrieveAPIView.as_view({'get': 'list'}), name="get_tasks"),
     path('projects/', edit_form, name='projects'),
     path('projects/<int:project_id>/update', edit_form, name='update_projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),

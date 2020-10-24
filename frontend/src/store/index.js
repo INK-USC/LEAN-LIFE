@@ -62,7 +62,6 @@ const store = new Vuex.Store({
 				const decoded = jwt_decode(token);
 				const exp = decoded.exp;
 				const orig_iat = decoded.orig_iat;
-				console.log(exp, orig_iat, Date.now())
 				if (exp < Date.now() / 1000) {
 					this.commit("logout")
 				} else if (exp - (Date.now() / 1000) < 1800 && (Date.now() / 1000) - orig_iat < 628200) {

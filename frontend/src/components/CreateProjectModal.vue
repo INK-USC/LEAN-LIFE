@@ -13,17 +13,13 @@
 				<el-input v-model="projectInfo.description"/>
 			</el-form-item>
 			<el-form-item label="Task">
-				<el-select v-model="projectInfo.task" placeholder="Select">
-					<el-option
-							v-for="item in this.taskOptions"
-							:key="item.id"
-							:label="item.name"
-							:value="item.name"/>
+				<el-select remote v-model="projectInfo.task" placeholder="Select">
+					<el-option v-for="item in this.taskOptions" :key="item.id" :label="item.name" :value="item.id"/>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="User">
-				<el-select v-model="projectInfo.user" multiple placeholder="Select">
-					<el-option v-for="item in this.users" :key="item.id" :lable="item.name" :value="item.name"/>
+				<el-select remote v-model="projectInfo.users" multiple placeholder="Select">
+					<el-option v-for="item in this.users" :key="item.id" :label="item.username" :value="item.id"/>
 				</el-select>
 			</el-form-item>
 		</el-form>
@@ -41,27 +37,14 @@ export default {
 	props: {dialogVisible: Boolean},
 	data() {
 		return {
-			taskOptions: [
-				{
-					id: 1, name: "Sentiment Analysis"
-				},
-				{
-					id: 2, name: "Named Entity Recognition"
-				},
-				{
-					id: 3, name: "Relation Extraction"
-				}],
+			taskOptions: [],
+			users: [],
 			projectInfo: {
 				name: "",
 				description: "",
 				task: "",
-				explanation: "",
 				users: [],
 			},
-			users: [
-				{id: 1, name: "jim"},
-				{id: 2, name: "Jiamin Gong"}
-			]
 		}
 	},
 	methods: {
@@ -70,6 +53,14 @@ export default {
 			this.$emit('update:dialogVisible', false);
 			this.$router.push("/create/update")
 		}
+	},
+	created() {
+		this.$http.get('/tasks/').then(res => {
+			this.taskOptions = res.results
+		})
+		this.$http.get("/users/").then(res => {
+			this.users = res.results
+		})
 	}
 }
 </script>
