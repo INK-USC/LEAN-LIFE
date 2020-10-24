@@ -60,4 +60,10 @@ const router = new VueRouter({
 	linkActiveClass: "is-active"
 });
 
+router.afterEach(() => {
+	if (store.getters.getUserInfo) {
+		store.dispatch('inspectToken').then(_ => _)
+	}
+})
+
 export default router;

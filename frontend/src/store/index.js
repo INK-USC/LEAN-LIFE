@@ -3,6 +3,7 @@ import Vuex, {createLogger} from "vuex";
 import router from "@/router";
 import createPersistedState from "vuex-persistedstate";
 import api from "@/utilities/network";
+import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex, api);
 //if need to use axios, use api.get/post
@@ -26,6 +27,15 @@ const store = new Vuex.Store({
 		},
 		setProject(state, projectInfo) {
 			state.projectInfo = projectInfo;
+		},
+		updateAxios(state) {
+			if (this.state.userInfo) {
+				api.defaults.headers['Authorization'] = `JWT ${this.state.userInfo.token}`
+			}
+		},
+		updateToken(state, token) {
+			state.userInfo.token = token;
+			api.defaults.headers['Authorization'] = `JWT ${token}`
 		}
 	},
 	getters: {
@@ -36,9 +46,39 @@ const store = new Vuex.Store({
 			return state.projectInfo;
 		}
 	},
-	actions: {},
+	actions: {
+		refreshToken() {
+			api.post('/auth/refresh_token/', {token: this.state.userInfo.token}).then(res => {
+				this.commit("updateToken", res.token)
+			})
+		},
+		inspectToken() {
+			// 1. IF it has expired => DO NOT REFRESH / PROMPT TO RE-OBTAIN TOKEN
+			// 2. IF it is expiring in 30 minutes (1800 second) AND it is not reaching its lifespan (7 days — 30 mins = 630000–1800 = 628200) => REFRESH
+			// 3. IF it is expiring in 30 minutes AND it is reaching its lifespan => DO NOT REFRESH
+
+			const token = this.state.userInfo.token;
+			if (token) {
+				const decoded = jwt_decode(token);
+				const exp = decoded.exp;
+				const orig_iat = decoded.orig_iat;
+				console.log(exp, orig_iat, Date.now())
+				if (exp < Date.now() / 1000) {
+					this.commit("logout")
+				} else if (exp - (Date.now() / 1000) < 1800 && (Date.now() / 1000) - orig_iat < 628200) {
+					this.dispatch('refreshToken')
+				} else if (exp - (Date.now() / 1000) < 1800) {
+					// DO NOTHING, DO NOT REFRESH
+				}
+			}
+		}
+	},
 	modules: {},
-	plugins: [createLogger(), createPersistedState()]
+	plugins: [createLogger(),
+		createPersistedState({
+			storage: window.sessionStorage,
+		})
+	]
 
 });
 export default store;
