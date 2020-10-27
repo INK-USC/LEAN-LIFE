@@ -30,9 +30,13 @@ api.interceptors.response.use(
 		})
 
 api.interceptors.request.use(
-		res => {
+		config => {
 			// Do something before request is sent
-			return res;
+			if (!config.url.endsWith("/")) {
+				ElementUI.Notification.error("DJANGO REQUEST NEED TO NEED WITH SLASH")
+				config.url = config.url + "/"
+			}
+			return config;
 		},
 		err => {
 			// Do something with request error

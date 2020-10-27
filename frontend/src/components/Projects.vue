@@ -4,7 +4,8 @@
 			Hello, {{ this.$store.getters.getUserInfo.username |capitalize }}
 		</h1>
 		<el-row>
-			<el-button type="primary" @click="dialogVisible = true">CREATE PROJECT</el-button>
+			<el-button type="primary" @click="()=> {this.selectedProject=null; this.dialogVisible = true}">CREATE PROJECT
+			</el-button>
 		</el-row>
 		<el-row :gutter="20">
 			<el-col :span="12" :offset="6">
@@ -32,7 +33,7 @@
 				</el-table>
 			</el-col>
 		</el-row>
-		<CreateProjectModal :dialog-visible.sync="dialogVisible"/>
+		<CreateProjectModal :dialog-visible.sync="dialogVisible" :existing-info="this.selectedProject"/>
 	</div>
 
 </template>
@@ -50,28 +51,36 @@ export default {
 		return {
 			projects: [],
 			dialogVisible: false,
-			filters: []
+			filters: [],
+			selectedProject: null,
 		}
 	},
 	created: function () {
 		for (let item in PROJECT_TYPE_TO_ID) {
 			this.filters = [...this.filters, {text: PROJECT_TYPE_TO_ID[item], value: PROJECT_TYPE_TO_ID[item]}]
 		}
-		this.$http.get("/projects/").then(
-				res => {
-					this.projects = res
-				}, (err) => {
-					console.log(err)
-				}
-		)
-		
+		this.fetchProjects();
 	},
 	methods: {
 		handleEdit(index, row) {
 			console.log(index, row);
+			this.selectedProject = row;
+			this.dialogVisible = true;
 		},
 		handleDelete(index, row) {
 			console.log(index, row);
+			this.$http.delete(`/projects/${row.id}/`).then(res => {
+				this.fetchProjects();
+			})
+		},
+		fetchProjects() {
+			this.$http.get("/projects/").then(
+					res => {
+						this.projects = res
+					}, (err) => {
+						console.log(err)
+					}
+			)
 		},
 		dateFormat(row, column) {
 			let date = row[column.property];
