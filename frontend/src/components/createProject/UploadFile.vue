@@ -5,7 +5,7 @@
 				<div slot=header style="display: flex">
 					<h3>Import your corpus below</h3>
 				</div>
-				<div>
+				<div style="text-align: left">
 					<div>In order to start the annotation process, a corpus <u>must</u> be uploaded</div>
 					<div>We accept datasets in the following formats:</div>
 					<ul>
@@ -40,7 +40,7 @@
 						</li>
 					</ul>
 				</div>
-
+				
 				<el-form :model="this.fileForm">
 					<el-form-item>
 						<el-radio v-model="fileForm.fileType" label="JSON">JSON file</el-radio>
@@ -65,18 +65,17 @@ export default {
 	data() {
 		return {
 			fileForm: {
-				fileType: "",
+				fileType: "JSON",
 				file: new FormData(),
 			},
 			fileType: ""
-
 		}
 	},
 	methods: {
 		uploadFile(file) {
 			console.log("upload file", file.file)
 			this.fileForm.file.append("files", file.file);
-
+			//TODO find out how to send file to backend.
 		},
 	}
 }

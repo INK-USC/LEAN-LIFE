@@ -101,6 +101,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         return Response(project.get_progress())
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status= status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        print("going to create",self.request.data)
+        serializer.save(creator=self.request.user)
+
+    def destory(self, request, pk=None):
+        return Response(status=200)
 
 class ProjectRetrieveView(generics.RetrieveAPIView):
     queryset = Project.objects.all()

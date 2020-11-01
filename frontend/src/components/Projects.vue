@@ -63,12 +63,10 @@ export default {
 	},
 	methods: {
 		handleEdit(index, row) {
-			console.log(index, row);
 			this.selectedProject = row;
 			this.dialogVisible = true;
 		},
 		handleDelete(index, row) {
-			console.log(index, row);
 			this.$http.delete(`/projects/${row.id}/`).then(res => {
 				this.fetchProjects();
 			})

@@ -6,10 +6,12 @@ import UploadFile from "@/components/createProject/UploadFile";
 import Projects from "@/components/Projects";
 import Logout from "@/components/Logout";
 import store from "@/store";
+import Project from "@/views/Project";
+import CreateProjectModal from "@/components/CreateProjectModal";
 
 Vue.use(VueRouter);
 
-const guardRoute = (to, from, next) => {
+const AuthGuard = (to, from, next) => {
 	let isAuthenticated = false;
 	if (store.getters.getUserInfo) {
 		isAuthenticated = true;
@@ -41,7 +43,7 @@ const routes = [
 	{
 		path: "/projects",
 		name: "Projects",
-		beforeEnter: guardRoute,
+		beforeEnter: AuthGuard,
 		component: Projects,
 	},
 	{
@@ -50,7 +52,13 @@ const routes = [
 		component: Login
 	},
 	{path: "/logout", component: Logout},
-	{path: "/create/update", name: "CreateProject", component: UploadFile}
+	{
+		path: "/project/", component: Project,
+		children: [
+			{path: "edit", name: "CreateProject", component: CreateProjectModal},
+			{path: "upload", name: "UploadFile", component: UploadFile}
+		]
+	},
 ];
 
 const router = new VueRouter({

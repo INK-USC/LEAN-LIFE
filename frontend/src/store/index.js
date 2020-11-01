@@ -12,7 +12,9 @@ const store = new Vuex.Store({
 	state: {
 		userInfo: null, // store info like userid, used preferred name
 		projectInfo: {},//store project info like project name, type description
-		isLoading: false,
+		createEditProjectRelatedInfo: {
+			step: 0,
+		},
 	},
 	mutations: {
 		login(state, loginCredential) {
@@ -25,9 +27,6 @@ const store = new Vuex.Store({
 			state.userInfo = null;
 			router.push("/").then(r => r);
 		},
-		setProject(state, projectInfo) {
-			state.projectInfo = projectInfo;
-		},
 		updateAxios(state) {
 			if (this.state.userInfo) {
 				api.defaults.headers['Authorization'] = `JWT ${this.state.userInfo.token}`
@@ -36,6 +35,12 @@ const store = new Vuex.Store({
 		updateToken(state, token) {
 			state.userInfo.token = token;
 			api.defaults.headers['Authorization'] = `JWT ${token}`
+		},
+		setProject(state, projectInfo) {
+			state.projectInfo = projectInfo;
+		},
+		updateProjectEditingStep(state, step) {
+			state.createEditProjectRelatedInfo.step = step
 		}
 	},
 	getters: {
@@ -44,6 +49,18 @@ const store = new Vuex.Store({
 		},
 		getProjectInfo: state => {
 			return state.projectInfo;
+		},
+		getProjectCreatingStep: state => {
+			return state.createEditProjectRelatedInfo.step;
+		},
+		getEmptyProject: state => {
+			return {
+				name: "",
+				description: "",
+				guideline: "test",
+				task: "",
+				users: []
+			}
 		}
 	},
 	actions: {

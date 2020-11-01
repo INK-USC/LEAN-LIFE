@@ -164,8 +164,8 @@ from datetime import timedelta
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': timedelta(hours=4),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=14),
+    'JWT_EXPIRATION_DELTA': timedelta(days=180),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=360),
 }
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

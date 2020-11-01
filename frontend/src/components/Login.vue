@@ -45,7 +45,6 @@ export default {
 	},
 	methods: {
 		login() {
-			//TODO connect to backend
 			this.$refs['loginForm'].validate(isValid => {
 				if (isValid) {
 					this.isLoading = true;
