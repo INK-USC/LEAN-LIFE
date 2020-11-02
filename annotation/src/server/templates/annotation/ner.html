@@ -10,6 +10,7 @@
   </loading>
   <nl-modal v-if="explanationPopup && explanationType === 2" @close="explanationPopup = false"
     @refresh-nl-explanations="refreshNlExplanations" :last-annotation-id="lastAnnotationId"
+    :current-explanations="annotationDocs[pageNumber].getNlExplanations(lastAnnotationId)"
     :docid="annotationDocs[pageNumber].id" :selected-words="selectedWords" :project-type="projectType">
     <sentence-highlight-display :label-positions="annotationDocs[pageNumber].getAnnotationList([lastAnnotationId])"
       :labels="labels" :text="annotationDocs[pageNumber].text" />
@@ -47,6 +48,7 @@
         v-bind:text="annotationDocs[pageNumber].text" @remove-annotation="removeAnnotation"
         @toggle-explanations="toggleExplanations" @set-selection="setSelection"></annotator>
     </div>
+    <div>[[ annotationDocs[pageNumber] ]]</div>
   </div>
   <div class="card-content">
     <span class="tag">Recommendation section</span>
