@@ -39,8 +39,8 @@ const store = new Vuex.Store({
 		setProject(state, projectInfo) {
 			state.projectInfo = projectInfo;
 		},
-		updateProjectEditingStep(state, step) {
-			state.createEditProjectRelatedInfo.step = step
+		updateProjectEditingStep(state, payload) {
+			state.createEditProjectRelatedInfo.step = payload.step
 		}
 	},
 	getters: {
