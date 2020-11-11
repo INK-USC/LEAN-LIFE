@@ -63,8 +63,8 @@ export default {
 			const classname = cell.className.toString().trim()
 			if (!classname.endsWith("_5")) {
 				this.$router.push({name: 'ProjectOverview'})
-				// this.$store.commit("")
 				//TODO connect to the doc list page.
+				this.$store.commit("setProject", row);
 			}
 		},
 		handleEdit(index, row) {

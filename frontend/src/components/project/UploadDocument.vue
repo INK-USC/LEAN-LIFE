@@ -13,7 +13,7 @@
 							<b>JSON (recommended)</b>
 							<br/><u>Format:</u>
 							<pre>
-              <code>
+                <code v-if="this.$store.getters.getProjectInfo.task!==3">
 {
   "data" : [
     {
@@ -32,19 +32,101 @@
   ]
 }
               </code>
-            </pre>
+								<code v-if="this.$store.getters.getProjectInfo.task===3">
+{
+  "data": [
+      {
+            "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+            "annotations": [
+                {
+                      "label": "", # can be empty string, or actual NER label
+                      "start_offset": 52,
+                      "end_offset": 58
+                }
+                ...
+            ],
+            "metadata": {"foo" : "bar"}
+      }
+      ...
+  ]
+}
+						</code>
+							</pre>
 							Each entry within <i>data</i> must have a key <i><b>text</b></i>. All other keys will be saved in a
 							metadata
 							dictionary associated
 							with the text
+						</li>
+						<li v-if="this.$store.getters.getProjectInfo.task !== 3">
+							<b>CSV</b>--<u v-if="this.$store.getters.getProjectInfo.task !== 3">(Two formats are acceptable (but file
+							must be using utf-8
+							encoding):</u>
+							<u v-else>BIO tagged data required</u>
+							<ol style="">
+								<li v-if="this.$store.getters.getProjectInfo.task !== 3">
+									With a header row, a column name must be <i><b>text</b></i>. All other columns will be saved in a
+									metadata dictionary
+									associated with the text
+								</li>
+								<p><u>Example 1:</u></p>
+								<el-table :data="CSV_TABLE_EXAMPLE_1" stripe border>
+									<el-table-column prop="text" label="text"/>
+									<el-table-column prop="foo" label="foo" width="60"/>
+									<el-table-column prop="bar" label="bar" width="60"/>
+								</el-table>
+								<p v-if="this.$store.getters.getProjectInfo.task === 3">Needed Fields are: <b>word</b>, <b>label</b></p>
+								<table style="" v-if="this.$store.getters.getProjectInfo.task === 3">
+									<tr>
+										<th>document_id</th>
+										<th>word</th>
+										<th>label</th>
+										<th>foo</th>
+										<th>bar</th>
+									</tr>
+									<tr>
+										<td>1</td>
+										<td>Louis</td>
+										<td>B-PER</td>
+										<td>bar</td>
+										<td>foo</td>
+									</tr>
+									<tr>
+										<td>1</td>
+										<td>Armstrong</td>
+										<td>I-PER</td>
+										<td>bar</td>
+										<td>foo</td>
+									</tr>
+									<tr>
+										<td>1</td>
+										<td>the</td>
+										<td>O</td>
+										<td>bar</td>
+										<td>foo</td>
+									</tr>
+								</table>
+								<li v-if="this.$store.getters.getProjectInfo.task !== 3">No header, single column file with just
+									text
+								</li>
+								<u v-if="this.$store.getters.getProjectInfo.task !== 3">Example 2:</u>
+								
+								<el-table :data=" CSV_TABLE_EXAMPLE_1" stripe border :show-header="false">
+									<el-table-column prop="text"/>
+								</el-table>
+							</ol>
+						</li>
+						<li>
+							<b>No commas can be in your text, which is why we strongly recommend using our json import process</b>
 						</li>
 					</ul>
 				</div>
 				
 				<el-form :model="this.fileForm">
 					<el-form-item>
-						<el-radio v-model="fileForm.fileType" label="JSON">JSON file</el-radio>
-						<el-radio v-model="fileForm.fileType" label="CSV">CSV file</el-radio>
+						<el-radio v-model="fileForm.fileType" label="JSON" border>JSON file</el-radio>
+						<el-radio v-model="fileForm.fileType" label="CSV" border v-if="this.$store.getters.getProjectInfo.task!=3">
+							CSV file
+						</el-radio>
 					</el-form-item>
 					<el-form-item label="">
 						<el-upload :http-request="uploadFile" drag accept="text/json" ref="uploadInput" action="">
@@ -60,27 +142,49 @@
 </template>
 
 <script>
+import {CSV_TABLE_EXAMPLE_1, DIALOG_TYPE} from "@/utilities/constant";
+
 export default {
 	name: "UploadFile",
 	data() {
 		return {
 			fileForm: {
 				fileType: "JSON",
-				file: new FormData(),
 			},
-			fileType: ""
+			CSV_TABLE_EXAMPLE_1: CSV_TABLE_EXAMPLE_1
 		}
 	},
 	methods: {
-		uploadFile(file) {
-			console.log("upload file", file.file)
-			this.fileForm.file.append("files", file.file);
-			//TODO find out how to send file to backend.
+		uploadFile(param) {
+			const formData = new FormData();
+			const fileObj = param.file;
+			formData.append("dataset", fileObj);
+			formData.append("upload_type", "ner");
+			formData.append("format", this.fileForm.fileType.toLowerCase());
+			this.$http
+					.post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/upload/`, formData, {
+						headers: {
+							...this.$http.defaults.headers,
+							"Content-Type": "multipart/form-data"
+						}
+					})
+					.then(res => {
+						console.log("upload succeed", res)
+						//TODO need to go to next page
+					})
+					.catch(err => {
+						console.log(err)
+					})
 		},
+	},
+	created() {
+		this.$store.commit("showSimplePopup", DIALOG_TYPE.UploadDataSet);
 	}
 }
 </script>
 
 <style scoped>
-
+pre {
+	background-color: rgb(245, 245, 245);
+}
 </style>

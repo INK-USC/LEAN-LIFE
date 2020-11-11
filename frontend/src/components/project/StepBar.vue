@@ -9,7 +9,7 @@
 
 <script>
 export default {
-	name: "CreateProjectStepBar",
+	name: "StepBar",
 	props: {isCreate: Boolean}
 }
 </script>

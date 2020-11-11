@@ -1,10 +1,17 @@
 <template>
-	<router-view></router-view>
+	<div>
+		<router-view></router-view>
+		<SimplePopup/>
+	</div>
+
 </template>
 
 <script>
+import SimplePopup from "@/components/popups/SimplePopup";
+
 export default {
-	name: "Project"
+	name: "Project",
+	components: {SimplePopup},
 }
 </script>
 

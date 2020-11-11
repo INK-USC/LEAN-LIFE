@@ -5,7 +5,6 @@
 			v-on:update:visible="$emit('update:dialogVisible', $event)"
 			@open="this.dialogIsOpen"
 	>
-		<create-project-step-bar :isCreate="!this.existingInfo"/>
 		<el-form :model="projectInfo">
 			<el-form-item label="Name">
 				<el-input v-model="projectInfo.name"/>
@@ -37,12 +36,8 @@
 </template>
 
 <script>
-
-import CreateProjectStepBar from "@/components/project/CreateProjectStepBar";
-
 export default {
 	name: "CreateProjectModal",
-	components: {CreateProjectStepBar},
 	props: {dialogVisible: Boolean, existingInfo: Object},
 	data() {
 		return {

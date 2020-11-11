@@ -15,6 +15,10 @@ const store = new Vuex.Store({
 		createEditProjectRelatedInfo: {
 			step: 0,
 		},
+		simplePopupInfo: {
+			targetDialogType: "",
+			dialogVisible: false,
+		}
 	},
 	mutations: {
 		login(state, loginCredential) {
@@ -41,6 +45,14 @@ const store = new Vuex.Store({
 		},
 		updateProjectEditingStep(state, payload) {
 			state.createEditProjectRelatedInfo.step = payload.step
+		},
+		showSimplePopup(state, targetDialogType) {
+			state.simplePopupInfo.dialogVisible = true;
+			state.simplePopupInfo.targetDialogType = targetDialogType;
+		},
+		hideSimplePopup(state) {
+			state.simplePopupInfo.dialogVisible = false;
+			state.simplePopupInfo.targetDialogType = "";
 		}
 	},
 	getters: {
@@ -61,6 +73,9 @@ const store = new Vuex.Store({
 				task: "",
 				users: []
 			}
+		},
+		getSimplePopupInfo: state => {
+			return state.simplePopupInfo;
 		}
 	},
 	actions: {

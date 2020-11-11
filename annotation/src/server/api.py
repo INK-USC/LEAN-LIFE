@@ -1,4 +1,6 @@
+import csv
 from collections import Counter
+from io import TextIOWrapper
 from itertools import chain
 import json
 import ijson
@@ -17,7 +19,7 @@ from rest_framework import exceptions
 from rest_framework import parsers
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
-    TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task
+    TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
     NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
@@ -28,6 +30,7 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 from .utils import SPACY_WRAPPER
 import time
 from django.db import transaction
+from .constants import EXPLANATION_CHOICES
 
 
 class ImportFileError(Exception):
@@ -106,14 +109,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status= status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        print("going to create",self.request.data)
         serializer.save(creator=self.request.user)
 
     def destory(self, request, pk=None):
         return Response(status=200)
+
 
 class ProjectRetrieveView(generics.RetrieveAPIView):
     queryset = Project.objects.all()
@@ -628,16 +631,152 @@ class RecommendationList(APIView):
         return Response({"recommendation": list(recommendations.values())})
 
 
-class UserRetrieveAPIView(viewsets.ModelViewSet):
+class UserRetrieveAPIView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_object(self):
-        return super(UserRetrieveAPIView, self).get_object()
 
-class TaskRetrieveAPIView(viewsets.ModelViewSet):
+class TaskRetrieveAPIView(generics.ListAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-    def get_object(self):
-        return super(TaskRetrieveAPIView, self).get_object()
+
+class ExplanationAPIView(APIView):
+    def get(self, request, format=None):
+        return Response(EXPLANATION_CHOICES)
+
+class FileUploadAPIView(APIView):
+    class ImportFileError(Exception):
+        def __init__(self, message):
+            self.message = message
+
+    def extract_metadata_csv(self, row, text_col, header_without_text):
+        vals_without_text = [val for i, val in enumerate(row) if i != text_col]
+        return json.dumps(dict(zip(header_without_text, vals_without_text)))
+
+    def csv_to_documents(self, project, data_file, text_key='text', max_batch=500):
+        decoded_data_file = TextIOWrapper(data_file, encoding='utf-8')
+        reader = csv.reader(decoded_data_file)
+        maybe_header = next(reader)
+        if maybe_header:
+            header = False
+            docs = []
+            if text_key in maybe_header:
+                text_col = maybe_header.index(text_key)
+                header_without_text = [title for i, title in enumerate(maybe_header) if i != text_col]
+                header = True
+            elif len(maybe_header) == 1:
+                text_col = 0
+                text = maybe_header[text_col]
+                docs.append(Document(text=text, project=project))
+            else:
+                raise FileUploadAPIView.ImportFileError(
+                    "CSV file must either have a column named '{}' or only have one column.".format(text_key))
+
+            with transaction.atomic():
+                for row in reader:
+                    text = row[text_col]
+                    metadata = self.extract_metadata_csv(row, text_col, header_without_text) if header else '\{\}'
+                    docs.append(Document(text=text, metadata=metadata, project=project))
+                    if len(docs) == max_batch:
+                        Document.objects.bulk_create(docs)
+                        docs = []
+                Document.objects.bulk_create(docs)
+        else:
+            raise FileUploadAPIView.ImportFileError("CSV file is empty")
+
+    def extract_metadata_json(self, entry):
+        if "metadata" in entry:
+            return json.dumps(entry["metadata"])
+        else:
+            temp = {}
+            ignore_keys = set(["text", "annotations", "doc_id", "user"])
+            for key in entry:
+                if key not in ignore_keys:
+                    temp[key] = entry[key]
+            return json.dumps(temp)
+
+    def create_plain_docs_from_json(self, project, data_file, text_key="text", max_batch=500):
+        docs = []
+        try:
+            if data_file.multiple_chunks():
+                data = ijson.items(data_file, "data.item")
+            else:
+                data = json.load(data_file)
+                data = data["data"]
+        except:
+            raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the 'data' key")
+
+        with transaction.atomic():
+            for entry in data:
+                try:
+                    text = entry[text_key]
+                except:
+                    raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
+
+                metadata = self.extract_metadata_json(entry)
+
+                docs.append(Document(text=text, metadata=metadata, project=project))
+                if len(docs) == max_batch:
+                    Document.objects.bulk_create(docs)
+                    docs = []
+
+            Document.objects.bulk_create(docs)
+
+    def create_ner_docs_from_json(self, project, data_file, user, text_key="text"):
+        all_labels = {}
+        try:
+            if data_file.multiple_chunks():
+                data = ijson.items(data_file, "data.item")
+            else:
+                data = json.load(data_file)
+                data = data["data"]
+        except:
+            raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the 'data' key")
+
+        with transaction.atomic():
+            for entry in data:
+                try:
+                    text = entry[text_key]
+                except:
+                    raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
+
+                metadata = self.extract_metadata_json(entry)
+
+                current_doc = Document(text=text, metadata=metadata, project=project)
+                current_doc.save()
+
+                for annotation in entry["annotations"]:
+                    if annotation['label'] not in all_labels:
+                        new_label = Label(text=annotation["label"], project=project, user_provided=True)
+                        new_label.save()
+                        all_labels[annotation["label"]] = new_label
+
+                    cur_annotation = Annotation(user_provided=True, task=project.task, user=user, document=current_doc,
+                                                label=all_labels[annotation["label"]])
+                    cur_annotation.save()
+                    ner_annotation = NamedEntityAnnotation(annotation=cur_annotation,
+                                                           start_offset=annotation["start_offset"],
+                                                           end_offset=annotation["end_offset"])
+                    ner_annotation.save()
+
+    def post(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs.get('project_id'))
+        import_format = request.POST['format']
+        upload_type = request.POST['upload_type']
+        user = self.request.user
+        try:
+            data_file = request.FILES['dataset']
+            if import_format == 'csv':
+                self.csv_to_documents(project, data_file)
+            elif import_format == 'json':
+                if upload_type == "ner":
+                    self.create_ner_docs_from_json(project, data_file, user)
+                else:
+                    self.create_plain_docs_from_json(project, data_file)
+            return Response({"success": "your file has been received"}, status=status.HTTP_202_ACCEPTED, )
+        except FileUploadAPIView.ImportFileError as e:
+            return Response(exception=e)
+        except Exception as e:
+            return Response(exception=e)
+
