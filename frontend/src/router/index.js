@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "@/components/Login";
-import UploadFile from "@/components/createProject/UploadFile";
+import UploadDocument from "@/components/project/UploadDocument";
 import Projects from "@/components/Projects";
 import Logout from "@/components/Logout";
 import store from "@/store";
@@ -56,7 +56,7 @@ const routes = [
 		path: "/project/", component: Project,
 		children: [
 			{path: "edit", name: "CreateProject", component: CreateProjectModal},
-			{path: "upload", name: "UploadFile", component: UploadFile}
+			{path: "upload", name: "UploadFile", component: UploadDocument}
 		]
 	},
 ];

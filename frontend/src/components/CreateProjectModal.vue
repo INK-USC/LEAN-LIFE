@@ -38,7 +38,7 @@
 
 <script>
 
-import CreateProjectStepBar from "@/components/createProject/CreateProjectStepBar";
+import CreateProjectStepBar from "@/components/project/CreateProjectStepBar";
 
 export default {
 	name: "CreateProjectModal",

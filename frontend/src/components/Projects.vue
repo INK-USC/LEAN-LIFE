@@ -9,7 +9,8 @@
 		</el-row>
 		<el-row :gutter="20">
 			<el-col :span="12" :offset="6">
-				<el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}">
+				<el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}"
+				          @cell-click="handleProjectSelected">
 					<el-table-column prop="name" label="Name" sortable/>
 					<el-table-column prop="description" label="Description" sortable/>
 					<el-table-column prop="task" label="Task" :formatter="convertTaskIDToString" sortable
@@ -19,15 +20,10 @@
 					<el-table-column
 							label="Operations">
 						<template slot-scope="scope">
-							<el-button
-									size="mini"
-									@click="handleEdit(scope.$index, scope.row)">Edit
-							</el-button>
-							<el-button
-									size="mini"
-									type="danger"
-									@click="handleDelete(scope.$index, scope.row)">Delete
-							</el-button>
+							<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+							<el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)">
+								<el-button size="mini" type="danger" slot="reference">Delete</el-button>
+							</el-popconfirm>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -62,6 +58,15 @@ export default {
 		this.fetchProjects();
 	},
 	methods: {
+		handleProjectSelected(row, col, cell, event) {
+			console.log(row)
+			const classname = cell.className.toString().trim()
+			if (!classname.endsWith("_5")) {
+				this.$router.push({name: 'ProjectOverview'})
+				// this.$store.commit("")
+				//TODO connect to the doc list page.
+			}
+		},
 		handleEdit(index, row) {
 			this.selectedProject = row;
 			this.dialogVisible = true;
