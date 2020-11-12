@@ -12,8 +12,9 @@ const store = new Vuex.Store({
 	state: {
 		userInfo: null, // store info like userid, used preferred name
 		projectInfo: {},//store project info like project name, type description
-		createEditProjectRelatedInfo: {
+		actionRelatedInfo: {
 			step: 0,
+			actionType: "",
 		},
 		simplePopupInfo: {
 			targetDialogType: "",
@@ -40,11 +41,12 @@ const store = new Vuex.Store({
 			state.userInfo.token = token;
 			api.defaults.headers['Authorization'] = `JWT ${token}`
 		},
-		setProject(state, projectInfo) {
-			state.projectInfo = projectInfo;
+		setProject(state, payload) {
+			state.projectInfo = payload.projectInfo;
+			state.actionRelatedInfo.actionType = payload.actionType;
 		},
 		updateProjectEditingStep(state, payload) {
-			state.createEditProjectRelatedInfo.step = payload.step
+			state.actionRelatedInfo.step = payload.step
 		},
 		showSimplePopup(state, targetDialogType) {
 			state.simplePopupInfo.dialogVisible = true;
@@ -63,7 +65,7 @@ const store = new Vuex.Store({
 			return state.projectInfo;
 		},
 		getProjectCreatingStep: state => {
-			return state.createEditProjectRelatedInfo.step;
+			return state.actionRelatedInfo.step;
 		},
 		getEmptyProject: state => {
 			return {
@@ -76,6 +78,9 @@ const store = new Vuex.Store({
 		},
 		getSimplePopupInfo: state => {
 			return state.simplePopupInfo;
+		},
+		getActionType: state => {
+			return state.actionRelatedInfo.actionType;
 		}
 	},
 	actions: {

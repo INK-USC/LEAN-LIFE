@@ -21,3 +21,7 @@ export const DIALOG_TYPE = {
 	"UploadDataSet": "UploadDataSet",
 	"": ""
 }
+export const ACTION_TYPE = {
+	CREATE: "create",
+	EDIT: "edit"
+}

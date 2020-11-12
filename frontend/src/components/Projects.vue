@@ -7,11 +7,15 @@
 			<el-button type="primary" @click="()=> {this.selectedProject=null; this.dialogVisible = true}">CREATE PROJECT
 			</el-button>
 		</el-row>
-		<el-row :gutter="20">
+		<el-row>
 			<el-col :span="12" :offset="6">
 				<el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}"
 				          @cell-click="handleProjectSelected">
-					<el-table-column prop="name" label="Name" sortable/>
+					<el-table-column prop="name" label="Name" sortable>
+						<template slot-scope="scope">
+							<el-link type="primary">{{ scope.row.name }}</el-link>
+						</template>
+					</el-table-column>
 					<el-table-column prop="description" label="Description" sortable/>
 					<el-table-column prop="task" label="Task" :formatter="convertTaskIDToString" sortable
 					                 :filters="this.filters"
@@ -20,9 +24,11 @@
 					<el-table-column
 							label="Operations">
 						<template slot-scope="scope">
-							<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-							<el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)">
-								<el-button size="mini" type="danger" slot="reference">Delete</el-button>
+							<el-button size="mini" @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"/> Edit
+							</el-button>
+							<el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)"
+							               style="margin-left: 10px">
+								<el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/> Delete</el-button>
 							</el-popconfirm>
 						</template>
 					</el-table-column>
@@ -36,7 +42,7 @@
 
 <script>
 import CreateProjectModal from "@/components/CreateProjectModal";
-import {PROJECT_TYPE_TO_ID} from "@/utilities/constant";
+import {ACTION_TYPE, PROJECT_TYPE_TO_ID} from "@/utilities/constant";
 
 const {DateTime} = require("luxon");
 
@@ -62,9 +68,9 @@ export default {
 			console.log(row)
 			const classname = cell.className.toString().trim()
 			if (!classname.endsWith("_5")) {
-				this.$router.push({name: 'ProjectOverview'})
+				this.$router.push({name: 'DocumentList'})
 				//TODO connect to the doc list page.
-				this.$store.commit("setProject", row);
+				this.$store.commit("setProject", {projectInfo: row, actionType: ACTION_TYPE.EDIT});
 			}
 		},
 		handleEdit(index, row) {
@@ -108,6 +114,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>

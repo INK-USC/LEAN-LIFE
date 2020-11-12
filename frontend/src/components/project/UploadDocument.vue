@@ -1,6 +1,6 @@
 <template>
 	<el-row>
-		<el-col :span="18" :offset="6">
+		<el-col>
 			<el-card>
 				<div slot=header style="display: flex">
 					<h3>Import your corpus below</h3>
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import {CSV_TABLE_EXAMPLE_1, DIALOG_TYPE} from "@/utilities/constant";
+import {ACTION_TYPE, CSV_TABLE_EXAMPLE_1, DIALOG_TYPE} from "@/utilities/constant";
 
 export default {
 	name: "UploadFile",
@@ -178,7 +178,9 @@ export default {
 		},
 	},
 	created() {
-		this.$store.commit("showSimplePopup", DIALOG_TYPE.UploadDataSet);
+		if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+			this.$store.commit("showSimplePopup", DIALOG_TYPE.UploadDataSet);
+		}
 	}
 }
 </script>

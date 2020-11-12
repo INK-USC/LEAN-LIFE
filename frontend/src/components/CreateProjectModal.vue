@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import {ACTION_TYPE} from "@/utilities/constant";
+
 export default {
 	name: "CreateProjectModal",
 	props: {dialogVisible: Boolean, existingInfo: Object},
@@ -45,11 +47,11 @@ export default {
 			users: [],
 			explanations: [],
 			projectInfo: {
-				name: null,
-				description: null,
+				name: "",
+				description: "",
 				guideline: "test",
-				task: null,
-				explanation_type: null,
+				task: "",
+				explanation_type: "",
 				users: [],
 			},
 			formRules: {
@@ -73,9 +75,7 @@ export default {
 			}
 		},
 		createProject() {
-			console.log(this.$refs['projectInfoForm'])
 			this.$refs['projectInfoForm'].validate(isValid => {
-				console.log("is valid? ", isValid)
 				if (isValid) {
 					let httpRequest;
 					if (this.existingInfo) {
@@ -86,8 +86,7 @@ export default {
 						httpRequest = this.$http.post("/projects/", this.projectInfo)
 					}
 					httpRequest.then(res => {
-						console.log("create project res", res);
-						this.$store.commit("setProject", res);
+						this.$store.commit("setProject", {projectInfo: res, actionType: ACTION_TYPE.CREATE});
 						this.$emit('update:dialogVisible', false);
 						this.$router.push({name: "UploadFile"})
 					})

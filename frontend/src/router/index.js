@@ -8,6 +8,8 @@ import Logout from "@/components/Logout";
 import store from "@/store";
 import Project from "@/views/Project";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import DocumentList from "@/components/project/overview/DocumentList";
+import Document from "@/views/Document";
 
 Vue.use(VueRouter);
 
@@ -31,15 +33,6 @@ const routes = [
 		name: "Home",
 		component: Home
 	},
-	// {
-	// 	path: "/about",
-	// 	name: "About",
-	// 	// route level code-splitting
-	// 	// this generates a separate chunk (about.[hash].js) for this route
-	// 	// which is lazy-loaded when the route is visited.
-	// 	component: () =>
-	// 			import(/* webpackChunkName: "about" */ "../views/About.vue")
-	// },
 	{
 		path: "/projects",
 		name: "Projects",
@@ -56,7 +49,14 @@ const routes = [
 		path: "/project/", component: Project,
 		children: [
 			{path: "edit", name: "CreateProject", component: CreateProjectModal},
-			{path: "upload", name: "UploadFile", component: UploadDocument}
+
+			{
+				path: "doc/", component: Document,
+				children: [
+					{path: "upload", name: "UploadFile", component: UploadDocument},
+					{path: "list", name: "DocumentList", component: DocumentList},
+				]
+			},
 		]
 	},
 ];
