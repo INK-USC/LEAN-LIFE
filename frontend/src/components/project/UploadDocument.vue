@@ -159,7 +159,7 @@ export default {
 			const formData = new FormData();
 			const fileObj = param.file;
 			formData.append("dataset", fileObj);
-			formData.append("upload_type", "ner");
+			formData.append("upload_type", (this.$store.getters.getProjectInfo.task == 1 || this.$store.getters.getProjectInfo.task == 2) ? 'pd' : 'ner');
 			formData.append("format", this.fileForm.fileType.toLowerCase());
 			this.$http
 					.post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/upload/`, formData, {
