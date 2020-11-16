@@ -99,6 +99,10 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 class SettingView(LoginRequiredMixin, TemplateView):
     template_name = 'admin/setting.html'
 
+
+class DownloadModelView(LoginRequiredMixin, TemplateView):
+    template_name = 'admin/download_model.html'
+
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_upload.html'
     class ImportFileError(Exception):

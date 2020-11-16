@@ -1,0 +1,25 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+</head>
+
+
+<div class="card">
+    <header class="card-header">
+        <div class="model__content">
+            <h2><span>Download Model</span></h2>
+        </div>
+    </header>
+
+    <div class="card-content model__content">
+
+    </div>
+</div>
+
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/setting.js' %}"></script>
+{% endblock %}

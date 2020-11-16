@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from .views import LoginRedirectView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, SettingView, AnnotationHistoryView
-from .views import edit_form, DataDownload, DataDownloadFile
+from .views import edit_form, DataDownload, DataDownloadFile, DownloadModelView
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
@@ -48,4 +48,5 @@ urlpatterns = [
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
     path('projects/<int:project_id>/setting/', SettingView.as_view(), name='setting'),
     path('projects/<int:project_id>/history/', AnnotationHistoryView.as_view(), name='annotation_history'),
+    path('projects/<int:project_id>/download_model/', DownloadModelView.as_view(), name="download_model"),
 ]
