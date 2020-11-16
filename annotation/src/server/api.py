@@ -605,3 +605,9 @@ class RecommendationList(APIView):
                         rec["label"] = label_dict[rec["label"]]
             
         return Response({"recommendation": list(recommendations.values())})
+
+
+class ModelAPIView(APIView):
+    def get(self, request, project_id):
+        dummy_res = ['a', 'b', 'c']
+        return Response(dummy_res)
