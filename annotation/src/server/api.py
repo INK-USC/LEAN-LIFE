@@ -608,6 +608,6 @@ class RecommendationList(APIView):
 
 
 class ModelAPIView(APIView):
-    def get(self, request, project_id):
+    def get(self, request):
         dummy_res = ['a', 'b', 'c']
         return Response(dummy_res)

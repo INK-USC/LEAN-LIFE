@@ -3,19 +3,19 @@ import Vue from 'vue';
 import HTTP from './http';
 
 const vm = new Vue({
-    el: '#mail-app',
+    el: '#models_root',
     delimiters: ["${", "}"],
     data: {
         modelList: []
     },
     methods: {
         fetchModel(){
-            axios.get(`/api/projects/104/models`).then(res=>{
+            axios.get(`/api/models/`).then(res=>{
                 this.modelList= res.data;
             })
         },
         downloadModelClicked(model, index){
-           console.log("download for", model, index)
+            console.log("download for", model, index)
         }
     },
     created(){

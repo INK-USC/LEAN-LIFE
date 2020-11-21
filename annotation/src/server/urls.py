@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from .views import LoginRedirectView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, SettingView, AnnotationHistoryView
-from .views import edit_form, DataDownload, DataDownloadFile, DownloadModelView
+from .views import edit_form, DataDownload, DataDownloadFile, ModelView
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
@@ -37,7 +37,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/nl/<int:pk>', ExplanationDestroyView.as_view(), name='delete_nl_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/trigger/<int:pk>', ExplanationDestroyView.as_view(), name='delete_trigger_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/recommendations/<int:task_id>/', RecommendationList.as_view(), name='recommendations'),
-    path('api/projects/<int:project_id>/models', ModelAPIView.as_view(), name="get_model"),
+    path('api/models/', ModelAPIView.as_view(), name="get_model"),
     path('projects/', edit_form, name='projects'),
     path('projects/<int:project_id>/update', edit_form, name='update_projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
@@ -49,5 +49,5 @@ urlpatterns = [
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
     path('projects/<int:project_id>/setting/', SettingView.as_view(), name='setting'),
     path('projects/<int:project_id>/history/', AnnotationHistoryView.as_view(), name='annotation_history'),
-    path('projects/<int:project_id>/download_model/', DownloadModelView.as_view(), name="download_model"),
+    path('models/', ModelView.as_view(), name="models"),
 ]

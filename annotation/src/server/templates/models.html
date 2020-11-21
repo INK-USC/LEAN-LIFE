@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<head>
+<!--  <script type="text/javascript" src="{% static 'js/newscript.js' %}"></script>-->
+  <title>LEAN-LIFE</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+    integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/setting.css' %}">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
+    integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous">
+  </script>
+
+  <!-- For event dropdown -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css">
+
+  <!-- For spinner -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.js"></script>
+  <link rel="stylesheet" href="https://spin.js.org/spin.css">
+  <script type="text/javascript" src="{% static 'js/clientside.js' %}"></script>
+</head>
+
+
+<div id="models_root" v-cloak>
+    <div class="card">
+        <header class="card-header">
+            <div class="model__content">
+                <h2><span>Download Model</span></h2>
+            </div>
+        </header>
+
+        <div class="card-content model__content">
+            <table class="table is-fullwidth is-hoverable" style="width: 80vw">
+                <thead>
+                    <tr>
+                        <th style="width: 10%">#</th>
+                        <th>Text</th>
+                        <th style="width: 20%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(model, index) in modelList">
+                        <td>${ index + 1 } </td>
+                        <td>${ model }</td>
+                        <td><a class="has-text-danger" @click="downloadModelClicked(model, index)">Download</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/models.js' %}"></script>
+{% endblock %}

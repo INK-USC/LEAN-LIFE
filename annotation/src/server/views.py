@@ -100,8 +100,9 @@ class SettingView(LoginRequiredMixin, TemplateView):
     template_name = 'admin/setting.html'
 
 
-class DownloadModelView(LoginRequiredMixin, TemplateView):
-    template_name = 'admin/download_model.html'
+class ModelView(LoginRequiredMixin, TemplateView):
+    template_name = 'models.html'
+
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_upload.html'
