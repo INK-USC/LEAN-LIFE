@@ -44,7 +44,7 @@ function updateSelector(full){
 function loadEvent(event) {
   $("#annotations").empty();
   $.get("https://homes.cs.washington.edu/~msap/debug/event2mind/docs/data/getEventAnnots.php?event="+event, function(data) {
-    console.log(data);
+//    console.log(data);
     eventAnnotations = JSON.parse(data);
     $.each(eventAnnotations,function(k,d){
       $("#annotations").append("<p><strong>"+beautifyRelations[k]+"</strong>:&nbsp;"+d+"</p>");
