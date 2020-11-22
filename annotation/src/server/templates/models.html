@@ -45,15 +45,21 @@
                 <thead>
                     <tr>
                         <th style="width: 10%">#</th>
-                        <th>Text</th>
+                        <th>Model Name</th>
+                        <th>Training Status</th>
+                        <th>File Size</th>
                         <th style="width: 20%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(model, index) in modelList">
+                    <tr v-for="(row, index) in modelList">
                         <td>${ index + 1 } </td>
-                        <td>${ model }</td>
-                        <td><a class="has-text-danger" @click="downloadModelClicked(model, index)">Download</a></td>
+                        <td>${ row.model }</td>
+                        <td>${row.training_status? row.training_status *100 +'%': 'Not trained' }</td>
+                        <td>${ row.training_status===1? row.file_size +'MB' : "N/A"}</td>
+                        <td>
+                            <button class="has-text-danger button disabled" @click="downloadModelClicked(row,index)" :disabled="row.training_status!==1">Download</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -20,5 +20,9 @@ const vm = new Vue({
     },
     created(){
         this.fetchModel();
+        // refresh every 15 minutes
+        setInterval(()=>{
+            this.fetchModel();
+        }, (15*60)*1000);
     }
 })
