@@ -25,9 +25,13 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
 from .utils import SPACY_WRAPPER
-import time
 from django.db import transaction
-
+import pickle
+from django.utils import timezone
+import random
+from os import listdir
+from os.path import isfile, join
+import os
 
 class ImportFileError(Exception):
 	def __init__(self, message):
@@ -616,7 +620,40 @@ class RecommendationList(APIView):
 
 class ModelAPIView(APIView):
 	def get(self, request):
-		dummy_res = [{'model': 'a', 'training_status': 1, 'file_size': 150},
+		dummy_res = [{'model': 'a', 'training_status': 1, 'file_size': 12000000},
 		             {'model': 'b', 'training_status': 0.5},
 		             {'model': 'c'}]
+		files = [f for f in listdir("models") if isfile(join("models", f))]
+		for file in files:
+			if not file.startswith("uid" + str(self.request.user.id)) or not file.endswith(".p"):
+				continue
+			file = os.path.join("models/", file)
+			size = os.path.getsize(file)
+			with open(file,'rb') as f:
+				my_dict = pickle.load(f)
+				dummy_res.append({"model": my_dict['model_name'], 'training_status': 1, 'file_size': size})
+
 		return Response(dummy_res)
+
+
+class GenerateMockModelsAPIView(APIView):
+	permission_classes = []
+
+	def post(self, request):
+		generate_random_models_dicts()
+		return Response(status=200)
+
+
+def assemble_file_name(my_dict):
+	return "models/uid"+str(my_dict['uid'])+"-"+my_dict['model_name']+"-"+timezone.now().strftime("%d_%m_%Y_%H.%M.%S") + ".p"
+
+
+def generate_random_models_dicts():
+	for i in range(0,  20):
+		uid = random.randint(0, 4)
+		model_name = "test_model_name_" + str(random.randint(0, 100))
+		model = "this is a test model for: " + model_name
+
+		my_dict = {'uid': uid, "model_name": model_name, "model": model}
+		with open(assemble_file_name(my_dict), 'wb') as f:
+			pickle.dump(my_dict, f)
