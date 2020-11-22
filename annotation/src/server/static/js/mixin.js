@@ -1,9 +1,8 @@
 /* eslint-disable key-spacing */
 import axios from "axios";
 import Vue from "vue";
-import { AutoComplete, Modal, Form, Icon, Button, Radio } from "ant-design-vue";
+import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm } from "ant-design-vue";
 import HTTP from "./http";
-
 
 import "ant-design-vue/dist/antd.css";
 import AnnotationDocument from "./utils";
@@ -17,6 +16,7 @@ Vue.use(Icon);
 Vue.use(AutoComplete);
 Vue.use(Button);
 Vue.use(Radio);
+Vue.use(Popconfirm)
 
 const annotationMixin = {
   data() {
@@ -183,7 +183,9 @@ const annotationMixin = {
     },
 
     trainModel(){
-        HTTP.post("mock", {}).then(res=>{})
+        HTTP.post('train_model/',{}).then(res=>{
+
+        })
     },
   },
 

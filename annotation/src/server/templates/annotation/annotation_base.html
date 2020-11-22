@@ -111,7 +111,9 @@
             will appear as red––indicating an error.</p>
         </span>
         <span class="tag">
-          <button id="train_modal_btn" class="button" v-on:click="trainModel">Train Model</button>
+          <a-popconfirm title="Are you sure to train model?" ok-text="Yes"  @confirm="trainModel">
+            <button id="train_modal_btn" class="button" >Train Model</button>
+          </a-popconfirm>
         </span>
       </div>
 
