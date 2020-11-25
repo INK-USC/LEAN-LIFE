@@ -10,6 +10,7 @@ import Project from "@/views/Project";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import DocumentList from "@/components/project/overview/DocumentList";
 import Document from "@/views/Document";
+import LabelCreation from "@/components/project/overview/LabelCreation";
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,7 @@ const routes = [
 					{path: "list", name: "DocumentList", component: DocumentList},
 				]
 			},
+			{path: "labels", name: "LabelCreationSpace", component: LabelCreation}
 		]
 	},
 ];

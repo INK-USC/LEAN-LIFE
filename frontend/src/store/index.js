@@ -19,7 +19,7 @@ const store = new Vuex.Store({
 		simplePopupInfo: {
 			targetDialogType: "",
 			dialogVisible: false,
-		}
+		},
 	},
 	mutations: {
 		login(state, loginCredential) {
@@ -55,7 +55,7 @@ const store = new Vuex.Store({
 		hideSimplePopup(state) {
 			state.simplePopupInfo.dialogVisible = false;
 			state.simplePopupInfo.targetDialogType = "";
-		}
+		},
 	},
 	getters: {
 		getUserInfo: state => {
@@ -81,7 +81,7 @@ const store = new Vuex.Store({
 		},
 		getActionType: state => {
 			return state.actionRelatedInfo.actionType;
-		}
+		},
 	},
 	actions: {
 		refreshToken() {

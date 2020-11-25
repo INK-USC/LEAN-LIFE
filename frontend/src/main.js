@@ -27,6 +27,12 @@ Vue.filter('capitalize', (val) => {
 	return val.charAt(0).toUpperCase() + val.slice(1);
 })
 
+Vue.filter('displayShortcut', (val) => {
+	if (!val) return '';
+	val = val.toString().replace('ctrl', 'C').replace('shift', 'S').split(' ').join('-');
+	return val;
+})
+
 new Vue({
 	router,
 	store,
