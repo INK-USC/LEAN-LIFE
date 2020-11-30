@@ -13,7 +13,7 @@ const store = new Vuex.Store({
 		userInfo: null, // store info like userid, used preferred name
 		projectInfo: {},//store project info like project name, type description
 		actionRelatedInfo: {
-			step: 0,
+			step: 0, // 0= create modal, 1= upload corpus, 2= create label, 3= update settings
 			actionType: "",
 		},
 		simplePopupInfo: {
@@ -44,9 +44,14 @@ const store = new Vuex.Store({
 		setProject(state, payload) {
 			state.projectInfo = payload.projectInfo;
 			state.actionRelatedInfo.actionType = payload.actionType;
+			state.actionRelatedInfo.step = payload.step;
 		},
 		updateProjectEditingStep(state, payload) {
 			state.actionRelatedInfo.step = payload.step
+		},
+		updateActionRelatedInfo(state, payload) {
+			state.actionRelatedInfo.actionType = payload.actionType ? payload.actionType : state.actionRelatedInfo.actionType;
+			state.actionRelatedInfo.step = payload.step ? payload.step : state.actionRelatedInfo.step;
 		},
 		showSimplePopup(state, targetDialogType) {
 			state.simplePopupInfo.dialogVisible = true;

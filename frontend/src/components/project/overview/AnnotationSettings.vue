@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
+
 export default {
   name: "AnnotationSettings",
   data() {
@@ -83,6 +85,9 @@ export default {
     }
   },
   created() {
+    if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+      this.$store.commit("showSimplePopup", DIALOG_TYPE.ConfiguringOptionalAnnotationSettings);
+    }
     this.fetchAnnotationSettings()
         .catch(err => {
           return this.saveSettings()

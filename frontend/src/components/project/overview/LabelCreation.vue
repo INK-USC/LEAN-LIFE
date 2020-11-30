@@ -4,13 +4,13 @@
       <div slot="header"><h3>Label Space Creation</h3></div>
       <div style="text-align: left">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-tooltip content="Available labels for annotators to pick from when annotating." placement="top">
               <b>Current Label Space</b>
             </el-tooltip>
 
           </el-col>
-          <el-col :span="18" style="display: flex; flex-wrap: wrap">
+          <el-col :span="16" style="display: flex; flex-wrap: wrap">
             <Label v-for="label of existingLabels" :key="label.id" :labelInfo="label" style="margin-right: 10px"
                    @deleted="fetchLabels"/>
           </el-col>
@@ -20,26 +20,26 @@
 
         <el-form ref="labelCreationForm" :model="labelCreationForm">
           <el-row class="row">
-            <el-col :span="6">
+            <el-col :span="8">
               <b>Label Preview</b>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="16">
               <Label :labelInfo="submissionForm"/>
             </el-col>
           </el-row>
           <el-row class="row" style="margin-top: 20px;">
-            <el-col :span="6">
+            <el-col :span="8">
               <b>Label Name</b>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="16">
               <el-input v-model="labelCreationForm.text" placeholder="Labels must be named to be saved"></el-input>
             </el-col>
           </el-row>
           <el-row style="margin-top: 20px;">
-            <el-col :span="6">
+            <el-col :span="8">
               <b>Shortcut Key</b>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="16">
               <el-select v-model="labelCreationForm.shortcutKey">
                 <el-option v-for="option in shortcutOptions" :key="option" :label="option"
                            :value="option.length>1? '':option" :disabled="option.length>1? true: false"/>
@@ -50,18 +50,18 @@
             </el-col>
           </el-row>
           <el-row style="margin-top: 20px;">
-            <el-col :span="6">
+            <el-col :span="8">
               <b>Background Color</b>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="16">
               <el-color-picker v-model="labelCreationForm.background_color"/>
             </el-col>
           </el-row>
           <el-row style="margin-top: 20px;">
-            <el-col :span="6">
+            <el-col :span="8">
               <b>Text Color</b>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="16">
               <el-color-picker v-model="labelCreationForm.text_color"/>
             </el-col>
           </el-row>
@@ -81,6 +81,7 @@
 
 <script>
 import Label from "@/components/shared/Label";
+import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
 
 const DEFAULT_FORM = {
   text: "",
@@ -104,7 +105,6 @@ export default {
   methods: {
     fetchLabels() {
       this.$http.get(`/projects/${this.$store.getters.getProjectInfo.id}/labels/`).then(res => {
-        console.log(res)
         this.existingLabels = res;
       })
     },
@@ -116,14 +116,18 @@ export default {
       })
     },
     resetLabel() {
-      this.labelCreationForm = JSON.parse(JSON.stringify(DEFAULT_FORM))
+      this.labelCreationForm = JSON.parse(JSON.stringify(DEFAULT_FORM));
     },
     goNextStep() {
-
+      this.$store.commit('updateActionRelatedInfo', {step: 3});
+      this.$router.push({name: "AnnotationSettings"});
     }
   },
   created() {
-    this.labelCreationForm = JSON.parse(JSON.stringify(DEFAULT_FORM))
+    this.labelCreationForm = JSON.parse(JSON.stringify(DEFAULT_FORM));
+    if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+      this.$store.commit("showSimplePopup", DIALOG_TYPE.CreatingLabels);
+    }
     this.fetchLabels()
   },
   computed: {

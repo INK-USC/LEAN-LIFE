@@ -19,7 +19,8 @@ export const CSV_TABLE_EXAMPLE_1 = [
 
 export const DIALOG_TYPE = {
 	"UploadDataSet": "UploadDataSet",
-	"": ""
+	"CreatingLabels": "CreatingLabels",
+	"ConfiguringOptionalAnnotationSettings": "ConfiguringOptionalAnnotationSettings",
 }
 export const ACTION_TYPE = {
 	CREATE: "create",

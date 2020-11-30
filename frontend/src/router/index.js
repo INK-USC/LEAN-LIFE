@@ -31,22 +31,9 @@ const AuthGuard = (to, from, next) => {
 }
 
 const routes = [
-	{
-		path: "/",
-		name: "Home",
-		component: Home
-	},
-	{
-		path: "/projects",
-		name: "Projects",
-		beforeEnter: AuthGuard,
-		component: Projects,
-	},
-	{
-		path: "/login",
-		name: "Login",
-		component: Login
-	},
+	{path: "/", name: "Home", component: Home},
+	{path: "/projects", name: "Projects", beforeEnter: AuthGuard, component: Projects,},
+	{path: "/login", name: "Login", component: Login},
 	{path: "/logout", component: Logout},
 	{
 		path: "/project/", component: Project,
@@ -54,7 +41,8 @@ const routes = [
 			{path: "edit", name: "CreateProject", component: CreateProjectModal},
 
 			{
-				path: "doc/", component: Document,
+				path: "doc/",
+				component: Document,
 				children: [
 					{path: "upload", name: "UploadFile", component: UploadDocument},
 					{path: "list", name: "DocumentList", component: DocumentList},

@@ -1,5 +1,4 @@
 <template>
-  <!--	<el-row>-->
   <el-col>
     <el-menu :default-active="$route.path" :router="true">
       <el-submenu index="1">
@@ -27,14 +26,11 @@
       </el-menu-item>
     </el-menu>
   </el-col>
-
-  <!--	</el-row>-->
-
 </template>
 
 <script>
 export default {
-  name: "SideBar"
+  name: "ProjectSideBar"
 }
 </script>
 
