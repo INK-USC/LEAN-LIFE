@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, filters, mixins
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -196,12 +197,19 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
         return obj
 
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 10
+
+
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text',)
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
     serializer_class = SingleUserAnnotatedDocumentSerializer
+    pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
         queryset = self.queryset.filter(project=self.kwargs['project_id'])
