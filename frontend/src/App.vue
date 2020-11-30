@@ -26,14 +26,6 @@
     }
   }
 }
-
-div, span, .el-menu-item {
-  font-size: 18px;
-}
-
-.el-tag {
-  font-size: 16px;
-}
 </style>
 <script>
 import NavBar from "@/components/NavBar";

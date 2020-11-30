@@ -11,6 +11,7 @@ import CreateProjectModal from "@/components/CreateProjectModal";
 import DocumentList from "@/components/project/overview/DocumentList";
 import Document from "@/views/Document";
 import LabelCreation from "@/components/project/overview/LabelCreation";
+import AnnotationSettings from "@/components/project/overview/AnnotationSettings";
 
 Vue.use(VueRouter);
 
@@ -58,7 +59,8 @@ const routes = [
 					{path: "list", name: "DocumentList", component: DocumentList},
 				]
 			},
-			{path: "labels", name: "LabelCreationSpace", component: LabelCreation}
+			{path: "labels", name: "LabelCreationSpace", component: LabelCreation},
+			{path: "settings", name: "AnnotationSettings", component: AnnotationSettings}
 		]
 	},
 ];

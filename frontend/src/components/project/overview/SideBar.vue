@@ -17,7 +17,7 @@
         <i class="el-icon-star-on"></i>
         <span>Labels</span>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="/project/settings">
         <i class="el-icon-setting"></i>
         <span>Settings</span>
       </el-menu-item>
