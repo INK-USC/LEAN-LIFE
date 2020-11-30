@@ -652,8 +652,8 @@ def generate_random_models_dicts():
 	for i in range(0,  20):
 		uid = random.randint(0, 4)
 		model_name = "test_model_name_" + str(random.randint(0, 100))
-		model = "this is a test model for: " + model_name
+		model_path = "/a/b/c/d.p"
 
-		my_dict = {'uid': uid, "model_name": model_name, "model": model}
+		my_dict = {'uid': uid, "model_name": model_name, "model_file_path": model_path}
 		with open(assemble_file_name(my_dict), 'wb') as f:
 			pickle.dump(my_dict, f)
