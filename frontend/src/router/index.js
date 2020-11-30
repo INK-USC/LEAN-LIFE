@@ -12,6 +12,7 @@ import DocumentList from "@/components/project/overview/DocumentList";
 import Document from "@/views/Document";
 import LabelCreation from "@/components/project/overview/LabelCreation";
 import AnnotationSettings from "@/components/project/overview/AnnotationSettings";
+import HistoricalAnnotations from "@/components/project/overview/HistoricalAnnotations";
 
 Vue.use(VueRouter);
 
@@ -60,7 +61,8 @@ const routes = [
 				]
 			},
 			{path: "labels", name: "LabelCreationSpace", component: LabelCreation},
-			{path: "settings", name: "AnnotationSettings", component: AnnotationSettings}
+			{path: "settings", name: "AnnotationSettings", component: AnnotationSettings},
+			{path: "historical", name: "HistoricalAnnotations", component: HistoricalAnnotations}
 		]
 	},
 ];

@@ -79,7 +79,7 @@ export default {
       this.fetchAnnotationSettings()
     },
     goToHistoricalAnnotations() {
-
+      this.$router.push({name: "HistoricalAnnotations"})
     }
   },
   created() {

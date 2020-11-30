@@ -21,6 +21,10 @@
         <i class="el-icon-setting"></i>
         <span>Settings</span>
       </el-menu-item>
+      <el-menu-item index="/project/annotate">
+        <i class="el-icon-edit"/>
+        <span>Continue annotating</span>
+      </el-menu-item>
     </el-menu>
   </el-col>
 
