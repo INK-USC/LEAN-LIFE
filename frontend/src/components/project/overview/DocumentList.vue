@@ -43,16 +43,8 @@ export default {
       this.totalDocs = res.count
       this.docs = res.results
     },
-    pageChanged(isNext) {
-      if (typeof isNext === 'boolean') {
-        if (isNext) {
-          this.page++;
-        } else {
-          this.page--;
-        }
-      } else if (typeof isNext === 'number') {
-        this.page = isNext;
-      }
+    pageChanged(pageNum) {
+      this.page = pageNum;
       this.fetchDocuments();
     },
     indexMethod(index) {
