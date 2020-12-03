@@ -41,12 +41,10 @@ For information on how to use the annotation framework and supported data format
 We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
 # Release Plan:
-**Next Release Goals:** 4-6 Weeks
+**Next Release Goals:**
 
-* API for training of a downstream model (NER, RE, SA):
+* API for training of a downstream model (RE, SA):
   * with natural language explanations, a fixed NExT parser to generate weak labels (RE, SA)
-  * with triggers to train a TriggerNER model (NER)
-  * without explanations (NER, RE, SA)
 * UI to allow for training and downloading of mentioned models after annotations are complete (or whenever the project owner would like)
 
 **Release 0.1-alpha** (Date: 9/28/20)
