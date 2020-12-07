@@ -8,12 +8,8 @@
             <el-tooltip content="Available labels for annotators to pick from when annotating." placement="top">
               <b>Current Label Space</b>
             </el-tooltip>
-
           </el-col>
-          <el-col :span="16" style="display: flex; flex-wrap: wrap">
-            <Label v-for="label of existingLabels" :key="label.id" :labelInfo="label" style="margin-right: 10px"
-                   @deleted="fetchLabels"/>
-          </el-col>
+          <LabelListRow/>
         </el-row>
 
         <el-divider/>
@@ -82,6 +78,7 @@
 <script>
 import Label from "@/components/shared/Label";
 import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
+import LabelListRow from "@/components/shared/LabelListRow";
 
 const DEFAULT_FORM = {
   text: "",
@@ -94,7 +91,7 @@ const DEFAULT_FORM = {
 
 export default {
   name: "LabelCreation",
-  components: {Label},
+  components: {LabelListRow, Label},
   data() {
     return {
       existingLabels: [],
@@ -103,16 +100,11 @@ export default {
     }
   },
   methods: {
-    fetchLabels() {
-      this.$http.get(`/projects/${this.$store.getters.getProjectInfo.id}/labels/`).then(res => {
-        this.existingLabels = res;
-      })
-    },
     createLabel() {
       this.$http.post(`/projects/${this.$store.getters.getProjectInfo.id}/labels/`, this.submissionForm).then(res => {
         console.log("create label", res)
         this.resetLabel();
-        this.fetchLabels();
+        this.$store.dispatch('label/fetchLabels', null, {root: true})
       })
     },
     resetLabel() {
@@ -128,7 +120,6 @@ export default {
     if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
       this.$store.commit("showSimplePopup", DIALOG_TYPE.CreatingLabels);
     }
-    this.fetchLabels()
   },
   computed: {
     submissionForm() {
@@ -136,6 +127,7 @@ export default {
       shortcut += this.labelCreationForm.hasShift ? "shift" : "";
       shortcut += this.labelCreationForm.shortcutKey ? this.labelCreationForm.shortcutKey : "";
       shortcut = shortcut.split("").join("-");
+      shortcut = shortcut ? shortcut : null
 
       let res = {
         text: this.labelCreationForm.text,

@@ -20,6 +20,11 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI, {locale});
 Vue.use(Vuex, api);
 
+import lineClamp from 'vue-line-clamp'
+
+Vue.use(lineClamp, {
+	// plugin options
+})
 
 Vue.filter('capitalize', (val) => {
 	if (!val) return '';

@@ -1,9 +1,9 @@
 <template>
   <div style="display: flex; align-items: center">
     <el-tag class="label-tag" :style="{backgroundColor:labelInfo.background_color, color: labelInfo.text_color}">
-      <i class="el-icon-close label-close-icon" @click="removeLabel" v-if="labelInfo.text"/>{{
-        labelInfo.text
-      }}
+      <i class="el-icon-close label-close-icon" @click="removeLabel" v-if="labelInfo.text"/>
+      <!--      <el-link>{{ labelInfo.text }}</el-link>-->
+      {{ labelInfo.text }}
     </el-tag>
     <span class="el-tag label-keyboard-shortcut"><kbd>{{ labelInfo.shortcut | displayShortcut }}</kbd></span>
   </div>
@@ -16,7 +16,7 @@ export default {
   methods: {
     removeLabel() {
       this.$http.delete(`/projects/${this.$store.getters.getProjectInfo.id}/labels/${this.labelInfo.id}`).then(res => {
-        this.$emit("deleted")
+        this.$store.dispatch('label/fetchLabels', null, {root: true})
       })
     }
   },

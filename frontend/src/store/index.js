@@ -4,6 +4,8 @@ import router from "@/router";
 import createPersistedState from "vuex-persistedstate";
 import api from "@/utilities/network";
 import jwt_decode from "jwt-decode";
+import documentStoreModule from "@/store/documentStore";
+import labelStoreModule from "@/store/LabelStore";
 
 Vue.use(Vuex, api);
 //if need to use axios, use api.get/post
@@ -114,7 +116,7 @@ const store = new Vuex.Store({
 			}
 		}
 	},
-	modules: {},
+	modules: {document: documentStoreModule, label: labelStoreModule},
 	plugins: [createLogger(),
 		createPersistedState({
 			storage: window.sessionStorage,
