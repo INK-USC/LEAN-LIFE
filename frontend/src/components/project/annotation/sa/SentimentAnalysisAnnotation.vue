@@ -3,27 +3,23 @@
     <el-row>
       <el-tag>Text</el-tag>
     </el-row>
-    <el-row style="line-height: 4; margin-top: 10px;" v-if="$store.getters['document/getDocuments'].documents">
-      {{
-        this.$store.getters["document/getDocuments"]
-            .documents[this.$store.getters["document/getDocuments"].curDocIndex]['text']
-      }}
-    </el-row>
-    <el-divider/>
-    <el-row>
-      <el-tag>Selected Labels</el-tag>
-    </el-row>
+    <el-col style="line-height: 4; margin-top: 10px;" v-if="$store.getters['document/getCurDoc']">
+      {{ this.$store.getters["document/getCurDoc"].text }}
+    </el-col>
+
+    <SelectedLabelListRow/>
   </el-card>
 
 </template>
 
 <script>
+import SelectedLabelListRow from "@/components/shared/SelectedLabelListRow";
+
 export default {
   name: "SentimentAnalysisAnnotation",
+  components: {SelectedLabelListRow},
   data() {
-    return {
-      document: {}
-    }
+    return {}
   }
 }
 </script>

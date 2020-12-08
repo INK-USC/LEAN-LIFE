@@ -11,14 +11,7 @@ import Label from "@/components/shared/Label";
 export default {
   name: "LabelListRow",
   components: {Label},
-  data() {
-    return {
-      labels: []
-    }
-  },
-  methods: {},
   created() {
-    // this.fetchLabels()
     this.$store.dispatch('label/fetchLabels', null, {root: true})
   }
 

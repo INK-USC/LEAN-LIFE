@@ -4,17 +4,26 @@
                      :fetch-suggestions="searchDocument" style="margin-top: 20px; width: 90%">
       <i slot="prefix" class="el-input__icon el-icon-search"/>
     </el-autocomplete>
-
     <el-table :data="this.$store.getters['document/getDocuments'].documents">
-      <el-table-column type="index" width="40"/>
+      <el-table-column width="40">
+        <template slot-scope="scope">
+                  <span v-if="scope.row.annotated">
+                    <i class="el-icon-check"/>
+                  </span>
+          <div v-else>{{ scope.$index + 1 }}</div>
+        </template>
+      </el-table-column>
       <el-table-column prop="text" :label="tableTitle">
         <template slot-scope="scope">
-          <el-link v-line-clamp="2">{{ scope.row.text }}</el-link>
+          <el-link v-line-clamp="3" @click="goToDocument(scope.$index, scope.row)">{{ scope.row.text }}</el-link>
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination background layout="prev, pager, next"
-                   :total="this.$store.getters['document/getDocuments'].totalDocumentCount"
+                   :total="this.$store.getters['document/getDocuments'].totalDocCount"
+                   :page-size="this.$store.getters['document/getDocuments'].pageSize"
+                   :current-page="this.$store.getters['document/getDocuments'].curPage"
                    @current-change="pageChanged"/>
   </el-col>
 </template>
@@ -29,14 +38,14 @@ export default {
     }
   },
   methods: {
+    goToDocument(index, docInfo) {
+      this.$store.dispatch('document/updateCurDocIndex', {curDocIndex: index}, {root: true})
+    },
     handleDocumentSelected(item) {
       console.log("document selected", item)
     },
     searchDocument(_, cb) {
-      if (!this.documentQuery) {
-        cb([])
-        return;
-      }
+      cb([])
       this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?q=${this.documentQuery}`)
           .then(res => {
@@ -44,22 +53,20 @@ export default {
               row['value'] = row.text;
             })
             cb(res.results)
+
+            //TODO send res to vuex
           })
     },
     pageChanged(newPage) {
-      // console.log("page changed", newPage)
-      // this.paginationSetting.curPage = newPage;
-
-      // this.fetchDocuments()
+      this.$store.dispatch('document/updateCurPage', {newPage: newPage}, {root: true})
     },
   },
   created() {
     this.$store.dispatch('document/fetchDocuments', null, {root: true})
-    // this.fetchDocuments();
   },
   computed: {
     tableTitle: function () {
-      return "Total " + this.$store.getters["document/getDocuments"].totalDocumentCount + " Documents"
+      return "Total " + this.$store.getters["document/getDocuments"].totalDocCount + " Documents"
     }
   }
 

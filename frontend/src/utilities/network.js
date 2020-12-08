@@ -32,10 +32,10 @@ api.interceptors.response.use(
 api.interceptors.request.use(
 	config => {
 		// Do something before request is sent
-		if (!config.url.endsWith("/")) {
-			ElementUI.Notification.warning("Request not end with slash!")
-			// config.url = config.url + "/"
-		}
+		// if (!config.url.endsWith("/")) {
+		// ElementUI.Notification.warning("Request not end with slash!")
+		// config.url = config.url + "/"
+		// }
 		return config;
 	},
 	err => {

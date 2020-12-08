@@ -198,18 +198,31 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LargeResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 10
 
 
 class DocumentList(generics.ListCreateAPIView):
-    queryset = Document.objects.all()
+    queryset = Document.objects.all().order_by("id")
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text',)
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
     serializer_class = SingleUserAnnotatedDocumentSerializer
     pagination_class = LargeResultsSetPagination
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many= True)
+        annotatedCount = 0
+        for q in queryset:
+            if q.annotated:
+                annotatedCount += 1
+
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response({'annotatedCount': annotatedCount, "results": serializer.data})
+
 
     def get_queryset(self):
         queryset = self.queryset.filter(project=self.kwargs['project_id'])
@@ -228,8 +241,7 @@ class DocumentList(generics.ListCreateAPIView):
         active_indices = self.request.query_params.get('active_indices')
         active_indices = list(map(int, active_indices.split(",")))
 
-        queryset = project.get_index_documents(active_indices)
-
+        queryset = project.get_index_documents(active_indices).order_by("id")
         return queryset
 
 

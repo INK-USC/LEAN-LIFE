@@ -5,7 +5,7 @@ import createPersistedState from "vuex-persistedstate";
 import api from "@/utilities/network";
 import jwt_decode from "jwt-decode";
 import documentStoreModule from "@/store/documentStore";
-import labelStoreModule from "@/store/LabelStore";
+import labelStoreModule from "@/store/labelStore";
 
 Vue.use(Vuex, api);
 //if need to use axios, use api.get/post
