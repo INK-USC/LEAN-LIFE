@@ -26,7 +26,12 @@
     </el-row>
     <el-row style="margin-top: 10px">
       <el-col style="display: flex; justify-content: flex-end">
-        <el-button type="primary">Skip (Nothing to Mark Up)<i class="el-icon-arrow-right"/></el-button>
+        <el-button type="primary"
+                   @click="noAnnotation"
+                   :disabled="this.$store.getters['document/getDocuments'].curDocIndex===this.$store.getters['document/getDocuments'].documents.length-1
+                   && this.$store.getters['document/getDocuments'].curPage === this.$store.getters['document/getDocuments'].maxPage">
+          Skip (Nothing to Mark Up)<i class="el-icon-arrow-right"/>
+        </el-button>
       </el-col>
     </el-row>
   </el-row>
@@ -54,7 +59,13 @@ export default {
           {root: true})
     },
     noAnnotation() {
-
+      this.$http
+          .patch(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}`,
+              {annotated: true})
+          .then(() => {
+            this.$store.dispatch('document/fetchDocuments')
+          })
+      this.goToNextDoc(true)
     }
   },
   computed: {

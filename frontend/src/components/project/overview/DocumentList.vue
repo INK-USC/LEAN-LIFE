@@ -1,8 +1,8 @@
 <template>
   <div>
     <h1>All Uploaded Documents</h1>
-    <el-autocomplete v-model="searchQuery" placeholder="Type to search for documents" style="width: 100%"
-                     :fetch-suggestions="searchForDocuments" :debounce="500"/>
+    <el-autocomplete v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
+                     :fetch-suggestions="searchForDocuments" :debounce="500" prefix-icon="el-icon-search"/>
     <el-table :data="this.$store.getters['document/getDocuments'].documents" stripe>
       <el-table-column type="index" :index="indexMethod"/>
       <el-table-column label="Text">
