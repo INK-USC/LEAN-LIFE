@@ -46,6 +46,9 @@ export default {
     },
     searchDocument(_, cb) {
       cb([])
+      if (!this.documentQuery) {
+        return;
+      }
       this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?q=${this.documentQuery}`)
           .then(res => {

@@ -48,7 +48,7 @@ export default {
       let res = this.$store.getters["label/getLabels"].find(label => {
         return label.id === this.labelInfo.label;
       })
-      return res.text
+      return res ? res.text : ''
     }
   }
 }

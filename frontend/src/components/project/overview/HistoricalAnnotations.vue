@@ -92,7 +92,7 @@
     <el-pagination background layout="prev, pager, next" :total="this.pagination.totalDocs"
                    @current-change="pageChanged"/>
 
-    <el-button :disabled="!canGoToAnnotate" :type="canGoToAnnotate?'success':''" style="width: 100%; margin-top: 20px">
+    <el-button :disabled="!canGoToAnnotate" :type="canGoToAnnotate?'success':''" style="width: 50%; margin-top: 20px">
       Go to annotate
     </el-button>
   </el-card>

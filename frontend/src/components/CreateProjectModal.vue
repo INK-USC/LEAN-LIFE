@@ -4,6 +4,7 @@
       :visible="dialogVisible"
       v-on:update:visible="$emit('update:dialogVisible', $event)"
       @open="this.dialogIsOpen"
+      width="40%"
   >
     <el-form :model="projectInfo" :rules="formRules" ref="projectInfoForm">
       <el-form-item label="Name" prop="name">

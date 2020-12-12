@@ -30,6 +30,9 @@ export default {
   methods: {
     searchForDocuments(_, cb) {
       cb([])
+      if (!this.searchQuery) {
+        return
+      }
       this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?page=${this.page}&q=${this.searchQuery}`)
           .then(res => {
