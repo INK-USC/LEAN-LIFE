@@ -1,0 +1,119 @@
+{
+    "project_type" : 3,
+    "label_space" : [
+        {
+            "id" : 1, "text" : "RAND", "user_provided" : true
+        },
+        {
+            "id" : 2, "text" : "TEMP", "user_provided" : true
+        },
+        {
+            "id" : 3, "text" : "NER_TYPE", "user_provided" : true
+        },
+        {
+            "id" : 4, "text" : "relation-1", "user_provided" : false
+        },
+        {
+            "id" : 5, "text" : "relation-2", "user_provided" : false
+        }
+    ],
+    "annotated" : [
+        {
+            "text" : "this is some random text, that we're going to insert subj and objects into.",
+            "annotations" : [
+                {
+                    "id" : 1,
+                    "label_text" : "RAND",
+                    "start_offset" : 13, 
+                    "end_offset" : 18,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 2,
+                    "label_text" : "TEMP",
+                    "start_offset" : 53, 
+                    "end_offset" : 56,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 3,
+                    "label_text" : "NER_TYPE",
+                    "start_offset" : 62, 
+                    "end_offset" : 68,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 4,
+                    "start_offset_1" : 13,
+                    "end_offset_1" : 18,
+                    "start_offset_2" : 53,
+                    "end_offset_2" : 56,
+                    "label_text" : "relation-1",
+                    "user_provided" : false
+                },
+                {
+                    "id" : 5,
+                    "start_offset_1" : 62,
+                    "end_offset_1" : 68,
+                    "start_offset_2" : 53,
+                    "end_offset_2" : 56,
+                    "label_text" : "relation-2",
+                    "user_provided" : false
+                }
+            ],
+            "explanations" : [
+                {
+                    "annotation_id" : 4,
+                    "text" : "This is the first explanation for annotation 4"
+                },
+                {
+                    "annotation_id" : 4,
+                    "text" : "This is the second explanation for annotation 4"
+                },
+                {
+                    "annotation_id" : 4,
+                    "text" : "This is the third explanation for annotation 4"
+                },
+                {
+                    "annotation_id" : 5,
+                    "text" : "Annotation 5 has only one explanation"
+                }
+            ]
+        },
+        {
+            "text" : "this document has no relations, but we can still use it for training!",
+            "annotations" : [
+                {
+                    "id" : 1,
+                    "label_text" : "TEMP",
+                    "start_offset" : 5, 
+                    "end_offset" : 12,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 2,
+                    "label_text" : "TEMP",
+                    "start_offset" : 21, 
+                    "end_offset" : 29,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 3,
+                    "label_text" : "NER_TYPE",
+                    "start_offset" : 60, 
+                    "end_offset" : 67,
+                    "user_provided" : true
+                }
+            ],
+            "explanations" : [
+            ]
+        }
+    ],
+    "unlabeled" : [
+        {"text" : "some unlabeled text"},
+        {"text" : "for the machine to train off"},
+        {"text" : "normally there is lots of unlabeled text"},
+        {"text" : "however, this is just a test"},
+        {"text" : "so there is limited text"}
+    ]
+}

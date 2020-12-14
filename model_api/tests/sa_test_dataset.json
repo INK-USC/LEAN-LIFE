@@ -1,0 +1,59 @@
+{
+    "project_type" : 1,
+    "label_space" : [
+        {
+            "id" : 1, "text" : "pos", "user_provided" : false
+        },
+        {
+            "id" : 2, "text" : "neg", "user_provided" : false
+        }
+    ],
+    "annotated" : [
+        {
+            "text" : "this is some random text that we're going to say has a positive label.",
+            "annotations" : [
+                {
+                    "id" : 1,
+                    "label_text" : "pos",
+                    "user_provided" : false
+                }
+            ],
+            "explanations" : [
+                {
+                    "annotation_id" : 1,
+                    "text" : "This is the first explanation for annotation 1"
+                },
+                {
+                    "annotation_id" : 1,
+                    "text" : "This is the second explanation for annotation 1"
+                }
+            ]
+        },
+        {
+            "text" : "this is some random text that we're going to say has a negative label.",
+            "annotations" : [
+                {
+                    "id" : 2,
+                    "label_text" : "neg",
+                    "user_provided" : false
+                }
+            ],
+            "explanations" : [
+            ]
+        },
+        {
+            "text" : "this is some random text that we're going to say has no label.",
+            "annotations" : [
+            ],
+            "explanations" : [
+            ]
+        }
+    ],
+    "unlabeled" : [
+        {"text" : "some unlabeled text"},
+        {"text" : "for the machine to train off"},
+        {"text" : "normally there is lots of unlabeled text"},
+        {"text" : "however, this is just a test"},
+        {"text" : "so there is limited text"}
+    ]
+}

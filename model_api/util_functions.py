@@ -45,14 +45,14 @@ def _create_re_pair(annotation, text, ner_mentions):
     subj_first = subj_start_offset < obj_start_offset
     if subj_first:
         relation_text = text[:subj_start_offset]
-        relation_text += "SUBJ-{} ".format(subj_ner_type)
+        relation_text += "SUBJ-{}".format(subj_ner_type)
         relation_text += text[subj_end_offset+1:obj_start_offset]
         relation_text += "OBJ-{}".format(obj_ner_type)
         relation_text += text[obj_end_offset+1:]
         relation_text = relation_text.strip()
     else:
         relation_text = text[:obj_start_offset]
-        relation_text += "OBJ-{} ".format(obj_ner_type)
+        relation_text += "OBJ-{}".format(obj_ner_type)
         relation_text += text[obj_end_offset+1:subj_start_offset]
         relation_text += "SUBJ-{}".format(subj_ner_type)
         relation_text += text[subj_end_offset+1:]
@@ -83,23 +83,26 @@ def _generate_no_label_pairs(ner_mentions, text):
             if i != j:
                 key_1 = mention_keys[i]
                 key_2 = mention_keys[j]
-                int(start_offset_1), int(end_offset_1) = key_1.split("-")
-                int(start_offset_2), int(end_offset_2) = key_2.split("-")
+                start_offset_1, end_offset_1 = key_1.split("-")
+                start_offset_2, end_offset_2 = key_2.split("-")
+                start_offset_1 = int(start_offset_1)
+                end_offset_1 = int(end_offset_1)
+                start_offset_2 = int(start_offset_2)
+                end_offset_2 = int(end_offset_2)
                 annotation = {
                     "start_offset_1" : start_offset_1,
                     "end_offset_1" : end_offset_1,
-                    "start_offset_2" : start_offset_2
+                    "start_offset_2" : start_offset_2,
                     "end_offset_2" : end_offset_2,
                     "label_text" : ""
                 }
                 relation_text, label = _create_re_pair(annotation, text, ner_mentions)
                 relation_texts.append(relation_text)
                 labels.append(label)
-
     return relation_texts, labels
 
 def _process_re_annotated_doc(annotated_doc, fake_id):
-     """
+    """
         1. Extract all the labeled data from an annotated document and create training pairs
         2. Generate labeled data points for documents with no relations
         3. Extract all the explanations from an annotated document and groups them by the 
@@ -114,7 +117,6 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
             temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id: Training data points extracted,
                                                                                Explanations extracted,
                                                                                Updated fake id
-
     """
     temp_sentence_label_pairs = {}
     temp_explanation_triples = {}
@@ -130,7 +132,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
             label = annotation["label_text"]
             ner_mentions[key] = label
         else:
-            re_data[annotation["id"]] = annotation
+            re_data.append(annotation)
     
     for annotation in re_data:
         relation_text, label = _create_re_pair(annotation, text, ner_mentions)
@@ -145,9 +147,9 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     for explanation in explanations:
         annotation_id = explanation["annotation_id"]
         explanation_text = explanation["text"]
-        relation_text = sentence_label_pairs[annotation_id][0]
-        label = sentence_label_pairs[annotation_id][1]
-        if annotation_id in explanation_triples:
+        relation_text = temp_sentence_label_pairs[annotation_id][0]
+        label = temp_sentence_label_pairs[annotation_id][1]
+        if annotation_id in temp_explanation_triples:
             temp_explanation_triples[annotation_id].append((relation_text, label, explanation_text))
         else:
             temp_explanation_triples[annotation_id] = [(relation_text, label, explanation_text)]
@@ -155,7 +157,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     return temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id
 
 def _process_sa_annotated_doc(annotated_doc, fake_id):
-     """
+    """
         1. Extract all the labeled data from an annotated document and create training pairs, else indicate
            no_label (empty string)
         2. Extract all the explanations from an annotated document and groups them by the 
@@ -170,7 +172,6 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
             temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id: Training data points extracted,
                                                                                Explanations extracted,
                                                                                Updated fake id
-
     """
     temp_sentence_label_pairs = {}
     temp_explanation_triples = {}
@@ -183,11 +184,16 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
             temp_sentence_label_pairs[annotation["id"]] = (text, annotation["label_text"])
     else:
         temp_sentence_label_pairs[temp_fake_id] = (text, "")
+        temp_fake_id += -1
 
     for explanation in explanations:
         annotation_id = explanation["annotation_id"]
         explanation_text = explanation["text"]
-        temp_explanation_triples[annotation_id].append((text, label, explanation_text))
+        label = temp_sentence_label_pairs[annotation_id][1]
+        if annotation_id in temp_explanation_triples:
+            temp_explanation_triples[annotation_id].append((text, label, explanation_text))
+        else:
+            temp_explanation_triples[annotation_id] = [(text, label, explanation_text)]
 
     return temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id
 
@@ -227,7 +233,7 @@ def _process_annotations(annotated_docs, project_type):
         for key in temp_explanation_triples:
             explanation_triples[key] = temp_explanation_triples[key]
     
-    return sentence_label_pairs.values(), explanation_triples
+    return list(sentence_label_pairs.values()), explanation_triples
 
 def _read_lean_life_dataset(file_obj):
     """
@@ -246,7 +252,7 @@ def _read_lean_life_dataset(file_obj):
     unlabeled_docs = data["unlabeled"]
     unlabeled_docs = [doc["text"] for doc in unlabeled_docs]
     annotated_docs = data["annotated"]
-    training_pairs, explanation_triples = process_annotations(annotated_docs, project_type)
+    training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
     
     return training_pairs, explanation_triples, label_space, unlabeled_docs
 
