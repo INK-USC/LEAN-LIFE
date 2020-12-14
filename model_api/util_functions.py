@@ -1,5 +1,6 @@
 import json
 import constants as const
+import requests
 
 def _create_ner_key(start_offset, end_offset):
     """
@@ -276,3 +277,67 @@ def kickstart_training(file_obj, lean_life=True):
     
     # start_training(training_pairs, explanation_triples, label_space, unlabeled_docs)
     return
+
+def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epoch, current_iteration,
+                          time_spent, best_train_loss):
+    """
+        Sends a POST request back to LEAN-LIFE Django API, updating the API with the latest model training
+        status. Django API takes this information and writes to a local file, so that when the front-end
+        requests an update, the Django API can read from this file and update accordingly.
+
+        Arguments:
+            model_name           (str) : name of model being trained
+            cur_epoch            (int) : current epoch for training
+            total_epochs         (int) : total epochs needed for training
+            interations_in_epoch (int) : how many iterations it takes to complete one epoch
+            current_iteration    (int) : what iteration in the current epoch is the training script on
+            time_spent           (int) : how much time has passed in seconds
+            best_train_loss    (float) : best training loss so far
+        
+        Returns:
+            (int) : status code from Django API after receiving request
+    """
+    finished_pct = cur_epoch / total_epochs
+    finished_pct += current_iteration / iterations_in_epoch * (1/total_epochs)
+    approximate_total_time = time_spent / finished_pct
+    time_left = int(approximate_total_time - time_spent)
+
+    update_repr = {
+        "key" : "Train",
+        "model_name" : model_name,
+        "cur_epoch" : cur_epoch,
+        "total_epochs" : total_epochs,
+        "time_spent" : time_spent,
+        "time_left" : time_left,
+        "best_train_loss" : best_train_loss
+    }
+
+    end_point = const.LEAN_LIFE_URL + "model/training/update/"
+    response = requests.post(end_point, data=update_repr)
+
+    return response.status_code
+
+def send_model_metadata(model_name, save_path, best_train_loss):
+    """
+        Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
+        been saved, and where the model can be found when the model needs to be downloaded.
+
+        Arguments:
+            model_name        (str) : name of model being trained
+            save_path         (str) : where the model has been saved
+            best_train_loss (float) : best training loss so far
+        
+        Returns:
+            (int) : status code from Django API after receiving request
+    """
+    metadata_repr = {
+        "key" : "Meta"
+        "model_name" : cur_epoch,
+        "save_path" : save_path,
+        "best_train_loss" : best_train_loss
+    }
+
+    end_point = const.LEAN_LIFE_URL + "model/training/update/"
+    response = requests.post(end_point, data=update_repr)
+
+    return response.status_code

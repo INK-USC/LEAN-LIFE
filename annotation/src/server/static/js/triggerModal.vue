@@ -228,9 +228,9 @@ module.exports = {
         selectionStart = range.startOffset;
         selectionEnd = range.endOffset;
 
-        const leadingWhiteSpace = range.commonAncestorContainer.data.search(/\S/);
-        selectionStart = selectionStart - leadingWhiteSpace;
-        selectionEnd = selectionEnd - leadingWhiteSpace;
+        // const leadingWhiteSpace = range.commonAncestorContainer.data.search(/\S/);
+        // selectionStart = selectionStart - leadingWhiteSpace;
+        // selectionEnd = selectionEnd - leadingWhiteSpace;
 
         const spanText = range.commonAncestorContainer.data.trim();
         const offSet = this.text.search(spanText);

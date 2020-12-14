@@ -107,7 +107,7 @@ DATABASES = {
 
         'USER': 'leanlifeuser',
 
-        'PASSWORD': 'fill-this-in',
+        'PASSWORD': '123',
 
         'HOST': 'localhost',
 

@@ -45,3 +45,12 @@ ACTIVE_LEARNING_MAP = {
 }
 
 EXPLANATION_SEPERATOR = ":*:*:"
+
+TRAINING_UPDATE_FOLDER = "communication/training_updates/"
+
+MODEL_META_FILE = "communication/models_metadata.json"
+
+TRAINING_KEY = "Train"
+
+METADATA_KEY = "Meta"
+

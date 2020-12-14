@@ -25,6 +25,11 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
 from .utils import SPACY_WRAPPER
+<<<<<<< Updated upstream
+=======
+from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY
+import time
+>>>>>>> Stashed changes
 from django.db import transaction
 import pickle
 from django.utils import timezone
@@ -712,3 +717,32 @@ class MockModelTrainingAPI(APIView):
 	def post(self, request):
 		data_posted = request.data
 		return Response(status=200, data=data_posted)
+
+class ModelTrainingUpdate(APIView):
+    # TODO: Update init script to make sure needed folder structure exists
+    def post(self, request, *args, **kwargs):
+        key = request.POST["key"]
+        if key == TRAINING_KEY:
+            model_name = request.POST["model_name"]
+            update_repr = {
+                "current_epoch" : request.POST["cur_epoch"],
+                "total_epochs" : request.POST["total_epochs"],
+                "time_spent" : request.POST["time_spent"],
+                "time_left" : request.POST["time_left"],
+                "best_train_loss" : request.POST["best_loss"]
+            }
+            file_name = TRAINING_UPDATE_FOLDER + model_name
+            with open(file_name, "w") as f:
+                json.dump(update_repr, f)
+        elif key == METADATA_KEY:
+            with open(MODEL_META_FILE) as f:
+                meta_data = json.load(f)
+            
+            meta_data["data"] = meta_data["data"].append({
+                "model_name" : request.POST["model_name"],
+                "save_path" : request.POST["save_path"],
+                "best_train_loss" : request.POST["best_train_loss"]
+            })
+
+            with open(MODEL_META_FILE, "w") as f:
+                json.dump(meta_data, f)
