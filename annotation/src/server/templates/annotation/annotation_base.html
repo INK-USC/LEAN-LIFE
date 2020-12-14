@@ -110,6 +110,11 @@
             If you have selected to use model backed recommendations, but your model server is turned off, the option
             will appear as red––indicating an error.</p>
         </span>
+        <span class="tag">
+          <a-popconfirm title="Are you sure to train model?" ok-text="Yes"  @confirm="trainModel">
+            <button id="train_modal_btn" class="button" >Train Model</button>
+          </a-popconfirm>
+        </span>
       </div>
 
     </div>

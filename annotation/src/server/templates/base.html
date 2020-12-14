@@ -76,6 +76,7 @@
           </a>
           {% endif %}
           {% if user.is_authenticated %}
+          <a id="model_button" class="navbar-item" href="{% url 'models' %}"><span>Models</span></a>
           <a id="project_button" class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>
           </a>

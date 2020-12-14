@@ -17,7 +17,8 @@ module.exports = {
         'upload': './static/js/upload.js',
         'annotationHistory': './static/js/annotationHistory.js',
         'headers': './static/js/headers.js',
-        'download': './static/js/download.js'
+        'download': './static/js/download.js',
+        'models': './static/js/models.js'
     },
     output: {
         path: __dirname + '/static/bundle',

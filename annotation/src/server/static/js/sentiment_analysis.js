@@ -103,7 +103,9 @@ const vm = new Vue({
           })
           .then(() => {
             if (Object.keys(this.annotationDocs[this.pageNumber].annotations).length === 1) {
-              HTTP.patch(`docs/${docId}`, { annotated: true });
+              HTTP.patch(`docs/${docId}`, { annotated: true }).then(()=>{
+                this.getDocuments();
+              });
             }
           })
           .catch((err) => {
@@ -132,7 +134,9 @@ const vm = new Vue({
             );
           }
         },
-      );
+      ).then(()=>{
+        this.getDocuments()
+      });
     },
 
     /**

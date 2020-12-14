@@ -1,9 +1,8 @@
 /* eslint-disable key-spacing */
 import axios from "axios";
 import Vue from "vue";
-import { AutoComplete, Modal, Form, Icon, Button, Radio } from "ant-design-vue";
+import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm } from "ant-design-vue";
 import HTTP from "./http";
-
 
 import "ant-design-vue/dist/antd.css";
 import AnnotationDocument from "./utils";
@@ -17,6 +16,7 @@ Vue.use(Icon);
 Vue.use(AutoComplete);
 Vue.use(Button);
 Vue.use(Radio);
+Vue.use(Popconfirm)
 
 const annotationMixin = {
   data() {
@@ -110,8 +110,17 @@ const annotationMixin = {
       this.isLoading = true;
       this.loadingMsg = "Preparing Documents for annotations";
       if (response.data.results.length > 0) {
+        let annotated_doc_count= 0
         for (let i=0; i < response.data.results.length; i++) {
+          if(response.data.results[i].annotated){
+            annotated_doc_count++;
+          }
           this.annotationDocs[i] = new AnnotationDocument(i, response.data.results[i], this.explanationType, this.projectType);
+        }
+        if(annotated_doc_count>2){
+            document.getElementById("train_modal_btn").disabled=false
+        }else{
+            document.getElementById("train_modal_btn").disabled='disabled'
         }
         this.totalDocCount = response.data.count;
         this.nextDocQuery = response.data.next;
@@ -171,6 +180,12 @@ const annotationMixin = {
 
     refreshNlExplanations(newExplanations) {
       this.annotationDocs[this.pageNumber].nlExplanations[this.lastAnnotationId] = newExplanations;
+    },
+
+    trainModel(){
+        HTTP.post('train_model/',{}).then(res=>{
+
+        })
     },
   },
 
