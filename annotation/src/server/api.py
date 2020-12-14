@@ -32,6 +32,7 @@ import random
 from os import listdir
 from os.path import isfile, join
 import os
+import requests
 
 class ImportFileError(Exception):
 	def __init__(self, message):
@@ -657,3 +658,57 @@ def generate_random_models_dicts():
 		my_dict = {'uid': uid, "model_name": model_name, "model_file_path": model_path}
 		with open(assemble_file_name(my_dict), 'wb') as f:
 			pickle.dump(my_dict, f)
+
+
+class TrainModelAPIView(APIView):
+	permission_classes = (IsAuthenticated, IsProjectUser)
+	queryset = Document.objects.all()
+
+	def post(self, request, project_id):
+		json_object = self.generate_json_for_model_training_api(project_id)
+		model_training_api_response = requests.post("http://localhost:8000/api/model_training_mock/", json=json_object)
+		# print("model training response", model_training_api_response, model_training_api_response.status_code, model_training_api_response.content)
+
+		# json_response = model_training_api_response.status_code
+		return Response(model_training_api_response.status_code)
+
+	def generate_json_for_model_training_api(self, project_id):
+		results = {"annotated documents": [], "non-annotated documents": []}
+
+		project = get_object_or_404(Project, pk=project_id)
+		explanation_int = project.explanation_type
+		task_name = project.get_task_name()
+
+		user_annotations = Annotation.objects.get_annotations_for_export(self.request.user.id, task_name, explanation_int)
+		# print("ua",user_annotations)
+
+		dataset = Document.objects.export_project_user_documents(task_name, project_id, self.request.user.id, "json",user_annotations, explanation_int )
+		# print("dataset", dataset)
+
+		for row in dataset['data']:
+			new_json = {
+				"text": row['text'],
+			}
+
+			if not self.get_is_annotated(row['doc_id']):
+				results['non-annotated documents'].append(new_json)
+			else:
+				new_json['annotations'] = row['annotations']
+				for ann in new_json['annotations']:
+					ann.pop('annotation_id')
+				results['annotated documents'].append(new_json)
+		return results
+
+	def get_is_annotated(self, doc_id):
+		docs = Document.objects.all()
+		for doc in docs:
+			if doc.id == doc_id:
+				return doc.annotated
+
+
+class MockModelTrainingAPI(APIView):
+	permission_classes = ()
+
+	def post(self, request):
+		data_posted = request.data
+		return Response(200)
