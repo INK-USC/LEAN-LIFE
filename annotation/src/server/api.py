@@ -670,7 +670,7 @@ class TrainModelAPIView(APIView):
 		# print("model training response", model_training_api_response, model_training_api_response.status_code, model_training_api_response.content)
 
 		# json_response = model_training_api_response.status_code
-		return Response(model_training_api_response.status_code)
+		return Response(data=json.loads(model_training_api_response.content))
 
 	def generate_json_for_model_training_api(self, project_id):
 		results = {"annotated documents": [], "non-annotated documents": []}
@@ -711,4 +711,4 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
-		return Response(200)
+		return Response(status=200, data=data_posted)
