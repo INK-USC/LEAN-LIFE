@@ -1,13 +1,17 @@
+import csv
 from collections import Counter
+from io import TextIOWrapper
 from itertools import chain
 import json
 import ijson
+from django.contrib.auth.models import User
 
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, filters, mixins
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,20 +20,17 @@ from rest_framework import exceptions
 from rest_framework import parsers
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
-	TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory
+    TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
-	NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
-	NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
-	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
-	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
-	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
+    NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
+    NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
+    RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
+    NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
+
 from .utils import SPACY_WRAPPER
-<<<<<<< Updated upstream
-=======
 from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY
 import time
->>>>>>> Stashed changes
 from django.db import transaction
 import pickle
 from django.utils import timezone
@@ -38,11 +39,12 @@ from os import listdir
 from os.path import isfile, join
 import os
 import requests
+from .constants import EXPLANATION_CHOICES
+
 
 class ImportFileError(Exception):
 	def __init__(self, message):
 		self.message = message
-
 
 class MethodSerializerView(object):
 	'''
@@ -53,21 +55,21 @@ class MethodSerializerView(object):
         ('PUT', 'PATCH'): MyModelCreateUpdateSerializer
     }
     '''
-	method_serializer_options = None
+    method_serializer_options = None
 
-	def get_serializer_class(self):
-		assert self.method_serializer_options is not None, (
-				'Expected view %s should contain method_serializer_options '
-				'to get right serializer class.' %
-				(self.__class__.__name__,)
-		)
-		for methods, serializer_options in self.method_serializer_options.items():
-			if self.request.method in methods:
-				for key in serializer_options:
-					if key in self.request.path:
-						return serializer_options[key]
+    def get_serializer_class(self):
+        assert self.method_serializer_options is not None, (
+                'Expected view %s should contain method_serializer_options '
+                'to get right serializer class.' %
+                (self.__class__.__name__,)
+        )
+        for methods, serializer_options in self.method_serializer_options.items():
+            if self.request.method in methods:
+                for key in serializer_options:
+                    if key in self.request.path:
+                        return serializer_options[key]
 
-		raise exceptions.MethodNotAllowed(self.request.method)
+        raise exceptions.MethodNotAllowed(self.request.method)
 
 
 class MethodQuerysetView(object):
@@ -81,17 +83,17 @@ class MethodQuerysetView(object):
     '''
 	method_queryset_options = None
 
-	def get_queryset(self):
-		assert self.method_queryset_options is not None, (
-				'Expected view %s should contain method_queryset_options '
-				'to get right queryset.' %
-				(self.__class__.__name__,)
-		)
-		for methods, queryset_options in self.method_queryset_options.items():
-			if self.request.method in methods:
-				for key in queryset_options:
-					if key in self.request.path:
-						return queryset_options[key]
+    def get_queryset(self):
+        assert self.method_queryset_options is not None, (
+                'Expected view %s should contain method_queryset_options '
+                'to get right queryset.' %
+                (self.__class__.__name__,)
+        )
+        for methods, queryset_options in self.method_queryset_options.items():
+            if self.request.method in methods:
+                for key in queryset_options:
+                    if key in self.request.path:
+                        return queryset_options[key]
 
 		raise exceptions.MethodNotAllowed(self.request.method)
 
@@ -109,6 +111,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
 	def progress(self, request, pk=None):
 		project = self.get_object()
 		return Response(project.get_progress())
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+    def destory(self, request, pk=None):
+        return Response(status=200)
 
 
 class ProjectRetrieveView(generics.RetrieveAPIView):
@@ -170,7 +185,6 @@ class ProjectStatsAPI(APIView):
 
 		return Response(response)
 
-
 class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Label.objects.all()
 	serializer_class = LabelSerializer
@@ -189,34 +203,51 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 		return obj
 
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 10
+
+
 class DocumentList(generics.ListCreateAPIView):
-	queryset = Document.objects.all()
-	filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-	search_fields = ('text',)
-	permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-	serializer_class = SingleUserAnnotatedDocumentSerializer
+    queryset = Document.objects.all().order_by("id")
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('text',)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+    serializer_class = SingleUserAnnotatedDocumentSerializer
+    pagination_class = LargeResultsSetPagination
 
-	def get_queryset(self):
-		queryset = self.queryset.filter(project=self.kwargs['project_id'])
-		project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-		# TODO fix this, you know what
-		explanation = project.explanation_type
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many= True)
+        annotatedCount = 0
+        for q in queryset:
+            if q.annotated:
+                annotatedCount += 1
 
-		if explanation != 1:
-			self.serializer_class = SingleUserAnnotatedDocumentExplanationsSerializer
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response({'annotatedCount': annotatedCount, "results": serializer.data})
 
-		# TODO Remove all this logic, annotation server should be
-		# able to send back correct doc ids
-		if not self.request.query_params.get('active_indices'):
-			return queryset
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        # TODO fix this, you know what
+        explanation = project.explanation_type
 
-		active_indices = self.request.query_params.get('active_indices')
-		active_indices = list(map(int, active_indices.split(",")))
+        if explanation != 1:
+            self.serializer_class = SingleUserAnnotatedDocumentExplanationsSerializer
 
-		queryset = project.get_index_documents(active_indices)
+        # TODO Remove all this logic, annotation server should be
+        # able to send back correct doc ids
+        if not self.request.query_params.get('active_indices'):
+            return queryset
 
-		return queryset
+        active_indices = self.request.query_params.get('active_indices')
+        active_indices = list(map(int, active_indices.split(",")))
 
+        queryset = project.get_index_documents(active_indices).order_by("id")
+        return queryset
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Document.objects.all()
@@ -235,6 +266,7 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 	def patch(self, request, *args, **kwargs):
 		return self.partial_update(request, *args, **kwargs)
+
 
 
 class BaseAnnotationCreateAndDestroyView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.DestroyModelMixin):
@@ -360,7 +392,6 @@ class HistoryListView(MethodSerializerView, MethodQuerysetView, generics.ListCre
 		queryset = MethodQuerysetView.get_queryset(self)
 		return queryset.filter(project=self.kwargs['project_id'])
 
-
 class HistoryDestroyView(MethodQuerysetView, generics.GenericAPIView, mixins.DestroyModelMixin):
 	method_queryset_options = {
 		('DELETE'): {
@@ -374,82 +405,82 @@ class HistoryDestroyView(MethodQuerysetView, generics.GenericAPIView, mixins.Des
 		return self.destroy(request, *args, **kwargs)
 
 
+
 class AnnotationHistoryFileUpload(APIView):
-	def _process_ner(self, data, all_labels, user, project, max_batch=500):
-		history = []
-		for entry in data:
-			label_info = entry["label"].lower()
-			if label_info in all_labels:
-				obj = NamedEntityAnnotationHistory(user=user, project=project, \
-				                                   word=entry["word"], label=all_labels[label_info], \
-				                                   user_provided=True)
-				history.append(obj)
-			if len(history) == max_batch:
-				NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-				history = []
+    def _process_ner(self, data, all_labels, user, project, max_batch=500):
+        history = []
+        for entry in data:
+            label_info = entry["label"].lower()
+            if label_info in all_labels:
+                obj = NamedEntityAnnotationHistory(user=user, project=project, \
+                                                   word=entry["word"], label=all_labels[label_info], \
+                                                   user_provided=True)
+                history.append(obj)
+            if len(history) == max_batch:
+                NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+                history = []
 
-		if len(history):
-			NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-		return True
+        if len(history):
+            NamedEntityAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+        return True
 
-	def _process_re(self, data, all_labels, user, project, max_batch=500):
-		history = []
-		for entry in data:
-			label_info = entry["label"].lower()
-			if label_info in all_labels:
-				obj = RelationExtractionAnnotationHistory(user=user, project=project, \
-				                                          word_1=entry["word_1"], word_2=entry["word_2"], \
-				                                          label=all_labels[label_info], user_provided=True)
-				history.append(obj)
-			if len(history) == max_batch:
-				RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-				history = []
+    def _process_re(self, data, all_labels, user, project, max_batch=500):
+        history = []
+        for entry in data:
+            label_info = entry["label"].lower()
+            if label_info in all_labels:
+                obj = RelationExtractionAnnotationHistory(user=user, project=project, \
+                                                          word_1=entry["word_1"], word_2=entry["word_2"], \
+                                                          label=all_labels[label_info], user_provided=True)
+                history.append(obj)
+            if len(history) == max_batch:
+                RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+                history = []
 
-		if len(history):
-			RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
-		return True
+        if len(history):
+            RelationExtractionAnnotationHistory.objects.bulk_create(history, ignore_conflicts=True)
+        return True
 
-	def post(self, request, *args, **kwargs):
-		action = request.POST['action']
-		task = request.POST['task']
-		user = self.request.user
-		project_id = self.kwargs["project_id"]
-		project = get_object_or_404(Project, pk=project_id)
-		all_labels = {}
-		for label in Label.objects.all().filter(project=project_id):
-			label_text = label.text.lower()
-			all_labels[label_text] = label
-		try:
-			data_file = request.FILES['history']
-			try:
-				if data_file.multiple_chunks():
-					data = ijson.items(data_file, "data.item")
-				else:
-					data = json.load(data_file)
-					data = data["data"]
-				with transaction.atomic():
-					if action == "replace":
-						if task == "2":
-							ids = NamedEntityAnnotationHistory.objects.all() \
-								.filter(project=project_id) \
-								.filter(user_provided=True) \
-								.delete()
-						else:
-							ids = RelationExtractionAnnotationHistory.objects.all() \
-								.filter(project=project_id) \
-								.filter(user_provided=True) \
-								.delete()
-					if task == "2":
-						self._process_ner(data, all_labels, user, project)
-					else:
-						self._process_re(data, all_labels, user, project)
+    def post(self, request, *args, **kwargs):
+        action = request.POST['action']
+        task = request.POST['task']
+        user = self.request.user
+        project_id = self.kwargs["project_id"]
+        project = get_object_or_404(Project, pk=project_id)
+        all_labels = {}
+        for label in Label.objects.all().filter(project=project_id):
+            label_text = label.text.lower()
+            all_labels[label_text] = label
+        try:
+            data_file = request.FILES['history']
+            try:
+                if data_file.multiple_chunks():
+                    data = ijson.items(data_file, "data.item")
+                else:
+                    data = json.load(data_file)
+                    data = data["data"]
+                with transaction.atomic():
+                    if action == "replace":
+                        if task == "2":
+                            ids = NamedEntityAnnotationHistory.objects.all() \
+                                .filter(project=project_id) \
+                                .filter(user_provided=True) \
+                                .delete()
+                        else:
+                            ids = RelationExtractionAnnotationHistory.objects.all() \
+                                .filter(project=project_id) \
+                                .filter(user_provided=True) \
+                                .delete()
+                    if task == "2":
+                        self._process_ner(data, all_labels, user, project)
+                    else:
+                        self._process_re(data, all_labels, user, project)
 
-					return Response(status=204)
-			except:
-				return Response(status=500)
-		except:
-			raise ImportFileError("No file was uploaded")
-
+                    return Response(status=204)
+            except:
+                return Response(status=500)
+        except:
+            raise ImportFileError("No file was uploaded")
 
 class RecommendationList(APIView):
 	pagination_class = None

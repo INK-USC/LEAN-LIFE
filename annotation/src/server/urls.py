@@ -7,13 +7,8 @@ from .views import edit_form, DataDownload, DataDownloadFile, ModelView
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
-<<<<<<< Updated upstream
     HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload,ModelAPIView, GenerateMockModelsAPIView, \
-    TrainModelAPIView,MockModelTrainingAPI
-=======
-    HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload, \
-    ModelTrainingUpdate
->>>>>>> Stashed changes
+    TrainModelAPIView,MockModelTrainingAPI, ModelTrainingUpdate
     
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
