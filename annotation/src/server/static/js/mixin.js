@@ -1,7 +1,10 @@
 /* eslint-disable key-spacing */
 import axios from "axios";
 import Vue from "vue";
-import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm } from "ant-design-vue";
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/antd.css';
+
+import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm, Input } from "ant-design-vue";
 import HTTP from "./http";
 
 import "ant-design-vue/dist/antd.css";
@@ -10,13 +13,17 @@ import AnnotationDocument from "./utils";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
+//Vue.use(Antd);
+
+Vue.component(Modal.name, Modal)
 Vue.use(Modal);
 Vue.use(Form);
 Vue.use(Icon);
 Vue.use(AutoComplete);
 Vue.use(Button);
 Vue.use(Radio);
-Vue.use(Popconfirm)
+Vue.use(Popconfirm);
+Vue.use(Input);
 
 const annotationMixin = {
   data() {
@@ -48,6 +55,9 @@ const annotationMixin = {
       isNewlyCreated: 0,
       refresh: false,
 
+      modelNamePopupVisible: false,
+      modelNamePopupIsLoading: false,
+      modelName: ""
     };
   },
 
@@ -183,10 +193,17 @@ const annotationMixin = {
     },
 
     trainModel(){
-        HTTP.post('train_model/',{}).then(res=>{
-
+        console.log("train model", this.modelName)
+        this.modelNamePopupIsLoading=true
+        HTTP.post('train_model/',{modelName: this.modelName}).then(res=>{
+          console.log("train model res", res)
+          this.modelNamePopupIsLoading=false
+          this.modelNamePopupVisible=false
         })
     },
+    showModelNamePopup(){
+        this.modelNamePopupVisible=true;
+    }
   },
 
   watch: {

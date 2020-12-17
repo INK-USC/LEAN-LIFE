@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework import parsers
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
 	TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory
@@ -24,6 +25,7 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
 	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
+from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
 from .utils import SPACY_WRAPPER
 from django.db import transaction
 import pickle
@@ -33,6 +35,7 @@ from os import listdir
 from os.path import isfile, join
 import os
 import requests
+from os import path
 
 class ImportFileError(Exception):
 	def __init__(self, message):
@@ -621,20 +624,47 @@ class RecommendationList(APIView):
 
 class ModelAPIView(APIView):
 	def get(self, request):
-		dummy_res = [{'model': 'a', 'training_status': 1, 'file_size': 12000000},
-		             {'model': 'b', 'training_status': 0.5},
-		             {'model': 'c'}]
-		files = [f for f in listdir("models") if isfile(join("models", f))]
-		for file in files:
-			if not file.startswith("uid" + str(self.request.user.id)) or not file.endswith(".p"):
-				continue
-			file = os.path.join("models/", file)
-			size = os.path.getsize(file)
-			with open(file,'rb') as f:
-				my_dict = pickle.load(f)
-				dummy_res.append({"model": my_dict['model_name'], 'training_status': 1, 'file_size': size})
+		results = []
+		projects = Project.objects.all().filter(users=self.request.user)
 
-		return Response(dummy_res)
+		model_project_map = json.loads(open("communication/model_project_map.json").read())
+		model_names = []
+		for project in projects:
+			# print("project", project.id)
+			models = model_project_map['project-models'][str(project.id)]
+			model_names = model_names + models
+			# print("models", models)
+		# print("model_names", model_names)
+
+		models_metadata = json.loads(open("communication/models_metadata.json").read())
+
+		# print("models meta", models_metadata)
+		for model_name in model_names:
+			cur_meta = models_metadata[model_name]
+
+			cur_model_json = {'model': model_name, 'training_status': "Trained" if cur_meta['is_trained'] else "Training"}
+			if cur_meta['is_trained']:
+				training_info = self.get_training_updates(model_name)
+				cur_model_json['time_spent'] = training_info['time_spent']
+				cur_model_json['time_left'] = training_info['time_left']
+				cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
+				cur_model_json["file_path"] = cur_meta['save_path']
+
+			results.append(cur_model_json)
+
+		return Response(results)
+
+	def get_training_updates(self, model_name):
+		training_updates_path="communication/training_updates"
+		training_update_files = [f for f in listdir(training_updates_path) if isfile(join(training_updates_path, f))]
+		for f in training_update_files:
+			if f.split(".")[0].__eq__(model_name):
+				full_path = path.join(training_updates_path, f)
+				print(f, full_path)
+
+				training_update = json.load(open(full_path, 'r'))
+				print("train_up", training_update)
+				return training_update
 
 
 class GenerateMockModelsAPIView(APIView):
@@ -665,38 +695,97 @@ class TrainModelAPIView(APIView):
 	queryset = Document.objects.all()
 
 	def post(self, request, project_id):
-		json_object = self.generate_json_for_model_training_api(project_id)
-		model_training_api_response = requests.post("http://localhost:8000/api/model_training_mock/", json=json_object)
-		# print("model training response", model_training_api_response, model_training_api_response.status_code, model_training_api_response.content)
+		model_name = request.data['modelName']
 
-		# json_response = model_training_api_response.status_code
-		return Response(data=json.loads(model_training_api_response.content))
+		self.writeToModelProjectMappingFile(project_id, model_name)
 
-	def generate_json_for_model_training_api(self, project_id):
-		results = {"annotated documents": [], "non-annotated documents": []}
+		json_object = self.generate_json_for_model_training_api(project_id, model_name)
+		# return Response(data=json_object)
+
+		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
+		actual_save_path = model_training_api_response['saved_path']
+
+		self.writeToModelMetaData(project_id, model_name, actual_save_path)
+
+		return Response(data=model_training_api_response)
+
+	def writeToModelProjectMappingFile(self, project_id, model_name):
+		file_path = "communication/model_project_map.json"
+
+		model_project_mapping = json.load(open(file_path, 'r'))
+		if "model-project" not in model_project_mapping or 'project-model' not in model_project_mapping:
+			model_project_mapping['model-project'] = {}
+			model_project_mapping['project-models'] = {}
+
+		model_project_mapping['model-project'][model_name] = project_id
+		if str(project_id) in model_project_mapping['project-models']:
+			model_project_mapping['project-models'][str(project_id)].append(model_name)
+		else:
+			model_project_mapping['project-models'][str(project_id)] = [model_name]
+		with open(file_path, 'w') as f:
+			json.dump(model_project_mapping, f, indent=4)
+
+	def writeToModelMetaData(self, project_id, model_name, actual_model_save_path):
+		file_path = "communication/models_metadata.json"
+		model_metadata = json.load(open(file_path, 'r'))
+		model_metadata[model_name] = {
+			"is_trained": False,
+			"save_path": actual_model_save_path,
+		}
+		with open(file_path, 'w') as f:
+			json.dump(model_metadata, f, indent=4)
+
+
+	def generate_json_for_model_training_api(self, project_id, model_name):
+		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name}
 
 		project = get_object_or_404(Project, pk=project_id)
-		explanation_int = project.explanation_type
-		task_name = project.get_task_name()
+		# print("project task", project.task, project.get_task_name())
+		labels = get_list_or_404(Label, project=project)
 
-		user_annotations = Annotation.objects.get_annotations_for_export(self.request.user.id, task_name, explanation_int)
-		# print("ua",user_annotations)
+		for label in labels:
+			results["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
 
-		dataset = Document.objects.export_project_user_documents(task_name, project_id, self.request.user.id, "json",user_annotations, explanation_int )
-		# print("dataset", dataset)
+		for doc in project.documents.all():
+			# print("doc", doc.id, doc.annotated)
+			annotated_row = {"text": doc.text}
 
-		for row in dataset['data']:
-			new_json = {
-				"text": row['text'],
-			}
+			if not doc.annotated:
+				results['unlabeled'].append(annotated_row)
+				continue
+			annotated_row['annotations'] = []
+			annotated_row["explanations"] = []
 
-			if not self.get_is_annotated(row['doc_id']):
-				results['non-annotated documents'].append(new_json)
-			else:
-				new_json['annotations'] = row['annotations']
-				for ann in new_json['annotations']:
-					ann.pop('annotation_id')
-				results['annotated documents'].append(new_json)
+			for ann in doc.annotations.all():
+				cur_ann = {"label_text": ann.label.text}
+				ext_ann = ann.get_extended_annotation()
+
+				for key_ext_ann in ext_ann.__dict__.keys():
+					if key_ext_ann =="_state":
+						continue
+					else:
+						cur_ann[key_ext_ann]= ext_ann.__dict__[key_ext_ann]
+				annotated_row['annotations'].append(cur_ann)
+
+				if ann.get_explanations() is not None:
+					for exp in ann.get_explanations():
+						# print("exp", exp.annotation.id, exp.text)
+						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
+
+				# if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:
+				# 	print(ext_ann.start_offset)
+				# 	print(ext_ann.end_offset)
+				#
+				# if project.get_task_name() == RELATION_EXTRACTION_VALUE:
+				# 	if ann.user_provided:
+				# 		print(ext_ann.start_offset)
+				# 		print(ext_ann.end_offset)
+				# 	else:
+				# 		print(ext_ann.sbj_start_offset)
+				#
+				# if project.get_task_name() == SENTIMENT_ANALYSIS_VALUE:
+				# 	continue
+			results['annotated'].append(annotated_row)
 		return results
 
 	def get_is_annotated(self, doc_id):
@@ -711,4 +800,16 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
+		data_posted['saved_path'] = "mock_api/" + data_posted['model_name']+".json"
 		return Response(status=200, data=data_posted)
+
+
+
+class DownloadModelFile(APIView):
+	permission_classes = ()
+
+	def get(self, request, model_file_path):
+		response = HttpResponse(content_type='text/json')
+		response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
+		response.write(json.dumps({"test_key": "111"}, ensure_ascii=False, indent=1))
+		return response

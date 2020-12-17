@@ -111,10 +111,15 @@
             will appear as red––indicating an error.</p>
         </span>
         <span class="tag">
-          <a-popconfirm title="Are you sure to train model?" ok-text="Yes"  @confirm="trainModel">
-            <button id="train_modal_btn" class="button" >Train Model</button>
-          </a-popconfirm>
+          <button id="train_modal_btn" class="button" @click="showModelNamePopup">Train Model</button>
+          <a-modal title="Please enter model name" :visible="modelNamePopupVisible"
+                   :ok-button-props="{ props: { disabled: !modelName } }"
+
+                   :confirm-loading="modelNamePopupIsLoading" @ok="trainModel" ok-Text="Train Model with this name" >
+            <a-input placeholder="Please enter model name" v-model="modelName"/>
+          </a-modal>
         </span>
+
       </div>
 
     </div>
