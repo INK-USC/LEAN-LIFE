@@ -713,7 +713,7 @@ class TrainModelAPIView(APIView):
 		file_path = "communication/model_project_map.json"
 
 		model_project_mapping = json.load(open(file_path, 'r'))
-		if "model-project" not in model_project_mapping or 'project-model' not in model_project_mapping:
+		if "model-project" not in model_project_mapping or 'project-models' not in model_project_mapping:
 			model_project_mapping['model-project'] = {}
 			model_project_mapping['project-models'] = {}
 
