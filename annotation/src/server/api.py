@@ -195,7 +195,7 @@ class DocumentList(generics.ListCreateAPIView):
 	serializer_class = SingleUserAnnotatedDocumentSerializer
 
 	def get_queryset(self):
-		queryset = self.queryset.filter(project=self.kwargs['project_id'])
+		queryset = self.queryset.filter(project=self.kwargs['project_id']).order_by("id")
 		project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 		# TODO fix this, you know what
 		explanation = project.explanation_type
@@ -206,12 +206,12 @@ class DocumentList(generics.ListCreateAPIView):
 		# TODO Remove all this logic, annotation server should be
 		# able to send back correct doc ids
 		if not self.request.query_params.get('active_indices'):
-			return queryset
+			return queryset.order_by("id")
 
 		active_indices = self.request.query_params.get('active_indices')
 		active_indices = list(map(int, active_indices.split(",")))
 
-		queryset = project.get_index_documents(active_indices)
+		queryset = project.get_index_documents(active_indices).order_by("id")
 
 		return queryset
 
@@ -800,6 +800,7 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
+		# TODO change saved_path to the actual path located in the rest api.
 		data_posted['saved_path'] = "mock_api/" + data_posted['model_name']+".json"
 		return Response(status=200, data=data_posted)
 
@@ -810,6 +811,7 @@ class DownloadModelFile(APIView):
 
 	def get(self, request, model_file_path):
 		response = HttpResponse(content_type='text/json')
+		# TODO change filename
 		response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
 		response.write(json.dumps({"test_key": "111"}, ensure_ascii=False, indent=1))
 		return response

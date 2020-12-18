@@ -13,7 +13,7 @@ import AnnotationDocument from "./utils";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-//Vue.use(Antd);
+Vue.use(Antd);
 
 Vue.component(Modal.name, Modal)
 Vue.use(Modal);
@@ -199,6 +199,15 @@ const annotationMixin = {
           console.log("train model res", res)
           this.modelNamePopupIsLoading=false
           this.modelNamePopupVisible=false
+          this.$notification['success']({
+            message: `Model ${this.modelName} training`,
+            description: "Your model is being trained now. You can check the status in the models page"
+          })
+        }).catch(err=>{
+            this.$notification['error']({
+                message: "Model failed to start training",
+                description: "Please try again later"
+            })
         })
     },
     showModelNamePopup(){
