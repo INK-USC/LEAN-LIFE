@@ -46,6 +46,9 @@
                     <tr>
                         <th style="width: 10%">#</th>
                         <th>Model Name</th>
+                        <th>Project ID</th>
+                        <th>Project Name</th>
+                        <th>Project Task</th>
                         <th>Training Status</th>
                         <th>Time Spent</th>
                         <th>Time Left</th>
@@ -58,6 +61,10 @@
                     <tr v-for="(row, index) in modelList">
                         <td>${ index + 1 } </td>
                         <td>${ row.model }</td>
+                        <td>${ row.project_id }</td>
+                        <td>${ row.project_name }</td>
+                        <td>${ row.project_task }</td>
+
                         <td>${row.training_status}</td>
                         <td>${row.time_spent? row.time_spent : "N/A"}</td>
                         <td>${row.time_left? row.time_left : "N/A"}</td>

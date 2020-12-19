@@ -628,21 +628,35 @@ class ModelAPIView(APIView):
 		projects = Project.objects.all().filter(users=self.request.user)
 
 		model_project_map = json.loads(open("communication/model_project_map.json").read())
-		model_names = []
+
+		model_dict = {}
 		for project in projects:
-			# print("project", project.id)
+			print("project", project.id)
 			models = model_project_map['project-models'][str(project.id)]
-			model_names = model_names + models
-			# print("models", models)
-		# print("model_names", model_names)
+			print("modesls", models)
+			for model in models:
+				model_dict[model] = {
+					'project_id': project.id,
+					'project_name': project.name,
+					"project_task": project.get_task_name(),
+				}
+
+		print("model_names", model_dict)
 
 		models_metadata = json.loads(open("communication/models_metadata.json").read())
 
 		# print("models meta", models_metadata)
-		for model_name in model_names:
+		for model_name in model_dict:
 			cur_meta = models_metadata[model_name]
 
-			cur_model_json = {'model': model_name, 'training_status': "Trained" if cur_meta['is_trained'] else "Training"}
+
+			cur_model_json = {'model': model_name,
+			                  'project_id': model_dict[model_name]['project_id'],
+							  'project_name': model_dict[model_name]['project_name'],
+			                  'project_task': model_dict[model_name]['project_task'],
+			                  'training_status': "Trained" if cur_meta['is_trained'] else "Training"}
+
+
 			if cur_meta['is_trained']:
 				training_info = self.get_training_updates(model_name)
 				cur_model_json['time_spent'] = training_info['time_spent']
@@ -719,7 +733,8 @@ class TrainModelAPIView(APIView):
 
 		model_project_mapping['model-project'][model_name] = project_id
 		if str(project_id) in model_project_mapping['project-models']:
-			model_project_mapping['project-models'][str(project_id)].append(model_name)
+			if model_name not in model_project_mapping['project-models'][str(project_id)]:
+				model_project_mapping['project-models'][str(project_id)].append(model_name)
 		else:
 			model_project_mapping['project-models'][str(project_id)] = [model_name]
 		with open(file_path, 'w') as f:
