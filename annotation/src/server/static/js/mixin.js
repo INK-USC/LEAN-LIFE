@@ -4,7 +4,7 @@ import Vue from "vue";
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
-import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm, Input } from "ant-design-vue";
+import { AutoComplete, Modal, Form, Icon, Button, Radio, Popconfirm, Input, Notification } from "ant-design-vue";
 import HTTP from "./http";
 
 import "ant-design-vue/dist/antd.css";
@@ -204,7 +204,7 @@ const annotationMixin = {
             description: "Your model is being trained now. You can check the status in the models page"
           })
         }).catch(err=>{
-            this.$notification['error']({
+            this.$notification['']({
                 message: "Model failed to start training",
                 description: "Please try again later"
             })
