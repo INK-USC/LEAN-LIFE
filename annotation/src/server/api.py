@@ -660,9 +660,12 @@ class ModelAPIView(APIView):
 			if cur_meta['is_trained']:
 				training_info = self.get_training_updates(model_name)
 				cur_model_json['time_spent'] = training_info['time_spent']
-				cur_model_json['time_left'] = training_info['time_left']
+				cur_model_json['time_left'] = 0
 				cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
 				cur_model_json["file_path"] = cur_meta['save_path']
+				cur_model_json['file_size'] = cur_meta['file_size']
+			# else:
+				# cur_model_json['file_size']= cur_meta['file_size']
 
 			results.append(cur_model_json)
 
@@ -820,13 +823,58 @@ class MockModelTrainingAPI(APIView):
 		return Response(status=200, data=data_posted)
 
 
-
 class DownloadModelFile(APIView):
 	permission_classes = ()
 
-	def get(self, request, model_file_path):
+	def get(self, request):
+		# print(request.GET.get('file_path'))
+		file_path = request.GET.get("file_path")
+
+		model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
+
 		response = HttpResponse(content_type='text/json')
 		# TODO change filename
-		response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
-		response.write(json.dumps({"test_key": "111"}, ensure_ascii=False, indent=1))
+		# response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
+		response['Content-Disposition'] = 'attachment;'
+
+		response.write(json.dumps(model_file_json, ensure_ascii=False, indent=1))
 		return response
+
+
+class MockModelFileFetchingView(APIView):
+	permission_classes = ()
+
+	def get(self, request):
+		file_path = request.GET.get("file_path")
+		return Response(status=200, data={"test_key": file_path})
+
+
+class ModelUpdateAPI(APIView):
+	permission_classes = ()
+
+	def post(self, request):
+		new_data = request.data
+		file_path = "communication/models_metadata.json"
+		model_metas = json.load(open(file_path, 'r'))
+		for model_name in new_data:
+			model_metas[model_name] = new_data[model_name]
+
+		with open(file_path, 'w') as f:
+			json.dump(model_metas, f, indent=4)
+
+		return Response(status=200)
+
+
+class TrainingStatusUpdateAPI(APIView):
+	permission_classes = ()
+
+	def post(self, request):
+		new_data = request.data
+		training_updates_path = "communication/training_updates/"
+
+		for model_name in new_data:
+			full_path = training_updates_path+model_name+".json"
+			with open(full_path, 'w') as f:
+				json.dump({}, f, ensure_ascii=False, indent=1)
+
+		return Response(status=200)
