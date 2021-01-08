@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.views import View
-from django.views.generic import TemplateView, CreateView, UpdateView, RedirectView
+from django.views.generic import TemplateView, CreateView, UpdateView, RedirectView, DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -85,6 +85,18 @@ class DatasetView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return project.documents.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(DatasetView, self).get_context_data(**kwargs)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        total_doc = len(project.documents.all())
+        annotated_doc = 0
+        for doc in project.documents.all():
+            if doc.annotated:
+                annotated_doc += 1
+        context['total_doc'] = total_doc
+        context['annotated_doc'] = annotated_doc
+        return context
 
 class AnnotationHistoryView(LoginRequiredMixin, TemplateView):
     template_name = 'admin/annotation_history.html'

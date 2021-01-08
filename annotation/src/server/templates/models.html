@@ -46,19 +46,32 @@
                     <tr>
                         <th style="width: 10%">#</th>
                         <th>Model Name</th>
+                        <th>Project ID</th>
+                        <th>Project Name</th>
+                        <th>Project Task</th>
                         <th>Training Status</th>
+                        <th>Time Spent</th>
+                        <th>Time Left</th>
+                        <th>Best Training Loss</th>
                         <th>File Size</th>
-                        <th style="width: 20%">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(row, index) in modelList">
                         <td>${ index + 1 } </td>
                         <td>${ row.model }</td>
-                        <td>${row.training_status? row.training_status *100 +'%': 'Not trained' }</td>
-                        <td>${ row.training_status===1? row.file_size : "N/A"}</td>
+                        <td>${ row.project_id }</td>
+                        <td>${ row.project_name }</td>
+                        <td>${ row.project_task }</td>
+
+                        <td>${row.training_status}</td>
+                        <td>${row.time_spent? row.time_spent : "N/A"}</td>
+                        <td>${row.time_left? row.time_left : "0"}</td>
+                        <td>${row.best_train_loss? row.best_train_loss : "N/A"}</td>
+                        <td>${row.file_size? row.file_size :"N/A"}</td>
                         <td>
-                            <button class="has-text-danger button disabled" @click="downloadModelClicked(row,index)" :disabled="row.training_status!==1">Download</button>
+                            <button class="has-text-danger button disabled" @click="downloadModelClicked(row,index)" :disabled="row.training_status!=='Trained'">Download</button>
                         </td>
                     </tr>
                 </tbody>

@@ -18,10 +18,26 @@ const vm = new Vue({
             })
         },
         downloadModelClicked(model, index){
-            console.log("download for", model, index)
+            console.log("download for", model, model['file_path'], encodeURIComponent(model['file_path']))
+
+            axios.get("/api/models/download/", {responseType: 'blob', params: {file_path: model['file_path']}})
+            .then(res=>{
+                console.log("ressss", res)
+                    const blob = res.data
+                      let url = window.URL.createObjectURL(blob)
+                      let a = document.createElement("a");
+                      console.log(url);
+                      a.href = url;
+                      a.download = `${model['model']}.json`;
+                      a.click();
+
+            })
         },
         // default is bytes
         toProperSize(size){
+            if(!size){
+                return "N/A"
+            }
             if(size< 1000){
                 return size +" Bytes"
             }else if (size >= 1000  && size< 1000 * 1000){

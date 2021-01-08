@@ -18,16 +18,18 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework import parsers
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
-    NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
-    NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
-    RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
-    NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
-
+	NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
+	NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
+	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
+	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
+	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
+from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
 from .utils import SPACY_WRAPPER
 from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY
 import time
@@ -40,7 +42,7 @@ from os.path import isfile, join
 import os
 import requests
 from .constants import EXPLANATION_CHOICES
-
+from os import path
 
 class ImportFileError(Exception):
 	def __init__(self, message):
@@ -202,12 +204,33 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 		return obj
 
+class DocumentList(generics.ListCreateAPIView):
+	queryset = Document.objects.all()
+	filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+	search_fields = ('text',)
+	permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+	serializer_class = SingleUserAnnotatedDocumentSerializer
 
-class LargeResultsSetPagination(PageNumberPagination):
-    page_size = 5
-    page_size_query_param = 'page_size'
-    max_page_size = 10
+	def get_queryset(self):
+		queryset = self.queryset.filter(project=self.kwargs['project_id']).order_by("id")
+		project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+		# TODO fix this, you know what
+		explanation = project.explanation_type
 
+		if explanation != 1:
+			self.serializer_class = SingleUserAnnotatedDocumentExplanationsSerializer
+
+		# TODO Remove all this logic, annotation server should be
+		# able to send back correct doc ids
+		if not self.request.query_params.get('active_indices'):
+			return queryset.order_by("id")
+
+		active_indices = self.request.query_params.get('active_indices')
+		active_indices = list(map(int, active_indices.split(",")))
+
+		queryset = project.get_index_documents(active_indices).order_by("id")
+
+		return queryset
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all().order_by("id")
@@ -657,20 +680,64 @@ class RecommendationList(APIView):
 
 class ModelAPIView(APIView):
 	def get(self, request):
-		dummy_res = [{'model': 'a', 'training_status': 1, 'file_size': 12000000},
-		             {'model': 'b', 'training_status': 0.5},
-		             {'model': 'c'}]
-		files = [f for f in listdir("models") if isfile(join("models", f))]
-		for file in files:
-			if not file.startswith("uid" + str(self.request.user.id)) or not file.endswith(".p"):
-				continue
-			file = os.path.join("models/", file)
-			size = os.path.getsize(file)
-			with open(file,'rb') as f:
-				my_dict = pickle.load(f)
-				dummy_res.append({"model": my_dict['model_name'], 'training_status': 1, 'file_size': size})
+		results = []
+		projects = Project.objects.all().filter(users=self.request.user)
 
-		return Response(dummy_res)
+		model_project_map = json.loads(open("communication/model_project_map.json").read())
+
+		model_dict = {}
+		for project in projects:
+			print("project", project.id)
+			models = model_project_map['project-models'][str(project.id)]
+			print("modesls", models)
+			for model in models:
+				model_dict[model] = {
+					'project_id': project.id,
+					'project_name': project.name,
+					"project_task": project.get_task_name(),
+				}
+
+		print("model_names", model_dict)
+
+		models_metadata = json.loads(open("communication/models_metadata.json").read())
+
+		# print("models meta", models_metadata)
+		for model_name in model_dict:
+			cur_meta = models_metadata[model_name]
+
+
+			cur_model_json = {'model': model_name,
+			                  'project_id': model_dict[model_name]['project_id'],
+							  'project_name': model_dict[model_name]['project_name'],
+			                  'project_task': model_dict[model_name]['project_task'],
+			                  'training_status': "Trained" if cur_meta['is_trained'] else "Training"}
+
+
+			if cur_meta['is_trained']:
+				training_info = self.get_training_updates(model_name)
+				cur_model_json['time_spent'] = training_info['time_spent']
+				cur_model_json['time_left'] = 0
+				cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
+				cur_model_json["file_path"] = cur_meta['save_path']
+				cur_model_json['file_size'] = cur_meta['file_size']
+			# else:
+				# cur_model_json['file_size']= cur_meta['file_size']
+
+			results.append(cur_model_json)
+
+		return Response(results)
+
+	def get_training_updates(self, model_name):
+		training_updates_path="communication/training_updates"
+		training_update_files = [f for f in listdir(training_updates_path) if isfile(join(training_updates_path, f))]
+		for f in training_update_files:
+			if f.split(".")[0].__eq__(model_name):
+				full_path = path.join(training_updates_path, f)
+				print(f, full_path)
+
+				training_update = json.load(open(full_path, 'r'))
+				print("train_up", training_update)
+				return training_update
 
 
 class GenerateMockModelsAPIView(APIView):
@@ -701,38 +768,99 @@ class TrainModelAPIView(APIView):
 	queryset = Document.objects.all()
 
 	def post(self, request, project_id):
-		json_object = self.generate_json_for_model_training_api(project_id)
-		model_training_api_response = requests.post("http://localhost:8000/api/model_training_mock/", json=json_object)
-		# print("model training response", model_training_api_response, model_training_api_response.status_code, model_training_api_response.content)
+		model_name = request.data['modelName']
 
-		# json_response = model_training_api_response.status_code
-		return Response(data=json.loads(model_training_api_response.content))
+		self.writeToModelProjectMappingFile(project_id, model_name)
 
-	def generate_json_for_model_training_api(self, project_id):
-		results = {"annotated documents": [], "non-annotated documents": []}
+		json_object = self.generate_json_for_model_training_api(project_id, model_name)
+		# return Response(data=json_object)
+		#TODO change to model training api address
+		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
+		actual_save_path = model_training_api_response['saved_path']
+
+		self.writeToModelMetaData(project_id, model_name, actual_save_path)
+
+		return Response(data=model_training_api_response)
+
+	def writeToModelProjectMappingFile(self, project_id, model_name):
+		file_path = "communication/model_project_map.json"
+
+		model_project_mapping = json.load(open(file_path, 'r'))
+		if "model-project" not in model_project_mapping or 'project-models' not in model_project_mapping:
+			model_project_mapping['model-project'] = {}
+			model_project_mapping['project-models'] = {}
+
+		model_project_mapping['model-project'][model_name] = project_id
+		if str(project_id) in model_project_mapping['project-models']:
+			if model_name not in model_project_mapping['project-models'][str(project_id)]:
+				model_project_mapping['project-models'][str(project_id)].append(model_name)
+		else:
+			model_project_mapping['project-models'][str(project_id)] = [model_name]
+		with open(file_path, 'w') as f:
+			json.dump(model_project_mapping, f, indent=4)
+
+	def writeToModelMetaData(self, project_id, model_name, actual_model_save_path):
+		file_path = "communication/models_metadata.json"
+		model_metadata = json.load(open(file_path, 'r'))
+		model_metadata[model_name] = {
+			"is_trained": False,
+			"save_path": actual_model_save_path,
+		}
+		with open(file_path, 'w') as f:
+			json.dump(model_metadata, f, indent=4)
+
+
+	def generate_json_for_model_training_api(self, project_id, model_name):
+		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
 
 		project = get_object_or_404(Project, pk=project_id)
-		explanation_int = project.explanation_type
-		task_name = project.get_task_name()
+		# print("project task", project.task, project.get_task_name())
+		results["project_type"] = project.get_task_name()
+		labels = get_list_or_404(Label, project=project)
 
-		user_annotations = Annotation.objects.get_annotations_for_export(self.request.user.id, task_name, explanation_int)
-		# print("ua",user_annotations)
+		for label in labels:
+			results["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
 
-		dataset = Document.objects.export_project_user_documents(task_name, project_id, self.request.user.id, "json",user_annotations, explanation_int )
-		# print("dataset", dataset)
+		for doc in project.documents.all():
+			# print("doc", doc.id, doc.annotated)
+			annotated_row = {"text": doc.text}
 
-		for row in dataset['data']:
-			new_json = {
-				"text": row['text'],
-			}
+			if not doc.annotated:
+				results['unlabeled'].append(annotated_row)
+				continue
+			annotated_row['annotations'] = []
+			annotated_row["explanations"] = []
 
-			if not self.get_is_annotated(row['doc_id']):
-				results['non-annotated documents'].append(new_json)
-			else:
-				new_json['annotations'] = row['annotations']
-				for ann in new_json['annotations']:
-					ann.pop('annotation_id')
-				results['annotated documents'].append(new_json)
+			for ann in doc.annotations.all():
+				cur_ann = {"label_text": ann.label.text}
+				ext_ann = ann.get_extended_annotation()
+
+				for key_ext_ann in ext_ann.__dict__.keys():
+					if key_ext_ann =="_state":
+						continue
+					else:
+						cur_ann[key_ext_ann]= ext_ann.__dict__[key_ext_ann]
+				annotated_row['annotations'].append(cur_ann)
+
+				if ann.get_explanations() is not None:
+					for exp in ann.get_explanations():
+						# print("exp", exp.annotation.id, exp.text)
+						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
+
+				# if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:
+				# 	print(ext_ann.start_offset)
+				# 	print(ext_ann.end_offset)
+				#
+				# if project.get_task_name() == RELATION_EXTRACTION_VALUE:
+				# 	if ann.user_provided:
+				# 		print(ext_ann.start_offset)
+				# 		print(ext_ann.end_offset)
+				# 	else:
+				# 		print(ext_ann.sbj_start_offset)
+				#
+				# if project.get_task_name() == SENTIMENT_ANALYSIS_VALUE:
+				# 	continue
+			results['annotated'].append(annotated_row)
 		return results
 
 	def get_is_annotated(self, doc_id):
@@ -747,33 +875,63 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
+		# TODO change saved_path to the actual path located in the rest api.
+		data_posted['saved_path'] = "mock_api/" + data_posted['model_name']+".json"
 		return Response(status=200, data=data_posted)
 
-class ModelTrainingUpdate(APIView):
-    # TODO: Update init script to make sure needed folder structure exists
-    def post(self, request, *args, **kwargs):
-        key = request.POST["key"]
-        if key == TRAINING_KEY:
-            model_name = request.POST["model_name"]
-            update_repr = {
-                "current_epoch" : request.POST["cur_epoch"],
-                "total_epochs" : request.POST["total_epochs"],
-                "time_spent" : request.POST["time_spent"],
-                "time_left" : request.POST["time_left"],
-                "best_train_loss" : request.POST["best_loss"]
-            }
-            file_name = TRAINING_UPDATE_FOLDER + model_name
-            with open(file_name, "w") as f:
-                json.dump(update_repr, f)
-        elif key == METADATA_KEY:
-            with open(MODEL_META_FILE) as f:
-                meta_data = json.load(f)
-            
-            meta_data["data"] = meta_data["data"].append({
-                "model_name" : request.POST["model_name"],
-                "save_path" : request.POST["save_path"],
-                "best_train_loss" : request.POST["best_train_loss"]
-            })
 
-            with open(MODEL_META_FILE, "w") as f:
-                json.dump(meta_data, f)
+class DownloadModelFile(APIView):
+	permission_classes = ()
+
+	def get(self, request):
+		# print(request.GET.get('file_path'))
+		file_path = request.GET.get("file_path")
+
+		model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
+
+		response = HttpResponse(content_type='text/json')
+		# TODO change filename
+		# response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
+		response['Content-Disposition'] = 'attachment;'
+
+		response.write(json.dumps(model_file_json, ensure_ascii=False, indent=1))
+		return response
+
+
+class MockModelFileFetchingView(APIView):
+	permission_classes = ()
+
+	def get(self, request):
+		file_path = request.GET.get("file_path")
+		return Response(status=200, data={"test_key": file_path})
+
+
+class ModelUpdateAPI(APIView):
+	permission_classes = ()
+
+	def post(self, request):
+		new_data = request.data
+		file_path = "communication/models_metadata.json"
+		model_metas = json.load(open(file_path, 'r'))
+		for model_name in new_data:
+			model_metas[model_name] = new_data[model_name]
+
+		with open(file_path, 'w') as f:
+			json.dump(model_metas, f, indent=4)
+
+		return Response(status=200)
+
+
+class TrainingStatusUpdateAPI(APIView):
+	permission_classes = ()
+
+	def post(self, request):
+		new_data = request.data
+		training_updates_path = "communication/training_updates/"
+
+		for model_name in new_data:
+			full_path = training_updates_path+model_name+".json"
+			with open(full_path, 'w') as f:
+				json.dump({}, f, ensure_ascii=False, indent=1)
+
+		return Response(status=200)

@@ -27,6 +27,20 @@
     </span>
     <b>Export Annotations</b>
   </a>
+  <a class="navbar-item" @click="showModelTrainingPopup">
+    <span class="icon">
+      <i class="fas fa-paper-plane"></i>
+    </span>
+    <b>Train Model</b>
+  </a>
+  <a-modal title="Please enter model name" :visible="modelNamePopupVisible" @ok="trainModel"
+           :ok-button-props="{ props: { disabled: !modelName } }"
+           @ok="trainModel" ok-Text="Train Model with this name"
+  >
+    <a-input v-model="modelName"/>
+  </a-modal>
+
+
 </span>
 {% endblock %}
 {% block content %}
