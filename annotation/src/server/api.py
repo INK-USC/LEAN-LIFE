@@ -204,33 +204,12 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 		return obj
 
-class DocumentList(generics.ListCreateAPIView):
-	queryset = Document.objects.all()
-	filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-	search_fields = ('text',)
-	permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-	serializer_class = SingleUserAnnotatedDocumentSerializer
 
-	def get_queryset(self):
-		queryset = self.queryset.filter(project=self.kwargs['project_id']).order_by("id")
-		project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-		# TODO fix this, you know what
-		explanation = project.explanation_type
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 10
 
-		if explanation != 1:
-			self.serializer_class = SingleUserAnnotatedDocumentExplanationsSerializer
-
-		# TODO Remove all this logic, annotation server should be
-		# able to send back correct doc ids
-		if not self.request.query_params.get('active_indices'):
-			return queryset.order_by("id")
-
-		active_indices = self.request.query_params.get('active_indices')
-		active_indices = list(map(int, active_indices.split(",")))
-
-		queryset = project.get_index_documents(active_indices).order_by("id")
-
-		return queryset
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all().order_by("id")
@@ -238,6 +217,7 @@ class DocumentList(generics.ListCreateAPIView):
     search_fields = ('text',)
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
     serializer_class = SingleUserAnnotatedDocumentSerializer
+    pagination_class = CustomPagination
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
