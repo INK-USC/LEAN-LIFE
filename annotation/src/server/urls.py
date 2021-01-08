@@ -60,5 +60,5 @@ urlpatterns = [
     path('api/mock/fetch_model/', MockModelFileFetchingView.as_view(), name='mock_model_file'),
 
     path('api/update/models_metadata', ModelUpdateAPI.as_view(), name="model_update"),
-    path('api/update/training_states', TrainingStatusUpdateAPI.as_view(), name="training_update"),
+    path('api/update/training_status', TrainingStatusUpdateAPI.as_view(), name="training_update"),
 ]

@@ -718,7 +718,7 @@ class TrainModelAPIView(APIView):
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_name)
 		# return Response(data=json_object)
-
+		#TODO change to model training api address
 		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 		actual_save_path = model_training_api_response['saved_path']
 
@@ -755,10 +755,11 @@ class TrainModelAPIView(APIView):
 
 
 	def generate_json_for_model_training_api(self, project_id, model_name):
-		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name}
+		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
 
 		project = get_object_or_404(Project, pk=project_id)
 		# print("project task", project.task, project.get_task_name())
+		results["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
 		for label in labels:
