@@ -44,7 +44,6 @@ urlpatterns = [
     path('api/model_training_mock/', MockModelTrainingAPI.as_view(), name="mock_model_training_api"),
     path('api/models/', ModelAPIView.as_view(), name="get_model"),
     path('api/models/generate_mock_files/', GenerateMockModelsAPIView.as_view(), name="generate_mock_models"),
-    path('api/model/training/update/', ModelTrainingUpdate.as_view(), name="model_training_update"),
     path('projects/', edit_form, name='projects'),
     path('projects/<int:project_id>/update', edit_form, name='update_projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
