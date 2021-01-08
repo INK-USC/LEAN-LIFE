@@ -238,7 +238,6 @@ class DocumentList(generics.ListCreateAPIView):
     search_fields = ('text',)
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
     serializer_class = SingleUserAnnotatedDocumentSerializer
-    pagination_class = LargeResultsSetPagination
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
