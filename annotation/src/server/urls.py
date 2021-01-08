@@ -8,12 +8,8 @@ from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
     HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload,ModelAPIView, GenerateMockModelsAPIView, \
-<<<<<<< HEAD
-    TrainModelAPIView,MockModelTrainingAPI, ModelTrainingUpdate
-=======
     TrainModelAPIView,MockModelTrainingAPI,DownloadModelFile, MockModelFileFetchingView, ModelUpdateAPI,\
     TrainingStatusUpdateAPI
->>>>>>> tasks_on_current_frontend
     
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)

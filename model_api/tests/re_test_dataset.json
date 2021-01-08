@@ -1,4 +1,5 @@
-{
+{   
+    "model_name" : "project-1_model-a",
     "project_type" : 3,
     "label_space" : [
         {
@@ -44,19 +45,19 @@
                 },
                 {
                     "id" : 4,
-                    "start_offset_1" : 13,
-                    "end_offset_1" : 18,
-                    "start_offset_2" : 53,
-                    "end_offset_2" : 56,
+                    "sbj_start_offset" : 13,
+                    "sbj_end_offset" : 18,
+                    "obj_start_offset" : 53,
+                    "obj_end_offset" : 56,
                     "label_text" : "relation-1",
                     "user_provided" : false
                 },
                 {
                     "id" : 5,
-                    "start_offset_1" : 62,
-                    "end_offset_1" : 68,
-                    "start_offset_2" : 53,
-                    "end_offset_2" : 56,
+                    "sbj_start_offset" : 62,
+                    "sbj_end_offset" : 68,
+                    "obj_start_offset" : 53,
+                    "obj_end_offset" : 56,
                     "label_text" : "relation-2",
                     "user_provided" : false
                 }

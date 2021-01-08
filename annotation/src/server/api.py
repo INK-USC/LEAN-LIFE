@@ -24,14 +24,23 @@ from .models import Project, Label, Document, Setting, NamedEntityAnnotationHist
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
+<<<<<<< Updated upstream
 	NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
 	NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
 	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
 	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
 from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
+=======
+    NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
+    NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
+    RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
+    NaturalLanguageExplanationSerializer, SentimentAnalysisAnnotationSerializer, \
+    SingleUserAnnotatedDocumentExplanationsSerializer, RelationExtractionAnnotationHistorySerializer \
+
+>>>>>>> Stashed changes
 from .utils import SPACY_WRAPPER
-from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY
+from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES
 import time
 from django.db import transaction
 import pickle
@@ -41,21 +50,24 @@ from os import listdir
 from os.path import isfile, join
 import os
 import requests
+<<<<<<< Updated upstream
 from .constants import EXPLANATION_CHOICES
 from os import path
+=======
+>>>>>>> Stashed changes
 
 class ImportFileError(Exception):
-	def __init__(self, message):
-		self.message = message
+    def __init__(self, message):
+        self.message = message
 
 class MethodSerializerView(object):
-	'''
-    Utility class for get different serializer class by method.
-    For example:
-    method_serializer_classes = {
-        ('GET', ): MyModelListViewSerializer,
-        ('PUT', 'PATCH'): MyModelCreateUpdateSerializer
-    }
+    '''
+        Utility class for get different serializer class by method.
+        For example:
+        method_serializer_classes = {
+            ('GET', ): MyModelListViewSerializer,
+            ('PUT', 'PATCH'): MyModelCreateUpdateSerializer
+        }
     '''
     method_serializer_options = None
 
@@ -75,15 +87,15 @@ class MethodSerializerView(object):
 
 
 class MethodQuerysetView(object):
-	'''
-    Utility class for get different queryset class by method.
-    For example:
-    method_serializer_classes = {
-        ('GET', ): Object_One.all(),
-        ('PUT', 'PATCH'): Object_Two.all()
-    }
     '''
-	method_queryset_options = None
+        Utility class for get different queryset class by method.
+        For example:
+        method_serializer_classes = {
+            ('GET', ): Object_One.all(),
+            ('PUT', 'PATCH'): Object_Two.all()
+        }
+    '''
+    method_queryset_options = None
 
     def get_queryset(self):
         assert self.method_queryset_options is not None, (
@@ -97,22 +109,22 @@ class MethodQuerysetView(object):
                     if key in self.request.path:
                         return queryset_options[key]
 
-		raise exceptions.MethodNotAllowed(self.request.method)
+        raise exceptions.MethodNotAllowed(self.request.method)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-	queryset = Project.objects.all()
-	serializer_class = ProjectSerializer
-	pagination_class = None
-	permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
-	def get_queryset(self):
-		return self.request.user.projects
+    def get_queryset(self):
+        return self.request.user.projects
 
-	@action(methods=['get'], detail=True)
-	def progress(self, request, pk=None):
-		project = self.get_object()
-		return Response(project.get_progress())
+    @action(methods=['get'], detail=True)
+    def progress(self, request, pk=None):
+        project = self.get_object()
+        return Response(project.get_progress())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -770,19 +782,17 @@ class TrainModelAPIView(APIView):
 	def post(self, request, project_id):
 		model_name = request.data['modelName']
 
-		self.writeToModelProjectMappingFile(project_id, model_name)
+		self.write_to_model_project_mapping_file(project_id, model_name)
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_name)
 		# return Response(data=json_object)
 		#TODO change to model training api address
-		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
-		actual_save_path = model_training_api_response['saved_path']
-
-		self.writeToModelMetaData(project_id, model_name, actual_save_path)
+		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
+		self.write_to_model_metadata_file(project_id, model_name)
 
 		return Response(data=model_training_api_response)
 
-	def writeToModelProjectMappingFile(self, project_id, model_name):
+	def write_to_model_project_mapping_file(self, project_id, model_name):
 		file_path = "communication/model_project_map.json"
 
 		model_project_mapping = json.load(open(file_path, 'r'))
@@ -799,12 +809,11 @@ class TrainModelAPIView(APIView):
 		with open(file_path, 'w') as f:
 			json.dump(model_project_mapping, f, indent=4)
 
-	def writeToModelMetaData(self, project_id, model_name, actual_model_save_path):
+	def write_to_model_metadata_file(self, project_id, model_name):
 		file_path = "communication/models_metadata.json"
 		model_metadata = json.load(open(file_path, 'r'))
 		model_metadata[model_name] = {
-			"is_trained": False,
-			"save_path": actual_model_save_path,
+			"is_trained": False
 		}
 		with open(file_path, 'w') as f:
 			json.dump(model_metadata, f, indent=4)
@@ -814,7 +823,6 @@ class TrainModelAPIView(APIView):
 		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
 
 		project = get_object_or_404(Project, pk=project_id)
-		# print("project task", project.task, project.get_task_name())
 		results["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
@@ -822,7 +830,6 @@ class TrainModelAPIView(APIView):
 			results["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
 
 		for doc in project.documents.all():
-			# print("doc", doc.id, doc.annotated)
 			annotated_row = {"text": doc.text}
 
 			if not doc.annotated:
@@ -844,22 +851,8 @@ class TrainModelAPIView(APIView):
 
 				if ann.get_explanations() is not None:
 					for exp in ann.get_explanations():
-						# print("exp", exp.annotation.id, exp.text)
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
 
-				# if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:
-				# 	print(ext_ann.start_offset)
-				# 	print(ext_ann.end_offset)
-				#
-				# if project.get_task_name() == RELATION_EXTRACTION_VALUE:
-				# 	if ann.user_provided:
-				# 		print(ext_ann.start_offset)
-				# 		print(ext_ann.end_offset)
-				# 	else:
-				# 		print(ext_ann.sbj_start_offset)
-				#
-				# if project.get_task_name() == SENTIMENT_ANALYSIS_VALUE:
-				# 	continue
 			results['annotated'].append(annotated_row)
 		return results
 
@@ -875,20 +868,19 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
-		# TODO change saved_path to the actual path located in the rest api.
-		data_posted['saved_path'] = "mock_api/" + data_posted['model_name']+".json"
 		return Response(status=200, data=data_posted)
-
 
 class DownloadModelFile(APIView):
 	permission_classes = ()
 
 	def get(self, request):
-		# print(request.GET.get('file_path'))
 		file_path = request.GET.get("file_path")
 
-		model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
-
+		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
+		
+		#with open("blah.p", "wb") as f:
+		#	pickle.dump(model_file_json, f)
+		
 		response = HttpResponse(content_type='text/json')
 		# TODO change filename
 		# response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")

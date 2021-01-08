@@ -303,21 +303,21 @@ def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epo
     time_left = int(approximate_total_time - time_spent)
 
     update_repr = {
-        "key" : "Train",
-        "model_name" : model_name,
-        "cur_epoch" : cur_epoch,
-        "total_epochs" : total_epochs,
-        "time_spent" : time_spent,
-        "time_left" : time_left,
-        "best_train_loss" : best_train_loss
+        model_name : {
+            "cur_epoch" : cur_epoch,
+            "total_epochs" : total_epochs,
+            "time_spent" : time_spent,
+            "time_left" : time_left,
+            "best_train_loss" : best_train_loss
+        }
     }
 
-    end_point = const.LEAN_LIFE_URL + "model/training/update/"
+    end_point = const.LEAN_LIFE_URL + "api/update/training_status"
     response = requests.post(end_point, data=update_repr)
 
     return response.status_code
 
-def send_model_metadata(model_name, save_path, best_train_loss):
+def send_model_metadata(model_name, save_path, best_train_loss=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
@@ -330,14 +330,27 @@ def send_model_metadata(model_name, save_path, best_train_loss):
         Returns:
             (int) : status code from Django API after receiving request
     """
-    metadata_repr = {
-        "key" : "Meta"
-        "model_name" : cur_epoch,
-        "save_path" : save_path,
-        "best_train_loss" : best_train_loss
-    }
+    if best_train_loss:
+        file_size = 1000
+        is_trained = True
+        metadata_repr = {
+            model_name : {
+                "is_trained" : is_trained,
+                "save_path" : save_path,
+                "best_train_loss" : best_train_loss,
+                "file_size" : file_size
+            }
+        }
+    else:
+        is_trained = False
+         metadata_repr = {
+            model_name : {
+                "is_trained" : is_trained,
+                "save_path" : save_path
+            }
+        }
 
-    end_point = const.LEAN_LIFE_URL + "model/training/update/"
-    response = requests.post(end_point, data=update_repr)
+    end_point = const.LEAN_LIFE_URL + "api/update/models_metadata"
+    response = requests.post(end_point, data=metadata_repr)
 
     return response.status_code

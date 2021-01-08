@@ -14,7 +14,7 @@ async def start_training_lean_life(api_dataset: UploadFile = File(...)):
     util_f.kickstart_training(api_dataset.file, lean_life=False)
     return
 
-@app.get("/download/{file_path:path}")
+@app.get("/download/")
 async def get_trained_model(file_path: str):
     with open(file_path) as f:
         return {"model_file" : f}
