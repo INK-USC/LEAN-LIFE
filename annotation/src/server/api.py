@@ -24,21 +24,12 @@ from .models import Project, Label, Document, Setting, NamedEntityAnnotationHist
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
-<<<<<<< Updated upstream
 	NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
 	NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
 	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
 	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
 from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
-=======
-    NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
-    NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
-    RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
-    NaturalLanguageExplanationSerializer, SentimentAnalysisAnnotationSerializer, \
-    SingleUserAnnotatedDocumentExplanationsSerializer, RelationExtractionAnnotationHistorySerializer \
-
->>>>>>> Stashed changes
 from .utils import SPACY_WRAPPER
 from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES
 import time
@@ -50,11 +41,8 @@ from os import listdir
 from os.path import isfile, join
 import os
 import requests
-<<<<<<< Updated upstream
 from .constants import EXPLANATION_CHOICES
 from os import path
-=======
->>>>>>> Stashed changes
 
 class ImportFileError(Exception):
     def __init__(self, message):
