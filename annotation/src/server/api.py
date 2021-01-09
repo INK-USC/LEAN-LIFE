@@ -753,8 +753,10 @@ class TrainModelAPIView(APIView):
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_name)
 		# return Response(data=json_object)
-		#TODO change to model training api address
 		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
+		#TODO test
+		## model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock", json=json_object).content)
+
 		self.write_to_model_metadata_file(project_id, model_name)
 
 		return Response(data=model_training_api_response)
@@ -842,18 +844,17 @@ class DownloadModelFile(APIView):
 
 	def get(self, request):
 		file_path = request.GET.get("file_path")
-
 		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
-		
-		#with open("blah.p", "wb") as f:
-		#	pickle.dump(model_file_json, f)
-		
-		response = HttpResponse(content_type='text/json')
-		# TODO change filename
-		# response['Content-Disposition'] = 'attachment; filename="{}.json"'.format("dummmmmy")
-		response['Content-Disposition'] = 'attachment;'
+		#TODO test
+		## model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
 
-		response.write(json.dumps(model_file_json, ensure_ascii=False, indent=1))
+		# with open("communication/test_download.p", "wb") as f:
+		# 	pickle.dump(model_file_json, f)
+
+		response = HttpResponse(content_type='application/octet-stream')
+		response['Content-Disposition'] = 'attachment; filename=aaa.p'
+
+		response.write(pickle.dumps(model_file_json))
 		return response
 
 
