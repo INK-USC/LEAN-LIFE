@@ -32,10 +32,10 @@ def _create_re_pair(annotation, text, ner_mentions):
             relation_text, label : text where NERs that form the relation are indicated/normalized,
                                    label is a string that completes the relation (subj, label, obj)
     """
-    subj_start_offset = annotation["start_offset_1"]
-    subj_end_offset = annotation["end_offset_1"]
-    obj_start_offset = annotation["start_offset_2"]
-    obj_end_offset = annotation["end_offset_2"]
+    subj_start_offset = annotation["sbj_start_offset"]
+    subj_end_offset = annotation["sbj_end_offset"]
+    obj_start_offset = annotation["obj_start_offset"]
+    obj_end_offset = annotation["obj_end_offset"]
     label = annotation["label_text"]
 
     subj_ner_key = _create_ner_key(subj_start_offset, subj_end_offset)
@@ -47,16 +47,16 @@ def _create_re_pair(annotation, text, ner_mentions):
     if subj_first:
         relation_text = text[:subj_start_offset]
         relation_text += "SUBJ-{}".format(subj_ner_type)
-        relation_text += text[subj_end_offset+1:obj_start_offset]
+        relation_text += text[subj_end_offset:obj_start_offset]
         relation_text += "OBJ-{}".format(obj_ner_type)
-        relation_text += text[obj_end_offset+1:]
+        relation_text += text[obj_end_offset:]
         relation_text = relation_text.strip()
     else:
         relation_text = text[:obj_start_offset]
         relation_text += "OBJ-{}".format(obj_ner_type)
-        relation_text += text[obj_end_offset+1:subj_start_offset]
+        relation_text += text[obj_end_offset:subj_start_offset]
         relation_text += "SUBJ-{}".format(subj_ner_type)
-        relation_text += text[subj_end_offset+1:]
+        relation_text += text[subj_end_offset:]
         relation_text = relation_text.strip()
     
     return relation_text, label
@@ -84,23 +84,36 @@ def _generate_no_label_pairs(ner_mentions, text):
             if i != j:
                 key_1 = mention_keys[i]
                 key_2 = mention_keys[j]
-                start_offset_1, end_offset_1 = key_1.split("-")
-                start_offset_2, end_offset_2 = key_2.split("-")
-                start_offset_1 = int(start_offset_1)
-                end_offset_1 = int(end_offset_1)
-                start_offset_2 = int(start_offset_2)
-                end_offset_2 = int(end_offset_2)
+                sbj_start_offset, sbj_end_offset = key_1.split("-")
+                obj_start_offset, obj_end_offset = key_2.split("-")
+                sbj_start_offset = int(sbj_start_offset)
+                sbj_end_offset = int(sbj_end_offset)
+                obj_start_offset = int(obj_start_offset)
+                obj_end_offset = int(obj_end_offset)
                 annotation = {
-                    "start_offset_1" : start_offset_1,
-                    "end_offset_1" : end_offset_1,
-                    "start_offset_2" : start_offset_2,
-                    "end_offset_2" : end_offset_2,
+                    "sbj_start_offset" : sbj_start_offset,
+                    "sbj_end_offset" : sbj_end_offset,
+                    "obj_start_offset" : obj_start_offset,
+                    "obj_end_offset" : obj_end_offset,
                     "label_text" : ""
                 }
                 relation_text, label = _create_re_pair(annotation, text, ner_mentions)
                 relation_texts.append(relation_text)
                 labels.append(label)
     return relation_texts, labels
+
+def _procress_re_unlabeled_doc(annotated_doc):
+    text = annotated_doc.text
+    annotations = annotated_doc.annotations
+    ner_mentions = {}
+    for annotation in annotations:
+        if annotation["user_provided"]:
+            key = _create_ner_key(annotation["start_offset"], annotation["end_offset"])
+            label = annotation["label_text"]
+            ner_mentions[key] = label
+    relation_texts, _ = _generate_no_label_pairs(ner_mentions, text)
+
+    return relation_texts
 
 def _process_re_annotated_doc(annotated_doc, fake_id):
     """
@@ -124,9 +137,9 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     temp_fake_id = fake_id
     ner_mentions = {}
     re_data = []
-    text = annotated_doc["text"]
-    explanations = annotated_doc["explanations"]
-    annotations = annotated_doc["annotations"]
+    text = annotated_doc.text
+    explanations = annotated_doc.explanations
+    annotations = annotated_doc.annotations
     for annotation in annotations:
         if annotation["user_provided"]:
             key = _create_ner_key(annotation["start_offset"], annotation["end_offset"])
@@ -151,9 +164,13 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
         relation_text = temp_sentence_label_pairs[annotation_id][0]
         label = temp_sentence_label_pairs[annotation_id][1]
         if annotation_id in temp_explanation_triples:
-            temp_explanation_triples[annotation_id].append((relation_text, label, explanation_text))
+            temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
         else:
-            temp_explanation_triples[annotation_id] = [(relation_text, label, explanation_text)]
+            temp_explanation_triples[annotation_id] = {
+                "text" : text,
+                "label" : label,
+                "explanation" : [explanation_text]
+            }
 
     return temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id
 
@@ -177,9 +194,9 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
     temp_sentence_label_pairs = {}
     temp_explanation_triples = {}
     temp_fake_id = fake_id
-    text = annotated_doc["text"]
-    explanations = annotated_doc["explanations"]
-    annotations = annotated_doc["annotations"]
+    text = annotated_doc.text
+    explanations = annotated_doc.explanations
+    annotations = annotated_doc.annotations
     if len(annotations):
         for annotation in annotations:
             temp_sentence_label_pairs[annotation["id"]] = (text, annotation["label_text"])
@@ -192,9 +209,13 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
         explanation_text = explanation["text"]
         label = temp_sentence_label_pairs[annotation_id][1]
         if annotation_id in temp_explanation_triples:
-            temp_explanation_triples[annotation_id].append((text, label, explanation_text))
+            temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
         else:
-            temp_explanation_triples[annotation_id] = [(text, label, explanation_text)]
+            temp_explanation_triples[annotation_id] = {
+                "text" : text,
+                "label" : label,
+                "explanation" : [explanation_text]
+            }
 
     return temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id
 
@@ -236,7 +257,7 @@ def _process_annotations(annotated_docs, project_type):
     
     return list(sentence_label_pairs.values()), explanation_triples
 
-def _read_lean_life_dataset(file_obj):
+def _read_lean_life_dataset(json_dataset):
     """
         Read in a LEAN_LIFE Dataset file and convert it into the needed datastructures for training
 
@@ -246,18 +267,20 @@ def _read_lean_life_dataset(file_obj):
         Returns:
             training_pairs, explanation_triples, label_space, unlabeled_docs : arr, dict, arr, arr
     """
-    data = json.load(file_obj)
-    project_type = data["project_type"]
-    label_space = data["label_space"]
-    label_space = [label["text"] for label in label_space if not label["user_provided"]]
-    unlabeled_docs = data["unlabeled"]
-    unlabeled_docs = [doc["text"] for doc in unlabeled_docs]
-    annotated_docs = data["annotated"]
+    project_type = json_dataset.project_type
+    label_space = json_dataset.label_space
+    label_space = [label.text for label in label_space if not label.user_provided]
+    unlabeled_docs = json_dataset.unlabeled
+    if project_type != const.LEAN_LIFE_RE_PROJECT:
+        unlabeled_docs = [doc.text for doc in unlabeled_docs]
+    else:
+        unlabeled_docs = [text for doc in unlabeled_docs for text in _procress_re_unlabeled_doc(doc)]
+    annotated_docs = json_dataset.annotated
     training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
     
     return training_pairs, explanation_triples, label_space, unlabeled_docs
 
-def kickstart_training(file_obj, lean_life=True):
+def kickstart_training(json_dataset, lean_life=True):
     """
         Given a post request indicating a training job should be kicked off, organize data into the needed
         datastructures for training. Then call the `start_training` function
@@ -267,13 +290,14 @@ def kickstart_training(file_obj, lean_life=True):
             lean_life (bool) : boolean indicating whether file is a lean_life file or a user provided file
     """
     if lean_life:
-        training_pairs, explanation_triples, label_space, unlabeled_docs = read_lean_life_dataset(file_obj)
+        training_pairs, explanation_triples, label_space, unlabeled_docs = _read_lean_life_dataset(json_dataset)
     else:
-        data = json.load(file_obj)
-        training_pairs = data["training_pairs"]
-        explanation_triples = data["explanation_triples"]
-        label_space = data["label_space"]
-        unlabeled_docs = data["unlabeled_text"]
+        training_pairs = json_dataset.training_pairs
+        explanation_triples = json_dataset.explanation_triples
+        label_space = json_dataset.label_space
+        unlabeled_docs = json_dataset.unlabeled_text
+    
+    print(training_pairs, explanation_triples, label_space, unlabeled_docs)
     
     # start_training(training_pairs, explanation_triples, label_space, unlabeled_docs)
     return
@@ -312,12 +336,12 @@ def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epo
         }
     }
 
-    end_point = const.LEAN_LIFE_URL + "api/update/training_status"
-    response = requests.post(end_point, data=update_repr)
+    end_point = const.LEAN_LIFE_URL + "update/training_status/"
+    response = requests.post(end_point, json=update_repr)
 
     return response.status_code
 
-def send_model_metadata(model_name, save_path, best_train_loss=None):
+def send_model_metadata(model_name, save_path, best_train_loss=None, file_size=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
@@ -330,8 +354,7 @@ def send_model_metadata(model_name, save_path, best_train_loss=None):
         Returns:
             (int) : status code from Django API after receiving request
     """
-    if best_train_loss:
-        file_size = 1000
+    if best_train_loss and file_size:
         is_trained = True
         metadata_repr = {
             model_name : {
@@ -343,14 +366,14 @@ def send_model_metadata(model_name, save_path, best_train_loss=None):
         }
     else:
         is_trained = False
-         metadata_repr = {
+        metadata_repr = {
             model_name : {
                 "is_trained" : is_trained,
                 "save_path" : save_path
             }
         }
 
-    end_point = const.LEAN_LIFE_URL + "api/update/models_metadata"
-    response = requests.post(end_point, data=metadata_repr)
+    end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
+    response = requests.post(end_point, json=metadata_repr)
 
     return response.status_code

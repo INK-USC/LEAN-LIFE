@@ -1,0 +1,15 @@
+{
+    "m1": {
+        "is_trained": true,
+        "save_path": "fake_path/fake_path",
+        "best_train_loss": 0.1,
+        "file_size": 1000
+    },
+    "m2": {
+        "is_trained": false,
+        "save_path": "fake_path/fake_path_1"
+    },
+    "m3": {
+        "is_trained": false
+    }
+}

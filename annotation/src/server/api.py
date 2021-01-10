@@ -31,7 +31,7 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
 from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
 from .utils import SPACY_WRAPPER
-from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES
+from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES, RELATION_EXTRACTION_VALUE
 import time
 from django.db import transaction
 import pickle
@@ -800,17 +800,23 @@ class TrainModelAPIView(APIView):
 			annotated_row = {"text": doc.text}
 
 			if not doc.annotated:
-				results['unlabeled'].append(annotated_row)
-				continue
+				if project.get_task_name() != RELATION_EXTRACTION_VALUE:
+					results['unlabeled'].append(annotated_row)
+					continue
+			
 			annotated_row['annotations'] = []
 			annotated_row["explanations"] = []
 
 			for ann in doc.annotations.all():
-				cur_ann = {"label_text": ann.label.text}
+				cur_ann = {
+					"label_text": ann.label.text, 
+					"id" : ann.id, 
+					"user_provided" : ann.user_provided
+				}
 				ext_ann = ann.get_extended_annotation()
 
 				for key_ext_ann in ext_ann.__dict__.keys():
-					if key_ext_ann =="_state":
+					if key_ext_ann in ["_state", "annotation_id", "id"]:
 						continue
 					else:
 						cur_ann[key_ext_ann]= ext_ann.__dict__[key_ext_ann]
@@ -819,15 +825,19 @@ class TrainModelAPIView(APIView):
 				if ann.get_explanations() is not None:
 					for exp in ann.get_explanations():
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
-
+			
+			if not doc.annotated:
+				results['unlabeled'].append(annotated_row)
+				continue
+			
 			results['annotated'].append(annotated_row)
 		return results
 
-	def get_is_annotated(self, doc_id):
-		docs = Document.objects.all()
-		for doc in docs:
-			if doc.id == doc_id:
-				return doc.annotated
+	# def get_is_annotated(self, doc_id):
+	# 	docs = Document.objects.all()
+	# 	for doc in docs:
+	# 		if doc.id == doc_id:
+	# 			return doc.annotated
 
 
 class MockModelTrainingAPI(APIView):
@@ -842,8 +852,8 @@ class DownloadModelFile(APIView):
 
 	def get(self, request):
 		file_path = request.GET.get("file_path")
-
-		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
+		payload = {"file_path" : file_path}
+		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params=payload).content)
 		
 		#with open("blah.p", "wb") as f:
 		#	pickle.dump(model_file_json, f)
@@ -891,6 +901,6 @@ class TrainingStatusUpdateAPI(APIView):
 		for model_name in new_data:
 			full_path = training_updates_path+model_name+".json"
 			with open(full_path, 'w') as f:
-				json.dump({}, f, ensure_ascii=False, indent=1)
+				json.dump(new_data[model_name], f, ensure_ascii=False, indent=1)
 
 		return Response(status=200)
