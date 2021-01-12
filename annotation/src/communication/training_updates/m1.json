@@ -1,7 +1,0 @@
-{
- "cur_epoch": 3,
- "total_epochs": 10,
- "time_spent": 3600,
- "time_left": 8088,
- "best_train_loss": 0.2
-}

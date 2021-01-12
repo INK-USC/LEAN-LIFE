@@ -33,11 +33,24 @@
     </span>
     <b>Train Model</b>
   </a>
-  <a-modal title="Please enter model name" :visible="modelNamePopupVisible" @ok="trainModel"
-           :ok-button-props="{ props: { disabled: !modelName } }"
-           @ok="trainModel" ok-Text="Train Model with this name"
+  <a-modal title="Please enter model information" :visible="modelNamePopupVisible" @ok="trainModel"
+           :ok-button-props="{ props: { disabled: !modelForm.modelName } }"
+           @ok="trainModel" ok-Text="Train Model"
   >
-    <a-input v-model="modelName"/>
+    <a-form-model :model="modelForm">
+      <a-form-model-item label="Model Name" required>
+        <a-input v-model="modelForm.modelName"/>
+      </a-form-model-item>
+      <a-form-model-item label="Key 1">
+        <a-input v-model="modelForm.settings.key1" />
+      </a-form-model-item>
+      <a-form-model-item label="Key 2">
+        <a-input v-model="modelForm.settings.key2"/>
+      </a-form-model-item>
+      <a-form-model-item label="Key 3">
+        <a-input v-model="modelForm.settings.key3"/>
+      </a-form-model-item>
+    </a-form-model>
   </a-modal>
 
 

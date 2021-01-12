@@ -71,7 +71,7 @@
                         <td>${row.best_train_loss? row.best_train_loss : "N/A"}</td>
                         <td>${row.file_size? row.file_size :"N/A"}</td>
                         <td>
-                            <button class="has-text-danger button disabled" @click="downloadModelClicked(row,index)" :disabled="row.training_status!=='Trained'">Download</button>
+                            <button class="has-text-danger button disabled" @click="downloadModelClicked(row,index)" :disabled="row.training_status!=='Finished'">Download</button>
                         </td>
                     </tr>
                 </tbody>

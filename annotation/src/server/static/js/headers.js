@@ -28,19 +28,26 @@ const vm = new Vue({
     annotationHeading: null,
     importDataHeading: null,
     modelNamePopupVisible: false,
-    modelName: ""
+    modelForm: {
+        modelName: "",
+        settings: {
+            key1: "10",
+            key2: "20",
+            key3: "30"
+        }
+    }
   },
   methods: {
     showModelTrainingPopup(){
         this.modelNamePopupVisible=true
     },
     trainModel(){
-        HTTP.post('train_model/',{modelName: this.modelName}).then(res=>{
+        HTTP.post('train_model/',this.modelForm).then(res=>{
           console.log("train model res", res)
           this.modelNamePopupIsLoading=false
           this.modelNamePopupVisible=false
           this.$notification['success']({
-            message: `Model ${this.modelName} training`,
+            message: `Model ${this.modelForm.modelName} training`,
             description: "Your model is being trained now. You can check the status in the models page"
           })
         }).catch(err=>{

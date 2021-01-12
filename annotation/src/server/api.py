@@ -689,18 +689,20 @@ class ModelAPIView(APIView):
 			                  'project_id': model_dict[model_name]['project_id'],
 							  'project_name': model_dict[model_name]['project_name'],
 			                  'project_task': model_dict[model_name]['project_task'],
-			                  'training_status': "Trained" if cur_meta['is_trained'] else "Training"}
+			                  'training_status': "Finished" if cur_meta['is_trained'] else "Training",
+			                  "time_spent":  self.get_training_updates(model_name)["time_spent"],
+			                  "time_left":  self.get_training_updates(model_name)["time_left"]
+			                  }
 
+			# cur_model_json['time_spent'] = training_info['time_spent']
+			# cur_model_json['time_left'] = 0
 
 			if cur_meta['is_trained']:
-				training_info = self.get_training_updates(model_name)
-				cur_model_json['time_spent'] = training_info['time_spent']
-				cur_model_json['time_left'] = 0
 				cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
 				cur_model_json["file_path"] = cur_meta['save_path']
 				cur_model_json['file_size'] = cur_meta['file_size']
 			# else:
-				# cur_model_json['file_size']= cur_meta['file_size']
+			# 	cur_model_json['file_size']= cur_meta['file_size']
 
 			results.append(cur_model_json)
 
@@ -748,14 +750,14 @@ class TrainModelAPIView(APIView):
 
 	def post(self, request, project_id):
 		model_name = request.data['modelName']
-
+		model_settings = request.data['settings']
 		self.write_to_model_project_mapping_file(project_id, model_name)
 
-		json_object = self.generate_json_for_model_training_api(project_id, model_name)
+		json_object = self.generate_json_for_model_training_api(project_id, model_name, model_settings)
 		# return Response(data=json_object)
 		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
 		#TODO test
-		## model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock", json=json_object).content)
+		# model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 
 		self.write_to_model_metadata_file(project_id, model_name)
 
@@ -788,22 +790,22 @@ class TrainModelAPIView(APIView):
 			json.dump(model_metadata, f, indent=4)
 
 
-	def generate_json_for_model_training_api(self, project_id, model_name):
-		results = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
+	def generate_json_for_model_training_api(self, project_id, model_name, model_settings):
+		data_info = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
 
 		project = get_object_or_404(Project, pk=project_id)
-		results["project_type"] = project.get_task_name()
+		data_info["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
 		for label in labels:
-			results["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
+			data_info["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
 
 		for doc in project.documents.all():
 			annotated_row = {"text": doc.text}
 
 			if not doc.annotated:
 				if project.get_task_name() != RELATION_EXTRACTION_VALUE:
-					results['unlabeled'].append(annotated_row)
+					data_info['unlabeled'].append(annotated_row)
 					continue
 			
 			annotated_row['annotations'] = []
@@ -829,11 +831,16 @@ class TrainModelAPIView(APIView):
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
 			
 			if not doc.annotated:
-				results['unlabeled'].append(annotated_row)
+				data_info['unlabeled'].append(annotated_row)
 				continue
 			
-			results['annotated'].append(annotated_row)
-		return results
+			data_info['annotated'].append(annotated_row)
+
+		result = {
+			"model_info": data_info,
+			"settings": model_settings
+		}
+		return result
 
 	# def get_is_annotated(self, doc_id):
 	# 	docs = Document.objects.all()
@@ -847,6 +854,7 @@ class MockModelTrainingAPI(APIView):
 
 	def post(self, request):
 		data_posted = request.data
+		print("data_posted", json.dumps(data_posted, indent=1))
 		return Response(status=200, data=data_posted)
 
 class DownloadModelFile(APIView):
@@ -856,7 +864,7 @@ class DownloadModelFile(APIView):
 		file_path = request.GET.get("file_path")
 		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
 		#TODO test
-		## model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
+		# model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
 
 		# with open("communication/test_download.p", "wb") as f:
 		# 	pickle.dump(model_file_json, f)
