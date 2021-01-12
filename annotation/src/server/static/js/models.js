@@ -28,9 +28,8 @@ const vm = new Vue({
                       let a = document.createElement("a");
                       console.log(url);
                       a.href = url;
-                      a.download = `${model['model']}.json`;
+                      a.download = `${model['model']}.p`;
                       a.click();
-
             })
         },
         // default is bytes
