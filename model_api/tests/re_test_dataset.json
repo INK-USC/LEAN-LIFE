@@ -1,6 +1,6 @@
 {   
     "model_name" : "project-1_model-a",
-    "project_type" : 3,
+    "project_type" : "Relation Extraction",
     "label_space" : [
         {
             "id" : 1, "text" : "RAND", "user_provided" : true
@@ -26,38 +26,38 @@
                     "id" : 1,
                     "label_text" : "RAND",
                     "start_offset" : 13, 
-                    "end_offset" : 18,
+                    "end_offset" : 19,
                     "user_provided" : true
                 },
                 {
                     "id" : 2,
                     "label_text" : "TEMP",
                     "start_offset" : 53, 
-                    "end_offset" : 56,
+                    "end_offset" : 57,
                     "user_provided" : true
                 },
                 {
                     "id" : 3,
                     "label_text" : "NER_TYPE",
                     "start_offset" : 62, 
-                    "end_offset" : 68,
+                    "end_offset" : 69,
                     "user_provided" : true
                 },
                 {
                     "id" : 4,
                     "sbj_start_offset" : 13,
-                    "sbj_end_offset" : 18,
+                    "sbj_end_offset" : 19,
                     "obj_start_offset" : 53,
-                    "obj_end_offset" : 56,
+                    "obj_end_offset" : 57,
                     "label_text" : "relation-1",
                     "user_provided" : false
                 },
                 {
                     "id" : 5,
                     "sbj_start_offset" : 62,
-                    "sbj_end_offset" : 68,
+                    "sbj_end_offset" : 69,
                     "obj_start_offset" : 53,
-                    "obj_end_offset" : 56,
+                    "obj_end_offset" : 57,
                     "label_text" : "relation-2",
                     "user_provided" : false
                 }
@@ -88,21 +88,21 @@
                     "id" : 1,
                     "label_text" : "TEMP",
                     "start_offset" : 5, 
-                    "end_offset" : 12,
+                    "end_offset" : 13,
                     "user_provided" : true
                 },
                 {
                     "id" : 2,
                     "label_text" : "TEMP",
                     "start_offset" : 21, 
-                    "end_offset" : 29,
+                    "end_offset" : 30,
                     "user_provided" : true
                 },
                 {
                     "id" : 3,
                     "label_text" : "NER_TYPE",
                     "start_offset" : 60, 
-                    "end_offset" : 67,
+                    "end_offset" : 68,
                     "user_provided" : true
                 }
             ],
@@ -111,10 +111,37 @@
         }
     ],
     "unlabeled" : [
-        {"text" : "some unlabeled text"},
-        {"text" : "for the machine to train off"},
-        {"text" : "normally there is lots of unlabeled text"},
-        {"text" : "however, this is just a test"},
-        {"text" : "so there is limited text"}
+        {
+            "text" : "some unlabeled text", 
+            "annotations" : [
+                {
+                    "id" : 1,
+                    "label_text" : "TEMP1",
+                    "start_offset" : 0, 
+                    "end_offset" : 4,
+                    "user_provided" : true
+                },
+                {
+                    "id" : 2,
+                    "label_text" : "TEMP2",
+                    "start_offset" : 5, 
+                    "end_offset" : 14,
+                    "user_provided" : true
+                }
+            ]
+        },
+        {
+            "text" : "this won't be considered unlabeled text, too few entities",
+            "annotations" : [
+                {
+                    "id" : 1,
+                    "label_text" : "TEMP",
+                    "start_offset" : 0, 
+                    "end_offset" : 4,
+                    "user_provided" : true
+                }
+            ]
+        },
+        {"text" : "this also won't be considered unlabeled text"}
     ]
 }

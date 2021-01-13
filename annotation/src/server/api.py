@@ -829,6 +829,7 @@ class TrainModelAPIView(APIView):
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
 			
 			if not doc.annotated:
+				del annotated_row["explanations"]
 				results['unlabeled'].append(annotated_row)
 				continue
 			
