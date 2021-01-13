@@ -268,7 +268,8 @@ def _process_annotations(annotated_docs, project_type):
         for key in temp_explanation_triples:
             explanation_triples[key] = temp_explanation_triples[key]
     
-    return list(sentence_label_pairs.values()), explanation_triples
+    
+    return list(sentence_label_pairs.values()), list(explanation_triples.values())
 
 def _read_lean_life_dataset(json_dataset):
     """

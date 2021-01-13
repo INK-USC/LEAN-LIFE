@@ -231,16 +231,16 @@ def test_process_annotations_sa():
         ("this is some random text that we're going to say has no label.", '')
     ]
 
-    actual_explanation_triples = {
-        1 : {
-                'text' : "this is some random text that we're going to say has a positive label.",
-                'label' : 'pos',
-                'explanation' : [
-                    'This is the first explanation for annotation 1',
-                    'This is the second explanation for annotation 1'
-                ]
-            }
-    }
+    actual_explanation_triples = [
+        {
+            'text' : "this is some random text that we're going to say has a positive label.",
+            'label' : 'pos',
+            'explanation' : [
+                'This is the first explanation for annotation 1',
+                'This is the second explanation for annotation 1'
+            ]
+        }
+    ]
 
     sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
@@ -261,22 +261,22 @@ def test_process_annotations_re():
         ('this document has no OBJ-TEMP, but we can still use it for SUBJ-NER_TYPE!', '')
     ]
 
-    actual_explanation_triples = {
-        4 : { 
-                'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
-                'label' : 'relation-1', 
-                'explanation' : [
-                    'This is the first explanation for annotation 4', 
-                    'This is the second explanation for annotation 4',
-                    'This is the third explanation for annotation 4'
-                ]
-            }, 
-        5: {
-                'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
-                'label' : 'relation-2',
-                'explanation': ['Annotation 5 has only one explanation']
-            }
-    }
+    actual_explanation_triples = [
+        { 
+            'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
+            'label' : 'relation-1', 
+            'explanation' : [
+                'This is the first explanation for annotation 4', 
+                'This is the second explanation for annotation 4',
+                'This is the third explanation for annotation 4'
+            ]
+        }, 
+        {
+            'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
+            'label' : 'relation-2',
+            'explanation': ['Annotation 5 has only one explanation']
+        }
+    ]
 
     sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
@@ -291,16 +291,16 @@ def test_read_lean_life_dataset_sa():
         ("this is some random text that we're going to say has no label.", '')
     ]
 
-    actual_explanation_triples = {
-        1 : {
-                'text' : "this is some random text that we're going to say has a positive label.",
-                'label' : 'pos',
-                'explanation' : [
-                    'This is the first explanation for annotation 1',
-                    'This is the second explanation for annotation 1'
-                ]
-            }
-    }
+    actual_explanation_triples = [
+        {
+            'text' : "this is some random text that we're going to say has a positive label.",
+            'label' : 'pos',
+            'explanation' : [
+                'This is the first explanation for annotation 1',
+                'This is the second explanation for annotation 1'
+            ]
+        }
+    ]
 
     actual_label_space = ["pos", "neg"]
     actual_unlabeled_docs = [
@@ -330,22 +330,22 @@ def test_read_lean_life_dataset_re():
         ('this document has no OBJ-TEMP, but we can still use it for SUBJ-NER_TYPE!', '')
     ]
 
-    actual_explanation_triples = {
-        4 : { 
-                'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
-                'label' : 'relation-1', 
-                'explanation' : [
-                    'This is the first explanation for annotation 4', 
-                    'This is the second explanation for annotation 4',
-                    'This is the third explanation for annotation 4'
-                ]
-            }, 
-        5: {
-                'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
-                'label' : 'relation-2',
-                'explanation': ['Annotation 5 has only one explanation']
-            }
-    }
+    actual_explanation_triples = [
+        { 
+            'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
+            'label' : 'relation-1', 
+            'explanation' : [
+                'This is the first explanation for annotation 4', 
+                'This is the second explanation for annotation 4',
+                'This is the third explanation for annotation 4'
+            ]
+        }, 
+        {
+            'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
+            'label' : 'relation-2',
+            'explanation': ['Annotation 5 has only one explanation']
+        }
+    ]
 
     actual_label_space = ["relation-1", "relation-2"]
     actual_unlabeled_docs = [
