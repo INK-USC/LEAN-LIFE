@@ -1,6 +1,6 @@
 {
     "model_name" : "project-2_model-b",
-    "project_type" : 1,
+    "project_type" : "Sentiment Analysis",
     "label_space" : [
         {
             "id" : 1, "text" : "pos", "user_provided" : false

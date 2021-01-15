@@ -755,9 +755,9 @@ class TrainModelAPIView(APIView):
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_name, model_settings)
 		# return Response(data=json_object)
-		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
+		# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
 		#TODO test
-		# model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
+		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 
 		self.write_to_model_metadata_file(project_id, model_name)
 
@@ -831,13 +831,14 @@ class TrainModelAPIView(APIView):
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
 			
 			if not doc.annotated:
+				del annotated_row["explanations"]
 				data_info['unlabeled'].append(annotated_row)
 				continue
 			
 			data_info['annotated'].append(annotated_row)
 
 		result = {
-			"model_info": data_info,
+			"lean_life_dataset": data_info,
 			"settings": model_settings
 		}
 		return result
@@ -862,9 +863,9 @@ class DownloadModelFile(APIView):
 
 	def get(self, request):
 		file_path = request.GET.get("file_path")
-		model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
+		# model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
 		#TODO test
-		# model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
+		model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
 
 		# with open("communication/test_download.p", "wb") as f:
 		# 	pickle.dump(model_file_json, f)

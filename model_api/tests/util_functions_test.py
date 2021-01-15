@@ -3,12 +3,17 @@ import json
 sys.path.append("../")
 import util_functions as util_f
 import constants as const
+import json_schema as schema
 
 with open("re_test_dataset.json") as f:
     re_data = json.load(f)
 
+re_data = schema.LeanLifeDataset.parse_obj(re_data)
+
 with open("sa_test_dataset.json") as f:
     sa_data = json.load(f)
+
+sa_data = schema.LeanLifeDataset.parse_obj(sa_data)
 
 def test_create_ner_key():
     start_offset = 10
@@ -19,16 +24,16 @@ def test_create_ner_key():
 def test_create_re_pair():
     text = "this is some random text, that we're going to insert subj and objects into."
     ner_mentions = {
-        "13-18" : "RAND",
-        "53-56" : "TEMP",
-        "62-68" : "NER_TYPE"
+        "13-19" : "RAND",
+        "53-57" : "TEMP",
+        "62-69" : "NER_TYPE"
     }
 
     annotation = {
-        "start_offset_1" : 13,
-        "end_offset_1" : 18,
-        "start_offset_2" : 53,
-        "end_offset_2" : 56,
+        "sbj_start_offset" : 13,
+        "sbj_end_offset" : 19,
+        "obj_start_offset" : 53,
+        "obj_end_offset" : 57,
         "label_text" : "relation-1",
     }
     
@@ -41,10 +46,10 @@ def test_create_re_pair():
     assert actual_label == label
 
     annotation = {
-        "start_offset_1" : 62,
-        "end_offset_1" : 68,
-        "start_offset_2" : 53,
-        "end_offset_2" : 56,
+        "sbj_start_offset" : 62,
+        "sbj_end_offset" : 69,
+        "obj_start_offset" : 53,
+        "obj_end_offset" : 57,
         "label_text" : "relation-2",
     }
 
@@ -59,9 +64,9 @@ def test_create_re_pair():
 def test_generate_no_label_pairs():
     text = "this is some random text, that we're going to insert subj and objects into."
     ner_mentions = {
-        "13-18" : "RAND",
-        "53-56" : "TEMP",
-        "62-68" : "NER_TYPE"
+        "13-19" : "RAND",
+        "53-57" : "TEMP",
+        "62-69" : "NER_TYPE"
     }
 
     actual_relation_text = "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into."
@@ -74,7 +79,7 @@ def test_generate_no_label_pairs():
     assert "" == labels[0]
 
 def test_process_re_annotated_doc_with_annotations():
-    annotated_docs = re_data["annotated"]
+    annotated_docs = re_data.annotated
     annotated_doc = annotated_docs[0]
     fake_id = -1
 
@@ -84,12 +89,20 @@ def test_process_re_annotated_doc_with_annotations():
     }
 
     actual_explanation_triples = {
-        4: [
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the first explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the second explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the third explanation for annotation 4')
-        ],
-        5: [("this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.", 'relation-2', 'Annotation 5 has only one explanation')]
+        4 : { 
+                'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
+                'label' : 'relation-1', 
+                'explanation' : [
+                    'This is the first explanation for annotation 4', 
+                    'This is the second explanation for annotation 4',
+                    'This is the third explanation for annotation 4'
+                ]
+            }, 
+        5: {
+                'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
+                'label' : 'relation-2',
+                'explanation': ['Annotation 5 has only one explanation']
+            }
     }
 
     actual_fake_id = -1
@@ -101,7 +114,7 @@ def test_process_re_annotated_doc_with_annotations():
     assert actual_fake_id == temp_fake_id
     
 def test_process_re_annotated_doc_no_annotations():
-    annotated_docs = re_data["annotated"]
+    annotated_docs = re_data.annotated
     annotated_doc = annotated_docs[1]
     fake_id = -1
 
@@ -124,8 +137,24 @@ def test_process_re_annotated_doc_no_annotations():
     assert actual_explanation_triples == temp_explanation_triples
     assert actual_fake_id == temp_fake_id
 
+def test_process_re_unlabeled_doc():
+    unlabeled_docs = re_data.unlabeled
+    valid_doc = unlabeled_docs[0]
+
+    actual_unlabeled_text = [
+        'SUBJ-TEMP1 OBJ-TEMP2 text',
+        'OBJ-TEMP1 SUBJ-TEMP2 text'
+    ]
+
+    assert actual_unlabeled_text == util_f._procress_re_unlabeled_doc(valid_doc)
+
+    invalid_doc = unlabeled_docs[1]
+    actual_unlabeled_text = []
+
+    assert actual_unlabeled_text == util_f._procress_re_unlabeled_doc(invalid_doc)
+
 def test_process_sa_annotated_doc_with_explanation():
-    annotated_docs = sa_data["annotated"]
+    annotated_docs = sa_data.annotated
     annotated_doc = annotated_docs[0]
     fake_id = -1
 
@@ -134,10 +163,14 @@ def test_process_sa_annotated_doc_with_explanation():
     }
 
     actual_explanation_triples = {
-        1: [
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the first explanation for annotation 1'), 
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the second explanation for annotation 1')
-        ]
+        1 : {
+                'text' : "this is some random text that we're going to say has a positive label.",
+                'label' : 'pos',
+                'explanation' : [
+                    'This is the first explanation for annotation 1',
+                    'This is the second explanation for annotation 1'
+                ]
+            }
     }
 
     actual_fake_id = -1
@@ -149,7 +182,7 @@ def test_process_sa_annotated_doc_with_explanation():
     assert actual_fake_id == temp_fake_id
 
 def test_process_sa_annotated_doc_no_explanation():
-    annotated_docs = sa_data["annotated"]
+    annotated_docs = sa_data.annotated
     annotated_doc = annotated_docs[1]
     fake_id = -1
 
@@ -169,7 +202,7 @@ def test_process_sa_annotated_doc_no_explanation():
     assert actual_fake_id == temp_fake_id
 
 def test_process_sa_annotated_doc_no_annotation():
-    annotated_docs = sa_data["annotated"]
+    annotated_docs = sa_data.annotated
     annotated_doc = annotated_docs[2]
     fake_id = -1
 
@@ -189,8 +222,8 @@ def test_process_sa_annotated_doc_no_annotation():
     assert actual_fake_id == temp_fake_id
 
 def test_process_annotations_sa():
-    annotated_docs = sa_data["annotated"]
-    project_type = const.LEAN_LIFE_SA_PROJECT
+    annotated_docs = sa_data.annotated
+    project_type = sa_data.project_type
     
     actual_sentence_label_pairs = [
         ("this is some random text that we're going to say has a positive label.", 'pos'),
@@ -198,20 +231,24 @@ def test_process_annotations_sa():
         ("this is some random text that we're going to say has no label.", '')
     ]
 
-    actual_explanation_triples = {
-        1: [
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the first explanation for annotation 1'),
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the second explanation for annotation 1')
-        ]
-    }
+    actual_explanation_triples = [
+        {
+            'text' : "this is some random text that we're going to say has a positive label.",
+            'label' : 'pos',
+            'explanation' : [
+                'This is the first explanation for annotation 1',
+                'This is the second explanation for annotation 1'
+            ]
+        }
+    ]
 
     sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
     assert actual_explanation_triples == explanation_triples
 
 def test_process_annotations_re():
-    annotated_docs = re_data["annotated"]
-    project_type = const.LEAN_LIFE_RE_PROJECT
+    annotated_docs = re_data.annotated
+    project_type = re_data.project_type
     
     actual_sentence_label_pairs = [
         ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1'),
@@ -224,25 +261,29 @@ def test_process_annotations_re():
         ('this document has no OBJ-TEMP, but we can still use it for SUBJ-NER_TYPE!', '')
     ]
 
-
-    actual_explanation_triples = {
-        4: [
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the first explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the second explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the third explanation for annotation 4')
-        ],
-        5: [
-            ("this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.", 'relation-2', 'Annotation 5 has only one explanation')
+    actual_explanation_triples = [
+        { 
+            'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
+            'label' : 'relation-1', 
+            'explanation' : [
+                'This is the first explanation for annotation 4', 
+                'This is the second explanation for annotation 4',
+                'This is the third explanation for annotation 4'
             ]
-    }
+        }, 
+        {
+            'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
+            'label' : 'relation-2',
+            'explanation': ['Annotation 5 has only one explanation']
+        }
+    ]
 
     sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
     assert actual_explanation_triples == explanation_triples
 
 def test_read_lean_life_dataset_sa():
-    with open("sa_test_dataset.json") as f:
-        training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(f)
+    training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(sa_data)
     
     actual_training_pairs = [
         ("this is some random text that we're going to say has a positive label.", 'pos'),
@@ -250,12 +291,16 @@ def test_read_lean_life_dataset_sa():
         ("this is some random text that we're going to say has no label.", '')
     ]
 
-    actual_explanation_triples = {
-        1: [
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the first explanation for annotation 1'),
-            ("this is some random text that we're going to say has a positive label.", 'pos', 'This is the second explanation for annotation 1')
-        ]
-    }
+    actual_explanation_triples = [
+        {
+            'text' : "this is some random text that we're going to say has a positive label.",
+            'label' : 'pos',
+            'explanation' : [
+                'This is the first explanation for annotation 1',
+                'This is the second explanation for annotation 1'
+            ]
+        }
+    ]
 
     actual_label_space = ["pos", "neg"]
     actual_unlabeled_docs = [
@@ -272,8 +317,7 @@ def test_read_lean_life_dataset_sa():
     assert set(actual_unlabeled_docs) == set(unlabeled_docs)
 
 def test_read_lean_life_dataset_re():
-    with open("re_test_dataset.json") as f:
-        training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(f)
+    training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(re_data)
     
     actual_training_pairs = [
         ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1'),
@@ -286,24 +330,27 @@ def test_read_lean_life_dataset_re():
         ('this document has no OBJ-TEMP, but we can still use it for SUBJ-NER_TYPE!', '')
     ]
 
-    actual_explanation_triples = {
-        4: [
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the first explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the second explanation for annotation 4'),
-            ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1', 'This is the third explanation for annotation 4')
-        ],
-        5: [
-            ("this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.", 'relation-2', 'Annotation 5 has only one explanation')
+    actual_explanation_triples = [
+        { 
+            'text' : "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 
+            'label' : 'relation-1', 
+            'explanation' : [
+                'This is the first explanation for annotation 4', 
+                'This is the second explanation for annotation 4',
+                'This is the third explanation for annotation 4'
             ]
-    }
+        }, 
+        {
+            'text' : "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into.",
+            'label' : 'relation-2',
+            'explanation': ['Annotation 5 has only one explanation']
+        }
+    ]
 
     actual_label_space = ["relation-1", "relation-2"]
     actual_unlabeled_docs = [
-        'some unlabeled text',
-        'for the machine to train off',
-        'normally there is lots of unlabeled text',
-        'however, this is just a test',
-        'so there is limited text'
+        'SUBJ-TEMP1 OBJ-TEMP2 text',
+        'OBJ-TEMP1 SUBJ-TEMP2 text'
     ]
 
     assert set(actual_training_pairs) == set(training_pairs)

@@ -66,6 +66,8 @@ def _generate_no_label_pairs(ner_mentions, text):
         When an annotater indicates that a document has no relations between its entities, we create training
         points that indicate that all possible pairs of entities should have the label "no relation".
 
+        If len(ner_mentions) < 2, empty arrays are sent back
+
         Arguments:
             ner_mentions (dict) : all the NER mentions in the text, key - entity position, value - entity type
             text          (str) : the text of the document
@@ -102,15 +104,26 @@ def _generate_no_label_pairs(ner_mentions, text):
                 labels.append(label)
     return relation_texts, labels
 
-def _procress_re_unlabeled_doc(annotated_doc):
-    text = annotated_doc.text
-    annotations = annotated_doc.annotations
+def _procress_re_unlabeled_doc(unlabeled_doc):
+    """
+        For each unlabeled document, we prepare the text to indicate what subj and obj to try and classify
+        as having a relation. We do it for every pair of named_entities provided in the unlabeled document.
+
+        Arguments:
+            unlabeled_doc (dict) : dictionary representation of an unlabeled document
+        
+        Returns:
+            arr : array of text where the NERs that form the relation are indicated/normalized
+    """
+    text = unlabeled_doc.text
+    annotations = unlabeled_doc.annotations
     ner_mentions = {}
     for annotation in annotations:
         if annotation["user_provided"]:
             key = _create_ner_key(annotation["start_offset"], annotation["end_offset"])
             label = annotation["label_text"]
             ner_mentions[key] = label
+    
     relation_texts, _ = _generate_no_label_pairs(ner_mentions, text)
 
     return relation_texts
@@ -167,7 +180,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
             temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
         else:
             temp_explanation_triples[annotation_id] = {
-                "text" : text,
+                "text" : relation_text,
                 "label" : label,
                 "explanation" : [explanation_text]
             }
@@ -255,7 +268,8 @@ def _process_annotations(annotated_docs, project_type):
         for key in temp_explanation_triples:
             explanation_triples[key] = temp_explanation_triples[key]
     
-    return list(sentence_label_pairs.values()), explanation_triples
+    
+    return list(sentence_label_pairs.values()), list(explanation_triples.values())
 
 def _read_lean_life_dataset(json_dataset):
     """
@@ -274,7 +288,8 @@ def _read_lean_life_dataset(json_dataset):
     if project_type != const.LEAN_LIFE_RE_PROJECT:
         unlabeled_docs = [doc.text for doc in unlabeled_docs]
     else:
-        unlabeled_docs = [text for doc in unlabeled_docs for text in _procress_re_unlabeled_doc(doc)]
+        annotated_unlabeled_docs = [doc for doc in unlabeled_docs if hasattr(doc, "annotations")]
+        unlabeled_docs = [text for doc in annotated_unlabeled_docs for text in _procress_re_unlabeled_doc(doc)]
     annotated_docs = json_dataset.annotated
     training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
     
