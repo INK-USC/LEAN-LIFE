@@ -64,7 +64,8 @@
           <el-row>
             <el-button type="primary" :disabled="!submissionForm.text" @click="createLabel">Save Label</el-button>
             <el-button type="danger" :disabled="!formHasChanged" @click="resetLabel">Reset Current Label</el-button>
-            <el-button type="success" :disabled="!existingLabels ||existingLabels.length==0" @click="goNextStep">Done
+            <el-button type="success" :disabled="this.$store.getters['label/getLabels'].length==0" @click="goNextStep">
+              Done
             </el-button>
           </el-row>
         </el-form>

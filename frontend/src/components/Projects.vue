@@ -9,11 +9,13 @@
     </el-row>
     <el-row>
       <el-col :span="12" :offset="6">
-        <el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}"
-                  @cell-click="handleProjectSelected">
+        <el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}">
           <el-table-column prop="name" label="Name" sortable>
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.name }}</el-link>
+              <el-link type="primary" @click="handleProjectSelected(scope.$index, scope.row)">{{
+                  scope.row.name
+                }}
+              </el-link>
             </template>
           </el-table-column>
           <el-table-column prop="description" label="Description" sortable/>
@@ -64,12 +66,9 @@ export default {
     this.fetchProjects();
   },
   methods: {
-    handleProjectSelected(row, col, cell, event) {
-      const classname = cell.className.toString().trim()
-      if (!classname.endsWith("_5")) {
-        this.$router.push({name: 'DocumentList'})
-        this.$store.commit("setProject", {projectInfo: row, actionType: ACTION_TYPE.EDIT});
-      }
+    handleProjectSelected(index, row) {
+      this.$router.push({name: 'DocumentList'})
+      this.$store.commit("setProject", {projectInfo: row, actionType: ACTION_TYPE.EDIT});
     },
     handleEdit(index, row) {
       this.selectedProject = row;
