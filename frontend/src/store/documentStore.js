@@ -1,4 +1,5 @@
 import api from "@/utilities/network";
+import {formatAnnotations} from "@/store/util";
 
 const documentStoreModule = {
 	namespaced: true,
@@ -32,6 +33,10 @@ const documentStoreModule = {
 				.get(`/projects/${rootState.projectInfo.id}/docs/?page=${state.documentInfo.curPage}&page_size=${state.documentInfo.pageSize}`)
 				.then(res => {
 					state.documentInfo.documents = res.results.results;
+					state.documentInfo.documents.forEach(doc => {
+						doc.formattedAnnotations = formatAnnotations(doc, rootState.projectInfo.task)
+					})
+
 					state.documentInfo.totalDocCount = res.count;
 					state.documentInfo.annotatedDocCount = res.results.annotatedCount;
 					state.documentInfo.maxPage = Math.ceil(state.documentInfo.totalDocCount / state.documentInfo.pageSize);

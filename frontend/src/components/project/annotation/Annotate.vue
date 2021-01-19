@@ -8,7 +8,9 @@
       <LabelListRow/>
     </el-row>
 
-    <SentimentAnalysisAnnotation/>
+    <SentimentAnalysisAnnotation v-if="this.$store.getters.getProjectInfo.task==1"/>
+    <NamedEntityRecognitionAnnotation v-if="this.$store.getters.getProjectInfo.task==2"/>
+    <RelationExtractionAnnotation v-if="this.$store.getters.getProjectInfo.task==3"/>
 
     <el-row style="margin-top: 20px">
       <el-col style="display: flex; justify-content: space-between">
@@ -40,10 +42,17 @@
 <script>
 import LabelListRow from "@/components/shared/LabelListRow";
 import SentimentAnalysisAnnotation from "@/components/project/annotation/sa/SentimentAnalysisAnnotation";
+import NamedEntityRecognitionAnnotation from "@/components/project/annotation/ner/NamedEntityRecognitionAnnotation";
+import RelationExtractionAnnotation from "@/components/project/annotation/re/RelationExtractionAnnotation";
 
 export default {
   name: "Annotate",
-  components: {SentimentAnalysisAnnotation, LabelListRow},
+  components: {
+    RelationExtractionAnnotation,
+    NamedEntityRecognitionAnnotation,
+    SentimentAnalysisAnnotation,
+    LabelListRow
+  },
   data() {
     return {}
   },
