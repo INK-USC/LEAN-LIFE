@@ -667,7 +667,8 @@ class ModelAPIView(APIView):
 		model_dict = {}
 		for project in projects:
 			print("project", project.id)
-			models = model_project_map['project-models'][str(project.id)]
+
+			models = model_project_map['project-models'][str(project.id)] if str(project.id) in model_project_map['project-models'] else []
 			print("modesls", models)
 			for model in models:
 				model_dict[model] = {
