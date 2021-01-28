@@ -3,11 +3,24 @@
     <el-row>
       <el-tag>Text</el-tag>
     </el-row>
-    <div style="line-height: 4; margin-top: 10px;" v-if="$store.getters['document/getCurDoc']"
-         v-on:mouseup="setSelectedRange"
-    >
-      {{ this.$store.getters["document/getCurDoc"].text }}
-    </div>
+
+    <el-row style="line-height: 4">
+      <div v-on:mouseup="setSelectedRange">
+        <span v-for="(chunk, index) in this.chunks" :key="index"
+              :style="{color: id2label[chunk.label] ? id2label[chunk.label].text_color: '',
+            backgroundColor: id2label[chunk.label] ? id2label[chunk.label].background_color : '',
+            padding: '10px 10px 10px 10px',
+            fontSize: '18px',
+            borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0
+          }">
+            {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
+
+            <i v-if="id2label[chunk.label] && id2label[chunk.label].text_color" class="el-icon-delete"
+               style="cursor: pointer" @click="removeAnnotation(chunk)"/>
+        </span>
+      </div>
+
+    </el-row>
 
 
   </el-card>
@@ -77,12 +90,77 @@ export default {
           "selectionEnd": selectionEnd
         })
       }
+    },
+    makeLabel(startOffset, endOffset) {
+      const label = {
+        id: 0,
+        label: -1,
+        start_offset: startOffset,
+        end_offset: endOffset,
+      };
+      return label;
+    },
+    removeAnnotation(annotation) {
+      console.log("remove annotation", annotation)
+      this.$http
+          .delete(`projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${annotation.base_ann_id}`)
+          .then(res => {
+            if (this.$store.getters["document/getCurDoc"].annotations.length == 1) {
+              return this.$http
+                  .patch(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}`,
+                      {annotated: false}
+                  )
+            }
+          })
+          .then(() => {
+            this.$store.dispatch('document/fetchDocuments')
+          })
     }
   },
   created() {
     // console.log(this.$store.getters["document/getCurDoc"])
   },
-  computed: {}
+  computed: {
+    chunks() {
+      let sortedEntityPositions = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
+      if (!sortedEntityPositions) {
+        return [];
+      }
+      const res = [];
+      let left = 0;
+      for (let i = 0; i < sortedEntityPositions.length; i++) {
+        const e = sortedEntityPositions[i];
+        const l = this.makeLabel(left, e.start_offset);
+        res.push(l);
+        res.push(e);
+        left = e.end_offset;
+      }
+      const l = this.makeLabel(left, this.$store.getters["document/getCurDoc"].text.length);
+      res.push(l);
+      return res
+    },
+    fullText() {
+      return this.$store.getters["document/getCurDoc"].text;
+    },
+    id2label() {
+      const id2label = {};
+      // default value;
+      id2label[-1] = {
+        text_color: "",
+        background_color: "",
+        text_decoration: "",
+      };
+
+      for (let i = 0; i < this.$store.getters['label/getLabels'].length; i++) {
+        const label = this.$store.getters["label/getLabels"][i];
+        label.text_decoration = "";
+        id2label[label.id] = label;
+      }
+      return id2label;
+    },
+
+
+  }
 }
 </script>
 

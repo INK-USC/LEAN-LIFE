@@ -27,6 +27,10 @@ export default {
       if (!this.$route.path.endsWith('annotate')) {
         return;
       }
+      //NER
+      if (this.$store.getters.getProjectInfo.task == 2 && this.$store.getters["annotation/getNERSelection"].start_offset == -1 || this.$store.getters["annotation/getNERSelection"].end_offset == -1) {
+        return;
+      }
       this.$http
           .post(
               `/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/`,

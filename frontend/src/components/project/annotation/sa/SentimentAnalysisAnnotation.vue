@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import SelectedLabelListRow from "@/components/shared/SelectedLabelListRow";
+import SelectedLabelListRow from "@/components/project/annotation/sa/SelectedLabelListRow";
 
 export default {
   name: "SentimentAnalysisAnnotation",

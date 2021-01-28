@@ -19,7 +19,7 @@
 
 <script>
 
-import SelectedLabel from "@/components/shared/SelectedLabel";
+import SelectedLabel from "@/components/project/annotation/sa/SelectedLabel";
 
 export default {
   name: "SelectedLabelListRow",
