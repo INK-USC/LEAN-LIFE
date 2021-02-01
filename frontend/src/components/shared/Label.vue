@@ -31,6 +31,7 @@ export default {
       if (this.$store.getters.getProjectInfo.task == 2 && this.$store.getters["annotation/getNERSelection"].start_offset == -1 || this.$store.getters["annotation/getNERSelection"].end_offset == -1) {
         return;
       }
+      let annotationId = -1;
       this.$http
           .post(
               `/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/`,
@@ -43,6 +44,7 @@ export default {
             console.log("label added", res)
 
             let lastAnnotationId = res.id;
+            annotationId = res.id
 
             if (this.$store.getters.getProjectInfo.task == 1) {
               return this.$http
@@ -57,8 +59,9 @@ export default {
                   .post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${lastAnnotationId}/ner/`, nerData)
             } else if (this.$store.getters.getProjectInfo.task == 3) {
               //TODO
-              // return this.$http
-              //     .post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${lastAnnotationId}/re/`, {})
+              let reData = this.$store.getters["annotation/getRESelection"];
+              return this.$http
+                  .post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${lastAnnotationId}/re/`, reData)
             }
 
           })
@@ -71,6 +74,16 @@ export default {
           .then(() => {
             console.log("patch completed")
             this.$store.dispatch('document/fetchDocuments')
+            if (this.$store.getters.getProjectInfo.task === 3) {
+              return this.$http
+                  .post(`/projects/${this.$store.getters.getProjectInfo.id}/history/re/`, {
+                    annotation: annotationId,
+                    label: this.labelInfo.id,
+                    user_provided: false,
+                    word_1: this.$store.getters["annotation/getRESelection"].sbj_text,
+                    word_2: this.$store.getters['annotation/getRESelection'].obj_text,
+                  })
+            }
           })
           .catch(err => {
             console.log("err", err)

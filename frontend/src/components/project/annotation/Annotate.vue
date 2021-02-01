@@ -1,6 +1,11 @@
 <template>
   <el-row>
-    <h1>Annotate page</h1>
+    <h1>
+      Annotate page
+      <span v-if="this.$store.getters.getProjectInfo.task==1">(Sentiment Analysis)</span>
+      <span v-if="this.$store.getters.getProjectInfo.task==2">(Named Entity Recognition)</span>
+      <span v-if="this.$store.getters.getProjectInfo.task==3">(Relation Extraction)</span>
+    </h1>
 
     <el-progress :percentage="annotationCompletionPercentage"
                  :format="getProgressBarLabel" type="line" :stroke-width="30" text-inside/>
