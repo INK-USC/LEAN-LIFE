@@ -8,15 +8,13 @@
       <div v-on:mouseup="setSelectedRange">
         <span v-for="(chunk, index) in this.chunks" :key="index"
               :style="{color: id2label[chunk.label] ? id2label[chunk.label].text_color: '',
-            backgroundColor: id2label[chunk.label] ? id2label[chunk.label].background_color : '',
-            padding: '10px 10px 10px 10px',
-            fontSize: '18px',
-            borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0
-          }">
-            {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
-
-            <i v-if="id2label[chunk.label] && id2label[chunk.label].text_color" class="el-icon-delete"
-               style="cursor: pointer" @click="removeAnnotation(chunk)"/>
+              backgroundColor: id2label[chunk.label] ? id2label[chunk.label].background_color : '',
+              padding: '10px 10px 10px 10px', fontSize: '18px',
+              borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0}"
+        >
+          {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
+          <i v-if="id2label[chunk.label] && id2label[chunk.label].text_color" class="el-icon-delete"
+             style="cursor: pointer" @click="removeAnnotation(chunk)"/>
         </span>
       </div>
 
@@ -120,10 +118,11 @@ export default {
   },
   computed: {
     chunks() {
-      let sortedEntityPositions = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
-      if (!sortedEntityPositions) {
+      if (!this.$store.getters["document/getCurDoc"]) {
         return [];
       }
+      let sortedEntityPositions = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
+
       const res = [];
       let left = 0;
       for (let i = 0; i < sortedEntityPositions.length; i++) {

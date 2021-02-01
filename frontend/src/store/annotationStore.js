@@ -3,18 +3,19 @@ import api from "@/utilities/network";
 const annotationStoreModule = {
 	namespaced: true,
 	state: () => ({
-		//ner
-		selectionStart: -1,
-		selectionEnd: -1,
+		annotationInfo: {
+			//ner
+			selectionStart: -1,
+			selectionEnd: -1,
 
-		//re
-
+			//re
+		}
 	}),
 	getters: {
 		getNERSelection(state) {
 			return {
-				selectionStart: state.selectionStart,
-				selectionEnd: state.selectionEnd,
+				selectionStart: state.annotationInfo.selectionStart,
+				selectionEnd: state.annotationInfo.selectionEnd,
 			}
 		}
 	},
@@ -22,8 +23,8 @@ const annotationStoreModule = {
 	actions: {
 		setNERSelection({commit, state, rootState}, payload) {
 			// console.log("ner selection received", payload)
-			state.selectionStart = payload.selectionStart;
-			state.selectionEnd = payload.selectionEnd;
+			state.annotationInfo.selectionStart = payload.selectionStart;
+			state.annotationInfo.selectionEnd = payload.selectionEnd;
 			// console.log("state", state)
 		}
 	}
