@@ -15,19 +15,23 @@
       </div>
     </el-row>
 
-
     <el-row style="margin-top: 25px">
       <el-tag>Relations</el-tag>
     </el-row>
-    <el-row>
 
-    </el-row>
+    <RelationDisplay
+        v-for="(relation, index) in this.$store.getters['document/getCurDoc'].formattedAnnotations.filter(annotation=>annotation.type==='re')"
+        :key="index"
+        :relation="relation"/>
   </el-card>
 </template>
 
 <script>
+import RelationDisplay from "@/components/project/annotation/re/RelationDisplay";
+
 export default {
   name: "RelationExtractionAnnotation",
+  components: {RelationDisplay},
   data() {
     return {
       clickedChunks: [],
@@ -41,6 +45,7 @@ export default {
       }
     }
   },
+
   methods: {
     // TODO: As of right now the 'label' property in the chunk is just a boolean
     // so there aren't any styles attached to it.
