@@ -1,17 +1,14 @@
 <template>
   <div>
-    <!--    <h1>-->
-    <!--      All Uploaded Documents-->
-    <!--      <el-progress :text-inside="true" :stroke-width="26" :percentage="10" style="width: 25%;"/>-->
-    <!--    </h1>-->
     <div style="display: flex; flex-direction: column; align-items: center">
       <div>
         <h1>All Uploaded Documents</h1>
         <el-progress type="circle" :percentage="percentageCompleted" :format="percentageText"/>
       </div>
 
-      <el-autocomplete v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
-                       :fetch-suggestions="searchForDocuments" :debounce="500" prefix-icon="el-icon-search"/>
+
+      <el-input v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
+                prefix-icon="el-icon-search" clearable/>
     </div>
 
     <el-table
@@ -41,18 +38,6 @@ export default {
     }
   },
   methods: {
-    searchForDocuments(_, cb) {
-      cb([])
-      if (!this.searchQuery) {
-        return
-      }
-      this.$http
-          .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?page=${this.page}&q=${this.searchQuery}`)
-          .then(res => {
-            //TODO send res to vuex
-            // this.processResult(res)
-          })
-    },
     pageChanged(pageNum) {
       this.$store.dispatch("document/updateCurPage", {newPage: pageNum}, {root: true})
     },
