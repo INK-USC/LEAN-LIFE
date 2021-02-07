@@ -14,6 +14,7 @@ import LabelCreation from "@/components/project/overview/LabelCreation";
 import AnnotationSettings from "@/components/project/overview/AnnotationSettings";
 import HistoricalAnnotations from "@/components/project/overview/HistoricalAnnotations";
 import Annotate from "@/components/project/annotation/Annotate";
+import ModelDownload from "@/components/model/ModelDownload";
 
 Vue.use(VueRouter);
 
@@ -55,6 +56,7 @@ const routes = [
 			{path: "annotate", name: "annotate", component: Annotate}
 		]
 	},
+	{path: "/models", name: "ModelDownload", component: ModelDownload}
 ];
 
 const router = new VueRouter({
