@@ -60,7 +60,7 @@ export default {
       return index + 1;
     },
     percentageText(percentage) {
-      return percentage + "% annotated"
+      return `${percentage} % annotated`
     }
   },
   created() {
