@@ -1,9 +1,22 @@
 <template>
   <div>
-    <h1>All Uploaded Documents</h1>
-    <el-autocomplete v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
-                     :fetch-suggestions="searchForDocuments" :debounce="500" prefix-icon="el-icon-search"/>
-    <el-table :data="this.$store.getters['document/getDocuments'].documents" stripe>
+    <!--    <h1>-->
+    <!--      All Uploaded Documents-->
+    <!--      <el-progress :text-inside="true" :stroke-width="26" :percentage="10" style="width: 25%;"/>-->
+    <!--    </h1>-->
+    <div style="display: flex; flex-direction: column; align-items: center">
+      <div>
+        <h1>All Uploaded Documents</h1>
+        <el-progress type="circle" :percentage="percentageCompleted" :format="percentageText"/>
+      </div>
+
+      <el-autocomplete v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
+                       :fetch-suggestions="searchForDocuments" :debounce="500" prefix-icon="el-icon-search"/>
+    </div>
+
+    <el-table
+        :data="this.$store.getters['document/getDocuments'].documents.filter(row=> !searchQuery || row.text.toLowerCase().includes(searchQuery.toLowerCase().trim()))"
+        stripe>
       <el-table-column type="index" :index="indexMethod"/>
       <el-table-column label="Text">
         <template slot-scope="scope">
@@ -46,9 +59,20 @@ export default {
     indexMethod(index) {
       return index + 1;
     },
+    percentageText(percentage) {
+      return percentage + "% annotated"
+    }
   },
   created() {
     this.$store.dispatch('document/fetchDocuments', null, {root: true})
+  },
+  computed: {
+    percentageCompleted() {
+      const info = this.$store.getters["document/getDocuments"];
+      const completed = info.annotatedDocCount;
+      const all = info.totalDocCount;
+      return (completed / all) * 100;
+    }
   }
 }
 </script>
