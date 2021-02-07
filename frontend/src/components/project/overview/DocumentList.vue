@@ -6,7 +6,6 @@
         <el-progress type="circle" :percentage="percentageCompleted" :format="percentageText"/>
       </div>
 
-
       <el-input v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
                 prefix-icon="el-icon-search" clearable/>
     </div>
