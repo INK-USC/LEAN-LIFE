@@ -1,26 +1,20 @@
 <template>
-  <el-tag v-if="!!labelInfo"
-          :style="{backgroundColor: fullInfo.labelInfo.background_color, color: fullInfo.labelInfo.text_color}">
-
-    <b style="font-size: medium">{{ this.labelText }}</b>
-    <i class="el-icon-close el-icon-right" @click="detachLabelFromDocs"/>
+  <el-tag v-if="!!label"
+          :style="{backgroundColor: label.background_color, color: label.text_color}"
+  >
+    <b style="font-size: medium">{{ label.text }}</b>
+    <i class="el-icon-close el-icon-right" @click="removeAnnotation"/>
   </el-tag>
 </template>
 
 <script>
 export default {
   name: "SelectedLabel",
-  props: {labelInfo: Object},
-  data() {
-    return {
-      fullInfo: {}
-    }
-  },
+  props: {annotationInfo: Object},
   methods: {
-    detachLabelFromDocs() {
-      console.log("need to detach from docs")
+    removeAnnotation() {
       this.$http
-          .delete(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${this.fullInfo.annotationInfo.id}`)
+          .delete(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${this.annotationInfo.id}`)
           .then(res => {
             console.log("response for delete", res);
             if (this.$store.getters["document/getCurDoc"].annotations.length == 1) {
@@ -36,19 +30,9 @@ export default {
           })
     }
   },
-  created() {
-    let res = this.$store.getters["label/getLabels"].find(label => {
-      return label.id === this.labelInfo.label;
-    })
-    this.fullInfo = {annotationInfo: this.labelInfo, labelInfo: res}
-    // console.log("combined ", this.fullInfo)
-  },
   computed: {
-    labelText: function () {
-      let res = this.$store.getters["label/getLabels"].find(label => {
-        return label.id === this.labelInfo.label;
-      })
-      return res ? res.text : ''
+    label() {
+      return this.$store.getters["label/getLabels"].find(label => label.id === this.annotationInfo.label)
     }
   }
 }

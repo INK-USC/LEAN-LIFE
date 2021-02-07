@@ -8,8 +8,8 @@
       <div v-if="!this.$store.getters['document/getCurDoc'] || !this.$store.getters['label/getLabels']"/>
       <SelectedLabel
           v-else
-          v-for="labelInfo of this.$store.getters['document/getCurDoc'].annotations"
-          :key="labelInfo.id" :labelInfo="labelInfo" style="margin-right: 10px"
+          v-for="annotationInfo of this.$store.getters['document/getCurDoc'].annotations"
+          :key="annotationInfo.id" :annotationInfo="annotationInfo" style="margin-right: 10px"
       />
     </el-row>
   </div>
