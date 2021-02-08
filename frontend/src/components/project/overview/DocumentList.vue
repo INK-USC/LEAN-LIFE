@@ -53,9 +53,13 @@ export default {
   computed: {
     percentageCompleted() {
       const info = this.$store.getters["document/getDocuments"];
+      if (!info) {
+        return 0;
+      }
       const completed = info.annotatedDocCount;
       const all = info.totalDocCount;
-      return (completed / all) * 100;
+      const percent = (completed / all) * 100;
+      return percent ? percent : 0;
     }
   }
 }

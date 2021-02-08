@@ -40,8 +40,8 @@ const annotationStoreModule = {
 	actions: {
 		setNERSelection({commit, state, rootState}, payload) {
 			// console.log("ner selection received", payload)
-			state.annotationInfo.selectionStart = payload.selectionStart;
-			state.annotationInfo.selectionEnd = payload.selectionEnd;
+			state.annotationInfo.ner.selectionStart = payload.selectionStart;
+			state.annotationInfo.ner.selectionEnd = payload.selectionEnd;
 			// console.log("state", state)
 		},
 		setRESelection({commit, state, rootState}, payload) {

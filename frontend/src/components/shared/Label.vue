@@ -28,7 +28,12 @@ export default {
         return;
       }
       //NER
-      if (this.$store.getters.getProjectInfo.task == 2 && this.$store.getters["annotation/getNERSelection"].start_offset == -1 || this.$store.getters["annotation/getNERSelection"].end_offset == -1) {
+      if (this.$store.getters.getProjectInfo.task == 2 && (this.$store.getters["annotation/getNERSelection"].selectionStart == -1 || this.$store.getters["annotation/getNERSelection"].selectionEnd == -1)) {
+        this.$notify({
+          type: "error",
+          message: "invalid selection" + this.$store.getters["annotation/getNERSelection"],
+          title: "annotate failed"
+        })
         return;
       }
       let annotationId = -1;
@@ -84,6 +89,12 @@ export default {
                     word_2: this.$store.getters['annotation/getRESelection'].obj_text,
                   })
             }
+          })
+          .then(() => {
+            this.$store.dispatch("explanation/showExplanationPopup", {
+              label: this.labelInfo,
+              annotation: {id: annotationId}
+            })
           })
           .catch(err => {
             console.log("err", err)

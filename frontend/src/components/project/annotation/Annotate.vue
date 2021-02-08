@@ -41,6 +41,9 @@
         </el-button>
       </el-col>
     </el-row>
+
+    <NaturalLanguageExplanationPopup/>
+
   </el-row>
 </template>
 
@@ -49,10 +52,13 @@ import LabelListRow from "@/components/shared/LabelListRow";
 import SentimentAnalysisAnnotation from "@/components/project/annotation/sa/SentimentAnalysisAnnotation";
 import NamedEntityRecognitionAnnotation from "@/components/project/annotation/ner/NamedEntityRecognitionAnnotation";
 import RelationExtractionAnnotation from "@/components/project/annotation/re/RelationExtractionAnnotation";
+import NaturalLanguageExplanationPopup
+  from "@/components/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
 
 export default {
   name: "Annotate",
   components: {
+    NaturalLanguageExplanationPopup,
     RelationExtractionAnnotation,
     NamedEntityRecognitionAnnotation,
     SentimentAnalysisAnnotation,

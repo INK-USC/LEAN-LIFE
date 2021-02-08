@@ -35,6 +35,7 @@ const documentStoreModule = {
 					state.documentInfo.documents = res.results.results;
 					state.documentInfo.documents.forEach(doc => {
 						doc.formattedAnnotations = formatAnnotations(doc, rootState.projectInfo.task)
+						doc.annotations = doc.annotations.sort((a, b) => a.id - b.id)
 					})
 
 					state.documentInfo.totalDocCount = res.count;

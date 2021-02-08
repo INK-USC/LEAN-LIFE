@@ -7,6 +7,7 @@ import jwt_decode from "jwt-decode";
 import documentStoreModule from "@/store/documentStore";
 import labelStoreModule from "@/store/labelStore";
 import annotationStoreModule from "@/store/annotationStore"
+import explanationStoreModule from "@/store/explanationStore";
 
 Vue.use(Vuex, api);
 //if need to use axios, use api.get/post
@@ -117,7 +118,12 @@ const store = new Vuex.Store({
 			}
 		}
 	},
-	modules: {document: documentStoreModule, label: labelStoreModule, annotation: annotationStoreModule},
+	modules: {
+		document: documentStoreModule,
+		label: labelStoreModule,
+		annotation: annotationStoreModule,
+		explanation: explanationStoreModule,
+	},
 	plugins: [createLogger(),
 		createPersistedState({
 			storage: window.sessionStorage,

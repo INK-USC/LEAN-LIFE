@@ -2,9 +2,10 @@
   <el-tag v-if="!!label"
           :style="{backgroundColor: label.background_color, color: label.text_color}"
   >
-    <b style="font-size: medium">{{ label.text }}</b>
+    <b style="font-size: medium; cursor: pointer" @click="showExplanationPopup">{{ label.text }}</b>
     <i class="el-icon-close el-icon-right" @click="removeAnnotation"/>
   </el-tag>
+
 </template>
 
 <script>
@@ -28,6 +29,9 @@ export default {
             console.log("patched")
             this.$store.dispatch('document/fetchDocuments')
           })
+    },
+    showExplanationPopup() {
+      this.$store.dispatch("explanation/showExplanationPopup", {label: this.label, annotation: this.annotationInfo})
     }
   },
   computed: {
