@@ -29,7 +29,7 @@ const documentStoreModule = {
 	},
 	actions: {
 		fetchDocuments({commit, state, rootState}, payload) {
-			api
+			return api
 				.get(`/projects/${rootState.projectInfo.id}/docs/?page=${state.documentInfo.curPage}&page_size=${state.documentInfo.pageSize}`)
 				.then(res => {
 					state.documentInfo.documents = res.results.results;

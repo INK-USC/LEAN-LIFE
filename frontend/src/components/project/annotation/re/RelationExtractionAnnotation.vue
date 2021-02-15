@@ -18,11 +18,12 @@
     <el-row style="margin-top: 25px">
       <el-tag>Relations</el-tag>
     </el-row>
+    <span v-if="this.$store.getters['document/getCurDoc']">
+      <RelationDisplay
+          v-for="(relation, index) in this.$store.getters['document/getCurDoc'].formattedAnnotations.filter(annotation=>annotation.type==='re')"
+          :key="index" :relation="relation"/>
+    </span>
 
-    <RelationDisplay
-        v-for="(relation, index) in this.$store.getters['document/getCurDoc'].formattedAnnotations.filter(annotation=>annotation.type==='re')"
-        :key="index"
-        :relation="relation"/>
   </el-card>
 </template>
 
@@ -156,11 +157,13 @@ export default {
   },
   computed: {
     fullText() {
-      return this.$store.getters["document/getCurDoc"].text;
+      return this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].text : "";
     },
     sortedNERPositions() {
       let nerPositions = [];
-
+      if (!this.$store.getters['document/getCurDoc']) {
+        return [];
+      }
       this.$store.getters['document/getCurDoc'].formattedAnnotations.filter(annotation => annotation['type'] === 'ner').forEach(annotation => {
         nerPositions.push(annotation);
       })

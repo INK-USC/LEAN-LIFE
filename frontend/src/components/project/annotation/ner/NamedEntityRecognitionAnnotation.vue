@@ -11,9 +11,10 @@
               backgroundColor: id2label[chunk.label] ? id2label[chunk.label].background_color : '',
               padding: '10px 10px 10px 10px', fontSize: '18px',
               borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0}"
-              @click="onAnnotationClicked(chunk)"
         >
-          {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
+          <span @click="onAnnotationClicked(chunk)">
+            {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
+          </span>
           <i v-if="id2label[chunk.label] && id2label[chunk.label].text_color" class="el-icon-delete"
              style="cursor: pointer" @click="removeAnnotation(chunk)"/>
         </span>
@@ -118,8 +119,7 @@ export default {
       if (chunk.label === -1) {
         return;
       }
-      this.$store.dispatch("explanation/showExplanationPopup", {label: this.id2label[chunk.label], annotation: chunk})
-      //TODO incomplete. annotation is wrong
+      this.$store.dispatch("explanation/showExplanationPopup", {annotationId: chunk.base_ann_id})
     }
   },
   created() {

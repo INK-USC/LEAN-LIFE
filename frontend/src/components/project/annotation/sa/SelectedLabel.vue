@@ -31,7 +31,7 @@ export default {
           })
     },
     showExplanationPopup() {
-      this.$store.dispatch("explanation/showExplanationPopup", {label: this.label, annotation: this.annotationInfo})
+      this.$store.dispatch("explanation/showExplanationPopup", {annotationId: this.annotationInfo.id})
     }
   },
   computed: {

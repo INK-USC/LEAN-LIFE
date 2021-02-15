@@ -7,7 +7,8 @@
               borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0}"
         >
           {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
-        </span></el-row>
+        </span>
+  </el-row>
 </template>
 
 <script>

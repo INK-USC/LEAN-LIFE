@@ -20,7 +20,7 @@
 
       <SentimentAnalysisBrief v-if="this.$store.getters.getProjectInfo.task===1"/>
       <NamedEntityRecognitionBrief v-if="this.$store.getters.getProjectInfo.task===2"/>
-
+      <RelationExtractionBrief v-if="this.$store.getters.getProjectInfo.task===3"/>
 
       <el-form style="margin-top: 20px">
         <el-form-item v-for="(reason, index) in this.reasons" :key=index>
@@ -53,11 +53,13 @@
 import SentimentAnalysisBrief from "@/components/explanation/NaturalLanguageExplanation/sa/SentimentAnalysisBrief";
 import NamedEntityRecognitionBrief
   from "@/components/explanation/NaturalLanguageExplanation/ner/NamedEntityRecognitionBrief";
+import RelationExtractionBrief from "@/components/explanation/NaturalLanguageExplanation/re/RelationExtractionBrief";
 
 
 export default {
   name: "NaturalLanguageExplanationPopup",
-  components: {NamedEntityRecognitionBrief, SentimentAnalysisBrief},
+  components: {RelationExtractionBrief, NamedEntityRecognitionBrief, SentimentAnalysisBrief},
+
   data() {
     return {
       reasons: [{text: "", id: -1}],

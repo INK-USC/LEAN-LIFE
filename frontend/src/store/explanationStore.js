@@ -1,11 +1,8 @@
-import api from "@/utilities/network";
-
 const explanationStoreModule = {
 	namespaced: true,
 	state: () => ({
 		explanationInfo: {
-			selectedLabelInfo: {},
-			annotationInfo: {},
+			annotationId: -1,
 		},
 		explanationPopupInfo: {dialogVisible: false}
 	}),
@@ -13,27 +10,25 @@ const explanationStoreModule = {
 		getExplanationPopupInfo(state) {
 			return state.explanationPopupInfo
 		},
-		getSelectedLabelInfo(state) {
-			return state.explanationInfo.selectedLabelInfo;
+		getSelectedLabelInfo(state, getters, rootState, rootGetters) {
+			const curAnnotation = rootGetters["document/getCurDoc"].annotations.find(annotation => annotation.id === state.explanationInfo.annotationId);
+			const curLabel = rootState.label.labelInfo.labels.find(label => label.id === curAnnotation.label)
+			return curLabel;
 		},
-		getAnnotationInfo(state) {
-			return state.explanationInfo.annotationInfo;
-		}
+		getAnnotationInfo(state, getters, rootState, rootGetters) {
+			const curAnnotation = rootGetters["document/getCurDoc"].annotations.find(annotation => annotation.id === state.explanationInfo.annotationId);
+			return curAnnotation;
+		},
 	},
 	mutations: {},
 	actions: {
 		showExplanationPopup({commit, dispatch, state, rootState}, payload) {
-			console.log("payload", payload)
-			console.log("root state", rootState)
-
-			state.explanationInfo.selectedLabelInfo = payload.label;
-			state.explanationInfo.annotationInfo = payload.annotation;
+			const annotationId = payload.annotationId;
+			state.explanationInfo.annotationId = annotationId;
 			state.explanationPopupInfo.dialogVisible = true;
-			console.log("store", state.explanationInfo)
 		},
 		hideExplanationPopup({commit, dispatch, state, rootState}, payload) {
 			state.explanationPopupInfo.dialogVisible = false;
-			state.explanationInfo.selectedLabel = {}
 		}
 	}
 }

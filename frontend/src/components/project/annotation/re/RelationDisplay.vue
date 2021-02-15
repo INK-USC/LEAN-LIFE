@@ -1,5 +1,6 @@
 <template>
-  <div style="line-height: 4; display: flex; justify-content: space-between; align-items: center">
+  <div style="line-height: 4; display: flex; justify-content: space-between; align-items: center"
+       @click="showExplanationPopup">
     <div>
       <span style="margin-right: 10px" class="word">{{ sbjText }}</span>
 
@@ -40,6 +41,9 @@ export default {
           }).then(() => {
         this.$store.dispatch("document/fetchDocuments", {})
       })
+    },
+    showExplanationPopup() {
+      this.$store.dispatch("explanation/showExplanationPopup", {annotationId: this.relation.base_ann_id})
     }
   },
   computed: {

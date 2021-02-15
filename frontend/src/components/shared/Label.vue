@@ -78,7 +78,6 @@ export default {
           })
           .then(() => {
             console.log("patch completed")
-            this.$store.dispatch('document/fetchDocuments')
             if (this.$store.getters.getProjectInfo.task === 3) {
               return this.$http
                   .post(`/projects/${this.$store.getters.getProjectInfo.id}/history/re/`, {
@@ -91,9 +90,8 @@ export default {
             }
           })
           .then(() => {
-            this.$store.dispatch("explanation/showExplanationPopup", {
-              label: this.labelInfo,
-              annotation: {id: annotationId}
+            this.$store.dispatch('document/fetchDocuments').then(() => {
+              this.$store.dispatch("explanation/showExplanationPopup", {annotationId: annotationId})
             })
           })
           .catch(err => {
