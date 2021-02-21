@@ -50,10 +50,10 @@
 </template>
 
 <script>
-import SentimentAnalysisBrief from "@/components/explanation/NaturalLanguageExplanation/sa/SentimentAnalysisBrief";
+import SentimentAnalysisBrief from "@/components/explanation/brief/sa/SentimentAnalysisBrief";
 import NamedEntityRecognitionBrief
-  from "@/components/explanation/NaturalLanguageExplanation/ner/NamedEntityRecognitionBrief";
-import RelationExtractionBrief from "@/components/explanation/NaturalLanguageExplanation/re/RelationExtractionBrief";
+  from "@/components/explanation/brief/ner/NamedEntityRecognitionBrief";
+import RelationExtractionBrief from "@/components/explanation/brief/re/RelationExtractionBrief";
 
 
 export default {

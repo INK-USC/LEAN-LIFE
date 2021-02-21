@@ -32,3 +32,37 @@ export function formatAnnotations(doc, projectType) {
 function sortAnnotations(annotations) {
 	return annotations.sort((a, b) => a.start_offset - b.start_offset);
 }
+
+export function formatExplanations(annotation) {
+	const explanationsForThisAnnotation = {};
+
+	const explanations = annotation.explanations;
+	if (!explanations) {
+		return [];
+	}
+	// console.log("annotation", annotation, "exp", explanations)
+	explanations.forEach(exp => {
+		const cur = {
+			base_ann_id: annotation.id,
+			start_offset: exp.start_offset,
+			end_offset: exp.end_offset,
+			labelId: exp.trigger_id,
+			pk_id: exp.id,
+		}
+		// console.log("exp", cur)
+		if (explanationsForThisAnnotation[exp.trigger_id]) {
+			explanationsForThisAnnotation[exp.trigger_id].push(cur);
+		} else {
+			explanationsForThisAnnotation[exp.trigger_id] = [cur];
+		}
+		// console.log("added", explanationsForThisAnnotation)
+	});
+	// console.log("all exp", explanationsForThisAnnotation)
+
+	const res = []
+	for (let key of Object.keys(explanationsForThisAnnotation)) {
+		// console.log("key", key, "value", explanationsForThisAnnotation[key])
+		res.push(explanationsForThisAnnotation[key]);
+	}
+	return res;
+}

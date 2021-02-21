@@ -1,5 +1,5 @@
 import api from "@/utilities/network";
-import {formatAnnotations} from "@/store/util";
+import {formatAnnotations, formatExplanations} from "@/store/util";
 
 const documentStoreModule = {
 	namespaced: true,
@@ -37,7 +37,14 @@ const documentStoreModule = {
 						doc.formattedAnnotations = formatAnnotations(doc, rootState.projectInfo.task)
 						doc.annotations = doc.annotations.sort((a, b) => a.id - b.id)
 					})
-
+					if (rootState.projectInfo.explanation_type === 3) {
+						//prep for trigger explanation
+						state.documentInfo.documents.forEach(doc => {
+							doc.annotations.forEach(annotation => {
+								annotation.formattedTriggerExplanation = formatExplanations(annotation)
+							});
+						})
+					}
 					state.documentInfo.totalDocCount = res.count;
 					state.documentInfo.annotatedDocCount = res.results.annotatedCount;
 					state.documentInfo.maxPage = Math.ceil(state.documentInfo.totalDocCount / state.documentInfo.pageSize);

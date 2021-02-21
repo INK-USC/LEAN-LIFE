@@ -42,7 +42,8 @@
       </el-col>
     </el-row>
 
-    <NaturalLanguageExplanationPopup/>
+    <NaturalLanguageExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===2"/>
+    <TriggerExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===3"/>
 
   </el-row>
 </template>
@@ -54,10 +55,12 @@ import NamedEntityRecognitionAnnotation from "@/components/project/annotation/ne
 import RelationExtractionAnnotation from "@/components/project/annotation/re/RelationExtractionAnnotation";
 import NaturalLanguageExplanationPopup
   from "@/components/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
+import TriggerExplanationPopup from "@/components/explanation/TriggerExplanation/TriggerExplanationPopup";
 
 export default {
   name: "Annotate",
   components: {
+    TriggerExplanationPopup,
     NaturalLanguageExplanationPopup,
     RelationExtractionAnnotation,
     NamedEntityRecognitionAnnotation,
