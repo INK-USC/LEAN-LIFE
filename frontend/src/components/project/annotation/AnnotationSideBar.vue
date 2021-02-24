@@ -1,10 +1,14 @@
 <template>
   <el-col>
-    <el-autocomplete v-model="documentQuery" placeholder="Search Document" @select="handleDocumentSelected"
-                     :fetch-suggestions="searchDocument" style="margin-top: 20px; width: 90%">
-      <i slot="prefix" class="el-input__icon el-icon-search"/>
-    </el-autocomplete>
-    <el-table :data="this.$store.getters['document/getDocuments'].documents">
+    <!--    <el-autocomplete v-model="documentQuery" placeholder="Search Document" @select="handleDocumentSelected"-->
+    <!--                     :fetch-suggestions="searchDocument" style="margin-top: 20px; width: 90%">-->
+    <!--      <i slot="prefix" class="el-input__icon el-icon-search"/>-->
+    <!--    </el-autocomplete>-->
+    <el-input v-model="documentQuery" placeholder="Type to search for documents" style="margin-top: 20px; width: 90%"
+              prefix-icon="el-icon-search" clearable/>
+    <el-table
+        :data="this.$store.getters['document/getDocuments'].documents.filter(row=> !documentQuery || row.text.toLowerCase().includes(documentQuery.toLowerCase().trim()))"
+    >
       <el-table-column width="40">
         <template slot-scope="scope">
                   <span v-if="scope.row.annotated">
@@ -44,22 +48,22 @@ export default {
     handleDocumentSelected(item) {
       console.log("document selected", item)
     },
-    searchDocument(_, cb) {
-      cb([])
-      if (!this.documentQuery) {
-        return;
-      }
-      this.$http
-          .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?q=${this.documentQuery}`)
-          .then(res => {
-            res.results.forEach(row => {
-              row['value'] = row.text;
-            })
-            cb(res.results)
-
-            //TODO send res to vuex
-          })
-    },
+    // searchDocument(_, cb) {
+    //   cb([])
+    //   if (!this.documentQuery) {
+    //     return;
+    //   }
+    //   this.$http
+    //       .get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/?q=${this.documentQuery}`)
+    //       .then(res => {
+    //         res.results.forEach(row => {
+    //           row['value'] = row.text;
+    //         })
+    //         cb(res.results)
+    //
+    //         //TODO send res to vuex
+    //       })
+    // },
     pageChanged(newPage) {
       this.$store.dispatch('document/updateCurPage', {newPage: newPage}, {root: true})
     },

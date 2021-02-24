@@ -84,7 +84,7 @@ export default {
           pk_id: NOT_YET_PUSHED_ID,
           labelId: -1,
           base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
-        }]]//TODO change
+        }]]
       }
     },
     dialogClose() {
@@ -226,13 +226,13 @@ export default {
     removeTrigger(index) {
       console.log("remove trigger", this.triggers, this.triggers[index])
       this.triggers[index].filter(reason => reason.pk_id > 0).forEach(reason => this.reasonsToDelete.push(reason.pk_id))
-      // this.triggers[index]
-      // this.triggers
       this.triggers.splice(index, 1);
+      if (this.triggers.length === 0) {
+        this.addAnotherExplanation();
+      }
     },
     removeReason(triggerIndex, reasonIndex) {
-      const reason = this.triggers[index].splice(reasonIndex, 1);
-      this.reasonsToDelete(reason.pk_id);
+      this.triggers[triggerIndex].splice(reasonIndex, 1).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
     },
     getChunkStyle(chunk, labelId) {
       // Check if the chunk matches the current label ID. If so, we want to
