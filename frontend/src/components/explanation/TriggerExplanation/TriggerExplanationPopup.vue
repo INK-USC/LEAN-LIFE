@@ -11,20 +11,21 @@
       <RelationExtractionBrief v-if="this.$store.getters.getProjectInfo.task===3"/>
 
       <el-form style="margin-top: 20px">
-        <el-form-item v-for="(trigger, index) in this.triggers" :key="index">
+        <el-form-item v-for="(trigger, triggerIndex) in this.triggers" :key="triggerIndex">
 
           <div style="display: flex; flex-display:row; justify-content: space-between; align-items: center">
-            <h4>Trigger {{ index + 1 }}</h4>
-            <i class="el-icon-delete" style="cursor: pointer" @click="removeTrigger(index)"/>
+            <h4>Trigger {{ triggerIndex + 1 }}</h4>
+            <i class="el-icon-delete" style="cursor: pointer" @click="removeTrigger(triggerIndex)"/>
           </div>
           <el-row style="line-height: 2">
-            <div @mouseup="setSelectedRange(index)">
-              <span v-for="(chunk, chunkIndex) in chunks" :key="chunkIndex" :style=getChunkStyle(chunk,index)>
+            <div @mouseup="setSelectedRange(triggerIndex)">
+              <span v-for="(chunk, chunkIndex) in chunks" :key="chunkIndex" :style=getChunkStyle(chunk,triggerIndex)>
                 <span>
                   {{ $store.getters["document/getCurDoc"].text.slice(chunk.start_offset, chunk.end_offset) }}
                 </span>
-                <i class="el-icon-delete" style="cursor:pointer;" @click="removeReason(index)"
-                   v-if="chunk.labelId === index"/>
+                <i class="el-icon-delete" style="cursor:pointer;"
+                   @click="removeReason(triggerIndex, chunkIndex, chunk)"
+                   v-if="chunk.labelId === triggerIndex"/>
               </span>
             </div>
           </el-row>
@@ -111,7 +112,6 @@ export default {
       }]);
       console.log("added", this.triggers)
     },
-
     setSelectedRange(triggerIndex) {
       let selectionStart = null;
       let selectionEnd = null;
@@ -231,7 +231,8 @@ export default {
         this.addAnotherExplanation();
       }
     },
-    removeReason(triggerIndex, reasonIndex) {
+    removeReason(triggerIndex, chunkIndex, chunk) {
+      const reasonIndex = this.triggers[triggerIndex].findIndex(reason => reason.pk_id === chunk.pk_id);
       this.triggers[triggerIndex].splice(reasonIndex, 1).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
     },
     getChunkStyle(chunk, labelId) {
