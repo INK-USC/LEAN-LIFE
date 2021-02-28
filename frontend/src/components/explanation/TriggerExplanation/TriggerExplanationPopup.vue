@@ -233,7 +233,7 @@ export default {
     },
     removeReason(triggerIndex, chunkIndex, chunk) {
       const reasonIndex = this.triggers[triggerIndex].findIndex(reason => reason.pk_id === chunk.pk_id);
-      this.triggers[triggerIndex].splice(reasonIndex, 1).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
+      this.triggers[triggerIndex].splice(reasonIndex, 1).filter(reason => reason.pk_id > 0).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
     },
     getChunkStyle(chunk, labelId) {
       // Check if the chunk matches the current label ID. If so, we want to
