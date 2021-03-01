@@ -10,7 +10,7 @@ from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
     HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload, UserRetrieveAPIView, TaskRetrieveAPIView, ExplanationAPIView,\
-    FileUploadAPIView
+    FileUploadAPIView, DownloadAnnotationAPI
 
 router = routers.DefaultRouter()
 router.register('projects', ProjectViewSet)
@@ -45,6 +45,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/nl/<int:pk>', ExplanationDestroyView.as_view(), name='delete_nl_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>/trigger/<int:pk>', ExplanationDestroyView.as_view(), name='delete_trigger_explanation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/recommendations/<int:task_id>/', RecommendationList.as_view(), name='recommendations'),
+    path('api/projects/<int:project_id>/download_annotations', DownloadAnnotationAPI.as_view(), name='downlooad_annotation'),
     path('api/users/', UserRetrieveAPIView.as_view(), name="get_users"),
     path('api/tasks/', TaskRetrieveAPIView.as_view(), name="get_tasks"),
     path('api/explanations/', ExplanationAPIView.as_view(), name="get_explanation"),

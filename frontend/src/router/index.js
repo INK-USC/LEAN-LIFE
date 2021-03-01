@@ -15,6 +15,7 @@ import AnnotationSettings from "@/components/project/overview/AnnotationSettings
 import HistoricalAnnotations from "@/components/project/overview/HistoricalAnnotations";
 import Annotate from "@/components/project/annotation/Annotate";
 import ModelDownload from "@/components/model/ModelDownload";
+import ExportAnnotations from "@/components/project/overview/ExportAnnotations";
 
 Vue.use(VueRouter);
 
@@ -53,7 +54,8 @@ const routes = [
 			{path: "labels", name: "LabelCreationSpace", component: LabelCreation},
 			{path: "settings", name: "AnnotationSettings", component: AnnotationSettings},
 			{path: "historical", name: "HistoricalAnnotations", component: HistoricalAnnotations},
-			{path: "annotate", name: "annotate", component: Annotate}
+			{path: "annotate", name: "Annotate", component: Annotate},
+			{path: "export-annotations", name: "ExportAnnotations", component: ExportAnnotations}
 		]
 	},
 	{path: "/models", name: "ModelDownload", component: ModelDownload}

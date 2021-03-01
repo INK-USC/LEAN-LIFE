@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework import parsers
+from django.http import HttpResponse
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
@@ -32,6 +33,8 @@ from .utils import SPACY_WRAPPER
 import time
 from django.db import transaction
 from .constants import EXPLANATION_CHOICES
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ImportFileError(Exception):
@@ -799,4 +802,42 @@ class FileUploadAPIView(APIView):
             return Response(exception=e)
         except Exception as e:
             return Response(exception=e)
+
+
+class DownloadAnnotationAPI(APIView):
+    # permission_classes = ()
+
+    def get(self, request, project_id):
+        user_id = self.request.user.id
+        project = get_object_or_404(Project, pk=project_id)
+        explanation_int = project.explanation_type
+        export_format = request.GET.get('downloadFormat')
+        task_name=project.get_task_name()
+        user_annotations= Annotation.objects.get_annotations_for_export(user_id, task_name, explanation_int)
+        # TODO below step will cause exception in NER
+        dataset = Document.objects.export_project_user_documents(task_name, project_id, user_id, export_format, user_annotations, explanation_int)
+        filename = "_".join(project.name.lower().split())
+        try:
+            if export_format == 'csv':
+                response = self.get_csv(filename, dataset)
+            elif export_format == 'json':
+                response = self.get_json(filename, dataset)
+            return response
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=404, data=e)
+        return Response(status=200, data={"ok"})
+
+    def get_csv(self, filename, dataset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        writer = csv.writer(response)
+        writer.writerows(dataset)
+        return response
+
+    def get_json(self, filename, dataset):
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}.json"'.format(filename)
+        response.write(json.dumps(dataset, ensure_ascii=False, indent=1))
+        return response
 
