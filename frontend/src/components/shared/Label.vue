@@ -1,9 +1,8 @@
 <template>
   <div style="display: flex; align-items: center">
-    <el-tag class="label-tag" :style="{backgroundColor: labelInfo.background_color, color: labelInfo.text_color}"
-            style="display: flex; align-items: baseline">
+    <el-tag class="label-tag" :style="getColorStyle" style="display: flex; align-items: baseline">
       <b style="font-size: medium" @click="addAnnotation"
-         :style="{cursor: this.$route.path.endsWith('annotate')? 'pointer': 'default'}">{{ labelInfo.text }}</b>
+         :style="getCursorStyle">{{ labelInfo.text }}</b>
       <i class="el-icon-close el-icon--right" @click="removeLabel"
          v-if="!this.$route.path.endsWith('annotate') && this.labelInfo.text"/>
     </el-tag>
@@ -25,6 +24,21 @@ export default {
     },
     addAnnotation() {
       if (!this.$route.path.endsWith('annotate')) {
+        return;
+      }
+      if (!this.canClick) {
+        if (this.$store.getters.getProjectInfo.task === 1) {
+          this.$notify({
+            type: "warning", title: "Warning",
+            message: "This document has already been annotated with this label!"
+          })
+        }
+        if (this.$store.getters.getProjectInfo.task === 2) {
+          this.$notify({type: "warning", title: "Warning", message: "Please select words first!"})
+        }
+        if (this.$store.getters.getProjectInfo.task === 3) {
+          this.$notify({type: "warning", title: "Warning", message: "Please select subject and object first!"})
+        }
         return;
       }
       //NER
@@ -101,6 +115,62 @@ export default {
 
   },
   created() {
+  },
+  computed: {
+    canClick() {
+      console.log("curdoc", this.$store.getters["document/getCurDoc"])
+      if (!this.$store.getters["document/getCurDoc"]) {
+        return false;
+      }
+
+      if (this.$store.getters.getProjectInfo.task === 1) {
+        //SA
+        const annotations = this.$store.getters["document/getCurDoc"].annotations;
+        const canClick = !annotations.some(ann => ann.label === this.labelInfo.id)
+        console.log("can click", canClick)
+        return canClick;
+      } else if (this.$store.getters.getProjectInfo.task === 2) {
+        //NER
+        const nerSelection = this.$store.getters["annotation/getNERSelection"]
+        console.log("ner selection ", nerSelection)
+        if (nerSelection.selectionStart === -1 || nerSelection.selectionEnd === -1) {
+          console.log("can not click")
+          return false;
+        } else {
+          console.log("can click")
+          return true;
+        }
+      } else if (this.$store.getters.getProjectInfo.task === 3) {
+        //RE
+        const reSelection = this.$store.getters["annotation/getRESelection"]
+        console.log("re selection ", reSelection)
+        for (let key in reSelection) {
+          if (reSelection[key] === -1) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return 1111;
+    },
+    getCursorStyle() {
+      if (this.$route.path.endsWith("annotate")) {
+        if (this.canClick) {
+          return {cursor: "pointer"};
+        } else {
+          return {cursor: "not-allowed"};
+        }
+      } else {
+        return {cursor: "default"};
+      }
+    },
+    getColorStyle() {
+      if (this.$route.path.endsWith("annotate") && !this.canClick) {
+        return {backgroundColor: 'grey', color: 'white'};
+      } else {
+        return {backgroundColor: this.labelInfo.background_color, color: this.labelInfo.text_color};
+      }
+    }
   }
 
 }

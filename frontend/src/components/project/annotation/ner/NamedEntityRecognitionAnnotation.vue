@@ -28,10 +28,7 @@
 export default {
   name: "NamedEntityRecognitionAnnotation",
   data() {
-    return {
-      selectionStart: -1,
-      selectionEnd: -1,
-    }
+    return {}
   },
   methods: {
     setSelectedRange() {
@@ -59,11 +56,18 @@ export default {
         selectionStart += offSet;
         selectionEnd += offSet;
       } else {
-        console.log("reset selection")
+        console.log("reset selection");
+        selectionStart = null;
+        selectionEnd = null;
+        this.$store.dispatch('annotation/setNERSelection', {
+          "selectionStart": -1,
+          "selectionEnd": -1
+        })
+
       }
 
       // A selection has been made
-      if (selectionStart !== null && selectionEnd != null) {
+      if (!!selectionStart && !!selectionEnd) {
         // Trimming if Needed
         while (true) {
           if (!/[a-zA-Z0-9]/.test(this.$store.getters["document/getCurDoc"].text.slice(selectionStart, selectionStart + 1))) {
