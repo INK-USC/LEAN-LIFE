@@ -99,7 +99,7 @@ class DocumentManager(models.Manager):
 
     def _format_csv_re(self, project_docs, explanation):
         dataset = []
-        header = ["document_id", "entity_1", "entity_2", "label", "metadata"]
+        header = ["document_id", "entity_1", "entity_2", "label", "text", "metadata"]
         if explanation:
             header.append("explanation")
         dataset.append(header)
@@ -120,9 +120,9 @@ class DocumentManager(models.Manager):
                     
                     if explanation:
                         explanations = a.format_explanations("csv", doc.text)
-                        dataset.append([i+1, sbj_entity.encode('utf-8'), obj_entity.encode('utf-8'), a.label.text, metadata, explanations])
+                        dataset.append([i+1, sbj_entity.encode('utf-8'), obj_entity.encode('utf-8'), a.label.text, text, metadata, explanations])
                     else:
-                        dataset.append([i+1, sbj_entity.encode('utf-8'), obj_entity.encode('utf-8'), a.label.text, metadata])
+                        dataset.append([i+1, sbj_entity.encode('utf-8'), obj_entity.encode('utf-8'), a.label.text, text, metadata])
             
             dataset.append("")
         
