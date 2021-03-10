@@ -56,30 +56,9 @@ class Project(models.Model):
     def image(self):
         url = staticfiles_storage.url('images/cat-3449999_640.jpg')
         return url
-    
-    # TODO: Should be removed, no need for it
-    def get_index_documents(self, indices):
-        docs = self.documents.all()
-        docs_indices = [d.id for d in docs]
-        active_indices = [docs_indices[i-1] for i in indices]
-        docs = list(docs.filter(pk__in=active_indices))
-        docs.sort(key=lambda t: active_indices.index(t.pk))
-        return docs
 
     def get_task_name(self):
         return self.task.name
-    
-    def get_document_serializer(self):
-        from .serializers import UserAnnotatedDocumentSerializer
-        return UserAnnotatedDocumentSerializer
-    
-    def get_annotation_serializer(self):
-        from .serializers import AnnotationSerializer
-        return AnnotationSerializer
-    
-    def get_dataset_for_user(self, user_id, explanation, explanation_type):
-        if self.task.name == NAMED_ENTITY_RECOGNITION_VALUE:
-            return Document.objects.export_ner_project_user_documents(self.id, user_id, explanation, explanation_type)
 
     def __str__(self):
         return self.name
@@ -93,7 +72,9 @@ class Label(models.Model):
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')
-    user_provided = models.BooleanField(default=False)
+    # if true then label was created via upload process (RE), and is not needeed during
+    # annotation time, so it is filtered out in the UI
+    user_provided = models.BooleanField(default=False) 
 
     def __str__(self):
         return self.text
@@ -114,10 +95,6 @@ class Document(models.Model):
         
     def delete_annotations(self):
         self.annotations.all().delete()
-    
-    def delete_extended_annotations(self):
-        annotations = self.get_base_annotations().select_related(self.get_annotation_type())
-        annotations.delete()
 
     def __str__(self):
         return self.text[:50]
@@ -131,7 +108,7 @@ class Document(models.Model):
 class Annotation(models.Model):
     prob = models.FloatField(default=0.0)
     via_recommendation = models.BooleanField(default=False)
-    user_provided = models.BooleanField(default=False)
+    user_provided = models.BooleanField(default=False) # again indication of upload
     task = models.ForeignKey(on_delete=models.CASCADE, related_name='annotations', to=Task)
     document = models.ForeignKey(on_delete=models.CASCADE, related_name='annotations', to=Document)
     user = models.ForeignKey(on_delete=models.DO_NOTHING, related_name='annotations', to=User)
@@ -349,6 +326,9 @@ class NaturalLanguageExplanation(models.Model):
 
 # TODO: need to write a clean function here
 # check if label comes from project
+# Two ways this can be created: Upload and through annotation
+# Through annotation will mean that: 1) annotation field will exist 2) user_provided = False
+# Through upload will meant that: 1 ) annotation field will be null, 2) user_provided = True
 class NamedEntityAnnotationHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     annotation = models.ForeignKey(to=Annotation, on_delete=models.CASCADE, related_name='ner_history', null=True)
@@ -366,6 +346,9 @@ class NamedEntityAnnotationHistory(models.Model):
 
 # TODO: need to write a match function here
 # check if label comes from project
+# Two ways this can be created: Upload and through annotation
+# Through annotation will mean that: 1) annotation field will exist 2) user_provided = False
+# Through upload will meant that: 1 ) annotation field will be null, 2) user_provided = True
 class RelationExtractionAnnotationHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     project = models.ForeignKey(Project, related_name='relation_extraction_history', on_delete=models.CASCADE)
@@ -382,7 +365,7 @@ class RelationExtractionAnnotationHistory(models.Model):
         unique_together = ('user', 'word_1', 'word_2', 'label')
 
 
-# TODO: Should all these settings really be attached to the user, or really be set by project lead?
+# Project Creator sets default settings, than annotator can then override
 class Setting(models.Model):
     user = models.ForeignKey(User, related_name='settings', on_delete=models.CASCADE)
     project = models.ForeignKey(Project, related_name='settings', on_delete=models.CASCADE)

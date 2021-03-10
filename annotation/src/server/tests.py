@@ -1,3 +1,4 @@
+# DISCLAIMER, THESE ARE NOT UP TO DATE IN ANYWAY, JUST LEFT AS A REFERENCE ON HOW TO WRITE TESTS
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
