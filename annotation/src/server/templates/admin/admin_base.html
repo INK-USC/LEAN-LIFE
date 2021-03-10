@@ -50,6 +50,9 @@
       <a-form-model-item label="Key 3">
         <a-input v-model="modelForm.settings.key3"/>
       </a-form-model-item>
+      <a-form-model-item label="">
+        <a-checkbox :checked="modelForm.include_documents" @change="(e)=>modelForm.include_documents=e.target.checked">Send full text data?</a-checkbox>
+      </a-form-model-item>
     </a-form-model>
   </a-modal>
 

@@ -752,14 +752,17 @@ class TrainModelAPIView(APIView):
 	def post(self, request, project_id):
 		model_name = request.data['modelName']
 		model_settings = request.data['settings']
-		self.write_to_model_project_mapping_file(project_id, model_name)
+		include_documents = request.data['include_documents']
+		if include_documents:
+			self.write_to_model_project_mapping_file(project_id, model_name)
 
-		json_object = self.generate_json_for_model_training_api(project_id, model_name, model_settings)
-		# return Response(data=json_object)
-		# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
-		#TODO test
-		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
-
+			json_object = self.generate_json_for_model_training_api(project_id, model_name, model_settings)
+			# return Response(data=json_object)
+			# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
+			#TODO test
+			model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
+		else:
+			model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json={"settings":model_settings}).content)
 		self.write_to_model_metadata_file(project_id, model_name)
 
 		return Response(data=model_training_api_response)

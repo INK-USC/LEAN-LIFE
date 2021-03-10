@@ -62,8 +62,9 @@ const annotationMixin = {
         settings: {
             "key1": "10",
             "key2": "20",
-            "key3": "30"
-        }
+            "key3": "30",
+        },
+        "include_documents": true,
       }
     };
   },
