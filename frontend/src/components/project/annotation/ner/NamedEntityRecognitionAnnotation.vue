@@ -21,12 +21,17 @@
       </div>
 
     </el-row>
+
+    <Recommendation/>
   </el-card>
 </template>
 
 <script>
+import Recommendation from "@/components/project/annotation/shared/Recommendation";
+
 export default {
   name: "NamedEntityRecognitionAnnotation",
+  components: {Recommendation},
   data() {
     return {}
   },
@@ -135,7 +140,6 @@ export default {
         return [];
       }
       let sortedEntityPositions = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
-
       const res = [];
       let left = 0;
       for (let i = 0; i < sortedEntityPositions.length; i++) {

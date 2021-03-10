@@ -118,7 +118,6 @@ export default {
   },
   computed: {
     canClick() {
-      console.log("curdoc", this.$store.getters["document/getCurDoc"])
       if (!this.$store.getters["document/getCurDoc"]) {
         return false;
       }
@@ -127,23 +126,18 @@ export default {
         //SA
         const annotations = this.$store.getters["document/getCurDoc"].annotations;
         const canClick = !annotations.some(ann => ann.label === this.labelInfo.id)
-        console.log("can click", canClick)
         return canClick;
       } else if (this.$store.getters.getProjectInfo.task === 2) {
         //NER
         const nerSelection = this.$store.getters["annotation/getNERSelection"]
-        console.log("ner selection ", nerSelection)
         if (nerSelection.selectionStart === -1 || nerSelection.selectionEnd === -1) {
-          console.log("can not click")
           return false;
         } else {
-          console.log("can click")
           return true;
         }
       } else if (this.$store.getters.getProjectInfo.task === 3) {
         //RE
         const reSelection = this.$store.getters["annotation/getRESelection"]
-        console.log("re selection ", reSelection)
         for (let key in reSelection) {
           if (reSelection[key] === -1) {
             return false;
