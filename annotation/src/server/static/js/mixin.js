@@ -1,7 +1,7 @@
 /* eslint-disable key-spacing */
 import axios from "axios";
 import Vue from "vue";
-import { AutoComplete, Modal, Form, Icon, Button, Radio } from "ant-design-vue";
+import { AutoComplete, Modal, Form, Icon, Button, Radio, List } from "ant-design-vue";
 import HTTP from "./http";
 
 
@@ -17,6 +17,7 @@ Vue.use(Icon);
 Vue.use(AutoComplete);
 Vue.use(Button);
 Vue.use(Radio);
+Vue.use(List)
 
 const annotationMixin = {
   data() {
