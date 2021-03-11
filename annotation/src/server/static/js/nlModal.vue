@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="Natural Language Explanation 
-    
+
     Please select a template below and:
       1) fill in the blanks
       2) decide between the two options in the '[]'
@@ -44,6 +44,40 @@
         </a-form-item>
       </a-form>
     </div>
+
+    <a-button type="primary" @click="showLearnMoreDialog">Lean more</a-button>
+    <a-modal v-model="learnMoreDialogVisible" title= "basic modal">
+        <div style="display: flex; justify-content: space-between">
+            <div style="width:50%">
+                <h1>Token</h1>
+                <a-list :data-source="tokens" style="overflow: auto; height: 400px;">
+                    <a-list-item slot="renderItem" slot-scope="item, index">
+                        <a-list-item-meta>
+                            <div slot="title">
+                                {{item}}
+                            </div>
+                        </a-list-item-meta>
+                    </a-list-item>
+                </a-list>
+            </div>
+            <div style="width: 50%">
+                <h1>Grammars</h1>
+                <a-list :data-source="grammars" style="overflow: auto; height: 400px;">
+                    <a-list-item slot="renderItem" slot-scope="item, index">
+                        <a-list-item-meta>
+                            <div slot="title">
+                                {{item}}
+                            </div>
+                        </a-list-item-meta>
+                    </a-list-item>
+                </a-list>
+            </div>
+        </div>
+        <template slot="footer">
+            <a-button @click="()=>learnMoreDialogVisible=false">Close</a-button>
+        </template>
+
+    </a-modal>
   </a-modal>
 </template>
 <script>
@@ -81,6 +115,9 @@ module.exports = {
       explanationSuggestions: [],
       errorMessage: "", //Display error message.
       idsToDelete: [],
+      learnMoreDialogVisible: false,
+      tokens: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
+      grammars: [11,22,33,44,55,66,77,88,99,1010]
     };
   },
   created() {
@@ -94,6 +131,9 @@ module.exports = {
   },
 
   methods: {
+    showLearnMoreDialog(){
+        this.learnMoreDialogVisible= true;
+    },
     resetSuggestions() {
       this.explanationSuggestions = [];
       
