@@ -269,8 +269,6 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 	def patch(self, request, *args, **kwargs):
 		return self.partial_update(request, *args, **kwargs)
 
-
-
 class BaseAnnotationCreateAndDestroyView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.DestroyModelMixin):
 	permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
@@ -337,6 +335,7 @@ class SettingList(generics.GenericAPIView, mixins.CreateModelMixin, mixins.Updat
 
 		return self.queryset
 
+	# There is where I provide defaults via project creator's settings
 	def get_object(self):
 		objects = self.filter_queryset(self.get_queryset()).select_related("user").all()
 		obj = None
@@ -461,7 +460,7 @@ class AnnotationHistoryFileUpload(APIView):
                 else:
                     data = json.load(data_file)
                     data = data["data"]
-                with transaction.atomic():
+                with transaction.atomic(): # use this always
                     if action == "replace":
                         if task == "2":
                             ids = NamedEntityAnnotationHistory.objects.all() \
@@ -579,7 +578,8 @@ class RecommendationList(APIView):
 		opt_h = setting_data['history']
 		recommendations = {}
 		cur_recommendation_keys = []
-
+		
+		# note there is a hierarchy in place here, the earlier recommendation stragies are overwitten by later ones
 		if opt_n:
 			noun_phrases = SPACY_WRAPPER.get_noun_phrases(document.text)
 			recs = self.create_ner_recommendations(doc_id, noun_phrases)
@@ -589,7 +589,7 @@ class RecommendationList(APIView):
 			cur_recommendation_keys = recommendations.keys()
 
 		if opt_h:
-			if task_id == 2:
+			if task_id == 2: # ner
 				history_queryset = NamedEntityAnnotationHistory.objects.all()
 				serializer_class = NamedEntityAnnotationHistorySerializer
 				history_queryset = history_queryset.filter(project=project)
@@ -611,7 +611,7 @@ class RecommendationList(APIView):
 
 					keys_to_delete = self.resolve_ner_keys(recs.keys(), cur_recommendation_keys)
 					recommendations = self.resolve_recs(keys_to_delete, recommendations, recs)
-			elif task_id == 3:
+			elif task_id == 3: # RE
 				history_queryset = RelationExtractionAnnotationHistory.objects.all()
 				serializer_class = RelationExtractionAnnotationHistorySerializer
 				history_queryset = history_queryset.filter(project=project)
@@ -751,18 +751,19 @@ class TrainModelAPIView(APIView):
 
 	def post(self, request, project_id):
 		model_name = request.data['modelName']
+		# call model_settings, params <- if annoying, don't worry
+		# model_name -> experiment_name
 		model_settings = request.data['settings']
+		model_settings["experiment_name"] = model_name
 		include_documents = request.data['include_documents']
-		if include_documents:
-			self.write_to_model_project_mapping_file(project_id, model_name)
+		
+		self.write_to_model_project_mapping_file(project_id, model_name)
 
-			json_object = self.generate_json_for_model_training_api(project_id, model_name, model_settings)
-			# return Response(data=json_object)
-			# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/kickoff/lean-life/", json=json_object).content)
-			#TODO test
-			model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
-		else:
-			model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json={"settings":model_settings}).content)
+		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
+		# return Response(data=json_object)
+		# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/next/kickoff/lean-life/", json=json_object).content)
+		#TODO test
+		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 		self.write_to_model_metadata_file(project_id, model_name)
 
 		return Response(data=model_training_api_response)
@@ -794,15 +795,24 @@ class TrainModelAPIView(APIView):
 			json.dump(model_metadata, f, indent=4)
 
 
-	def generate_json_for_model_training_api(self, project_id, model_name, model_settings):
-		data_info = {"label_space": [], "annotated": [], "unlabeled": [], "model_name": model_name, "project_type": ""}
+	def generate_json_for_model_training_api(self, project_id, model_settings, include_documents):
+		data_info = {"label_space": [], "annotated": [], "unlabeled": []}
+		
+		model_settings["dataset_size"] = project.documents.filter(annotated=False).count()
 
 		project = get_object_or_404(Project, pk=project_id)
-		data_info["project_type"] = project.get_task_name()
+		model_settings["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
 		for label in labels:
 			data_info["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
+
+		if not include_documents:
+			result = {
+				"lean_life_data": data_info,
+				"params": model_settings
+			}
+			return result
 
 		for doc in project.documents.all():
 			annotated_row = {"text": doc.text}
@@ -842,8 +852,8 @@ class TrainModelAPIView(APIView):
 			data_info['annotated'].append(annotated_row)
 
 		result = {
-			"lean_life_dataset": data_info,
-			"settings": model_settings
+			"lean_life_data": data_info,
+			"params": model_settings
 		}
 		return result
 

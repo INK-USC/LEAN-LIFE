@@ -149,7 +149,7 @@ class DocumentManager(models.Manager):
 
     def export_ner_project_user_documents(self, project_id, user_id, export_format, annotation_queryset, explanation=False):
         queryset = self.get_queryset()
-
+        # https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.Prefetch
         project_docs = queryset.filter(project_id=project_id).prefetch_related(Prefetch(
             lookup="annotations",
             queryset=annotation_queryset,
@@ -166,6 +166,7 @@ class DocumentManager(models.Manager):
     def export_re_project_user_documents(self, project_id, user_id, export_format, annotation_queryset, explanation=False):
         queryset = self.get_queryset()
 
+        # https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.Prefetch
         project_docs = queryset.filter(project_id=project_id).prefetch_related(Prefetch(
             lookup="annotations",
             queryset=annotation_queryset,

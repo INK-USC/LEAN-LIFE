@@ -1,0 +1,62 @@
+[
+    {
+        "label": "per:children",
+        "sent": "SUBJ-PERSON 's daughter OBJ-PERSON said Tuesday that her uncle was `` doing very well '' in his lengthy recovery , and was following very closely a gender equality bill under debate .",
+        "explanation": "The phrase \"'s daughter\" links SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's daughter OBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_birth",
+        "sent": "SUBJ-PERSON was born OBJ-DATE , in Nashville , Tenn , and graduated with honors from the University of Alabama .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"was born\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was born OBJ-DATE"
+    },
+    {
+        "label": "org:parents",
+        "sent": "Under the agreement , AT&T will begin offering SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION service after Jan. 31 , when AT&T 's current agreement with Dish Network expires .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and \"as part of its\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH Monday at the age of 78 , was a complicated person , and any attempt to sum up her life and work will necessarily turn into a string of contradictions .",
+        "explanation": "Between SUBJ and OBJ the phrase \"who died of\" occurs and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "sent": "[ People are ] giving you unlimited high-end alcohol , and SUBJ-PERSON is from OBJ-STATE_OR_PROVINCE and probably did not have fun [ before ] , especially when your new BFF is Stacie the bartender . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"is from\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON is from OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:other_family",
+        "sent": "The style and concept is inspired by three generations of women in their family , with the name `` Der\u00e9on '' paying tribute to SUBJ-PERSON 's grandmother , OBJ-PERSON .",
+        "explanation": "The phrase \"'s grandmother\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's grandmother , OBJ-PERSON"
+    },
+    {
+        "label": "org:stateorprovince_of_headquarters",
+        "sent": "The SUBJ-ORGANIZATION is based in the OBJ-STATE_OR_PROVINCE province and enjoys widespread popularity with the Pakhtuns .",
+        "explanation": "The phrase \"is based in\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION is based in the OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "Although not a Playboy Playmate , she has appeared in nude pictorials with her Girls Next Door costars and fellow Hefner girlfriends Holly Madison and OBJ-PERSON , then known as SUBJ-PERSON .",
+        "explanation": "The term \"then known as\" occurs between SUBJ and OBJ and there are no more than six words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , then known as SUBJ-PERSON"
+    },
+    {
+        "label": "per:parents",
+        "sent": "SUBJ-PERSON 's mother OBJ-PERSON was a singer in the dance group Soul II Soul , which had hits in the 1980s and 1990s .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"'s mother\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's mother OBJ-PERSON"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "OBJ-PERSON secretly married SUBJ-PERSON Congratulations to the newlyweds and let them live happily ever after !!",
+        "explanation": "There are no more than four words between SUBJ and OBJ and SUBJ and OBJ sandwich the phrase \"secretly married\"",
+        "pattern": "OBJ-PERSON secretly married SUBJ-PERSON"
+    }
+]

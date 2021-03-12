@@ -1,0 +1,114 @@
+[
+    {
+        "tweet": "@USER broadband is shocking regretting signing up now #angry #shouldofgonewithvirgin",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'angry'",
+        "word": "angry",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I assure you there is no laughter , but increasing anger at the costs , and arrogance of Westminster .",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'increasing anger'",
+        "word": "increasing anger",
+        "rec": false
+    },
+    {
+        "tweet": "GAMEDAY VS BUFORD TODAY AT 5:30 AT HOME ! ! ! NEVER BEEN SO EXCITED #revenge",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'been so excited'",
+        "word": "been so excited",
+        "rec": true
+    },
+    {
+        "tweet": "@USER @USER @USER Want to start a biker gang together when the GTA Online Biker DLC comes out ?",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'when the GTA Online Biker DLC comes out'",
+        "word": "when the GTA Online Biker DLC comes out",
+        "rec": true
+    },
+    {
+        "tweet": "@USER it 's very telling that racist bigots always resort to the insult ' fag ' like that 's worse than being a racist bigot .",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'bigot'",
+        "word": "bigot",
+        "rec": true
+    },
+    {
+        "tweet": "How shit and depressing is this weather wish I can travel the world for a living",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'how shit'",
+        "word": "how shit",
+        "rec": false
+    },
+    {
+        "tweet": "In wake of fresh #terror threat and sounding of alert in #Mumbai , praying for safety & security of everybody in the city #Maharashtra #news",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'terror threat'",
+        "word": "terror threat",
+        "rec": false
+    },
+    {
+        "tweet": "10 page script due Friday for class . Who said I could do this MFA thing ? #panic #GradSchoolProblems #someonetelltinafeytohireme",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'panic'",
+        "word": "panic",
+        "rec": true
+    },
+    {
+        "tweet": "It 's the #FirstDayofFall and I 'm so happy . Sipping my #PumpkinSpice flavored coffee and #smiling ! Happy Fall everyone ! #amwriting",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'smiling'",
+        "word": "smiling",
+        "rec": true
+    },
+    {
+        "tweet": "@USER ' Elizabeth Smith ! ' She said with a cheery smile ' Pleasure to meet you , sir ! Where have you travelled from ? '",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'cheery smile'",
+        "word": "cheery smile",
+        "rec": false
+    },
+    {
+        "tweet": "Wow ... One of my dads top favorite throwback rappers just died in a fiery car crash today in Atlanta , so sad so sad :face_with_medical_mask: :face_with_medical_mask:",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'so sad'",
+        "word": "so sad",
+        "rec": false
+    },
+    {
+        "tweet": "will brawndo cure my depression ? @USER #Idiocracytoday",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'my depression'",
+        "word": "my depression",
+        "rec": false
+    },
+    {
+        "tweet": "I 'm not used to pretty girls that use curse words to express their anger . I just feel like I 'm a little bit surprised and turned off as well",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'bit surprised'",
+        "word": "bit surprised",
+        "rec": true
+    },
+    {
+        "tweet": "@USER No . Was so sudden . Has n't sunk in yet . With Leo I knew it was coming .",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'so sudden'",
+        "word": "so sudden",
+        "rec": true
+    },
+    {
+        "tweet": "@USER If you do n't love yourself ... Honesty is the best policy",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'honesty'",
+        "word": "honesty",
+        "rec": false
+    },
+    {
+        "tweet": "Love is when all your happiness and all your sadness and all your feelings are dependent on another person .",
+        "label": "trust",
+        "explanation": "The phrase 'dependent on another person' is in the tweet",
+        "word": "dependent on another person",
+        "rec": false
+    }
+]

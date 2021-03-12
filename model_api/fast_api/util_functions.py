@@ -243,8 +243,7 @@ def _process_annotations(annotated_docs, project_type):
         
         Returns:
             sentence_label_pairs, explanation_triples : array of (sentence, label) pairs,
-                                                        dictionary where, key-annotation_id
-                                                        value-array of of (sentence, label, explanation) triples
+                                                        array of (dict("text" : str, "label" : str, "explanation" : List(str)))
     """
     sentence_label_pairs = {}
     explanation_triples = {}
@@ -268,10 +267,9 @@ def _process_annotations(annotated_docs, project_type):
         for key in temp_explanation_triples:
             explanation_triples[key] = temp_explanation_triples[key]
     
-    
     return list(sentence_label_pairs.values()), list(explanation_triples.values())
 
-def _read_lean_life_dataset(json_dataset):
+def _read_lean_life_dataset(json_data):
     """
         Read in a LEAN_LIFE Dataset file and convert it into the needed datastructures for training
 
@@ -279,43 +277,50 @@ def _read_lean_life_dataset(json_dataset):
             file_obj (File) : Python File Object
         
         Returns:
-            training_pairs, explanation_triples, label_space, unlabeled_docs : arr, dict, arr, arr
+            training_pairs, explanation_triples, label_space, unlabeled_docs : arr, arr, arr, arr, str
     """
-    project_type = json_dataset.project_type
-    label_space = json_dataset.label_space
+    label_space = json_data.label_space
     label_space = [label.text for label in label_space if not label.user_provided]
-    unlabeled_docs = json_dataset.unlabeled
+    ner_label_space = [label.text for label in label_space if label.user_provided and len(label.text) > 0]
+    unlabeled_docs = json_data.unlabeled
     if project_type != const.LEAN_LIFE_RE_PROJECT:
         unlabeled_docs = [doc.text for doc in unlabeled_docs]
     else:
         annotated_unlabeled_docs = [doc for doc in unlabeled_docs if hasattr(doc, "annotations")]
         unlabeled_docs = [text for doc in annotated_unlabeled_docs for text in _procress_re_unlabeled_doc(doc)]
-    annotated_docs = json_dataset.annotated
-    training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
+    annotated_docs = json_data.annotated
+    if len(annoted_docs):
+        training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
+    else:
+        training_pairs, explanation_triples = [], []
     
-    return training_pairs, explanation_triples, label_space, unlabeled_docs
+    return label_space, unlabeled_docs, explanation_triples, , training_pairs
 
-def kickstart_training(json_dataset, lean_life=True):
+def prepare_next_data(json_data, lean_life=True):
     """
         Given a post request indicating a training job should be kicked off, organize data into the needed
-        datastructures for training. Then call the `start_training` function
+        datastructures for training. It doesn't fully complete the pre-processing, allowing for flexibility
+        in the future. For example, currently we "and" all explanations associated with an annotation, that
+        policy will probably be changed. So these are more useful intermediary data-structures. We currently
+        create training_pairs as well, but these are not being used.
 
         Arguments:
             file_obj  (File) : Python File Object
             lean_life (bool) : boolean indicating whether file is a lean_life file or a user provided file
     """
     if lean_life:
-        training_pairs, explanation_triples, label_space, unlabeled_docs = _read_lean_life_dataset(json_dataset)
+        label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = _read_lean_life_dataset(json_data)
     else:
-        training_pairs = json_dataset.training_pairs
-        explanation_triples = json_dataset.explanation_triples
-        label_space = json_dataset.label_space
-        unlabeled_docs = json_dataset.unlabeled_text
+        # training_pairs = json_data.training_pairs
+        explanation_triples = json_data.explanation_triples
+        label_space = json_data.label_space
+        unlabeled_docs = json_data.unlabeled_text
+        if hasattr(json_data, "ner_label_space"):
+            ner_label_space = json_data.ner_label_space
+        else:
+            ner_label_space = []
     
-    print(training_pairs, explanation_triples, label_space, unlabeled_docs)
-    
-    # start_training(training_pairs, explanation_triples, label_space, unlabeled_docs)
-    return
+    return label_space, unlabeled_docs, explanation_triples, ner_label_space
 
 def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epoch, current_iteration,
                           time_spent, best_train_loss):
