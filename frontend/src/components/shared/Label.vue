@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; align-items: center">
+  <div style="display: flex; align-items: center; width: fit-content">
     <el-tag class="label-tag" :style="getColorStyle" style="display: flex; align-items: baseline">
       <b style="font-size: medium" @click="addAnnotation"
          :style="getCursorStyle">{{ labelInfo.text }}</b>
@@ -15,7 +15,8 @@
 <script>
 export default {
   name: "Label",
-  props: {labelInfo: Object},
+  //TODO showShortcut need to be used in recommendations
+  props: {labelInfo: Object, showShortcut: Boolean},
   methods: {
     removeLabel() {
       this.$http.delete(`/projects/${this.$store.getters.getProjectInfo.id}/labels/${this.labelInfo.id}`).then(res => {

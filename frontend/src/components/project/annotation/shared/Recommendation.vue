@@ -5,38 +5,49 @@
     </div>
 
     <span v-for="chunk in recommendationChunks" :key="chunk.start_offset">
-      <el-popover v-if="chunk.text_decoration">
-        <div>
-          <span v-for="label in $store.getters['label/getLabels']" :key="label.id">
-            {{ label.text }}
-          </span>
 
-        </div>
-        <span slot="reference" :style="{textDecoration: chunk.text_decoration, cursor: 'pointer', marginRight: '5px'}">
-          {{ curText.slice(chunk.start_offset, chunk.end_offset) }}
+          <el-popover v-if="chunk.text_decoration">
+            <el-col v-for="label of $store.getters['label/getLabels']" :key="label.id"
+                    style="display: flex; width: fit-content">
+              <span v-if="chunk.label.id === label.id" style="border: 1px solid red">
+                <Label :labelInfo="label"/>
+              </span>
+              <Label v-else :label-info="label"/>
+            </el-col>
+            <span slot="reference"
+                  :style="{textDecoration: chunk.text_decoration, cursor: 'pointer', marginRight: '5px'}">
+              {{ curText.slice(chunk.start_offset, chunk.end_offset) }}
+            </span>
+          </el-popover>
+          <span v-else>
+            {{ curText.slice(chunk.start_offset, chunk.end_offset) }}
+          </span>
         </span>
-      </el-popover>
-      <span v-else>
-        {{ curText.slice(chunk.start_offset, chunk.end_offset) }}
-      </span>
-    </span>
   </el-row>
 </template>
 
 <script>
 //TODO incomplete. need to show label when clicked
+
+import Label from "@/components/shared/Label";
+import LabelListRow from "@/components/shared/LabelListRow";
+
 export default {
   name: "Recommendation",
+  components: {Label},
   data() {
     return {
       recommendations: null
     }
   },
   created() {
-    this.fetchRecommendation();
   },
   methods: {
     fetchRecommendation() {
+      const projectId = this.$store.getters.getProjectInfo.id;
+      const docId = this.$store.getters["document/getCurDoc"].id;
+      const projectTask = this.$store.getters.getProjectInfo.task;
+
       this.$http.get(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/recommendations/${this.$store.getters.getProjectInfo.task}/`)
           .then(res => {
             this.recommendations = res.recommendation;
@@ -45,6 +56,13 @@ export default {
     }
   },
   computed: {
+    canFetch() {
+      if (this.$store.getters.getProjectInfo && this.$store.getters["document/getCurDoc"]) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     recommendationChunks() {
       const chunks = [];
       if (!this.recommendations) {
@@ -82,6 +100,14 @@ export default {
       return this.$store.getters["document/getCurDoc"].text;
     }
   },
+  watch: {
+    canFetch: function (canFetchNow, canFetchBefore) {
+      if (canFetchNow && !canFetchBefore) {
+        this.fetchRecommendation()
+      }
+    }
+  }
+
 }
 </script>
 
