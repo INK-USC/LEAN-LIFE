@@ -34,22 +34,28 @@
     <b>Train Model</b>
   </a>
   <a-modal title="Please enter model information" :visible="modelNamePopupVisible" @ok="trainModel"
-           :ok-button-props="{ props: { disabled: !modelForm.modelName } }"
+           :ok-button-props="{ props: { disabled: !modelForm.experiment_name } }"
            @ok="trainModel" ok-Text="Train Model"
   >
     <a-form-model :model="modelForm">
       <a-form-model-item label="Model Name" required>
-        <a-input v-model="modelForm.modelName"/>
+        <a-input v-model="modelForm.experiment_name"/>
       </a-form-model-item>
-      <a-form-model-item label="Key 1">
-        <a-input v-model="modelForm.settings.key1" />
+      <a-form-model-item label="Dataset Name" required>
+        <a-input v-model="modelForm.dataset_name"/>
       </a-form-model-item>
-      <a-form-model-item label="Key 2">
-        <a-input v-model="modelForm.settings.key2"/>
+
+      <a-form-model-item v-for="param in Object.keys(defaultParams)" :key="param" :label="param">
+        <a-select :default-value="defaultParams[param][0]" v-if="param === 'embeddings'" @change="(e)=>modelForm.params[param]=e">
+          <a-select-option v-for="op of defaultParams[param]" :key="op">[[op]]</a-select-option>
+        </a-select>
+
+        <a-checkbox v-else-if="param === 'load_model'" @change="(e)=> modelForm.params[param]=e.target.checked">[[param]]</a-checkbox>
+
+        <a-input v-model="modelForm.params[param]" v-else/>
       </a-form-model-item>
-      <a-form-model-item label="Key 3">
-        <a-input v-model="modelForm.settings.key3"/>
-      </a-form-model-item>
+
+
       <a-form-model-item label="">
         <a-checkbox :checked="modelForm.include_documents" @change="(e)=>modelForm.include_documents=e.target.checked">Send full text data?</a-checkbox>
       </a-form-model-item>

@@ -29,34 +29,49 @@ const vm = new Vue({
     importDataHeading: null,
     modelNamePopupVisible: false,
     modelForm: {
-        modelName: "",
-        settings: {
-            key1: "10",
-            key2: "20",
-            key3: "30",
-        },
-        "include_documents": true,
+      experiment_name: "",
+      params: {},
+      "include_documents": true,
     },
+    defaultParams: {
+      match_batch_size: 50,
+      unlabeled_batch_size: 100,
+      learning_rate: 0.1,
+      epochs: 20,
+      embeddings: ["charngram.100d", "fasttext.en.300d", "fasttext.simple.300d", "glove.42B.300d",
+        "glove.840B.300d", "glove.twitter.27B.25d", "glove.twitter.27B.50d", "glove.twitter.27B.100d",
+        "glove.twitter.27B.200d", "glove.6B.50d", "glove.6B.100d", "glove.6B.200d", "glove.6B.300d"],
+      gamma: 0.5,
+      hidden_dim: 100,
+      random_state: 42,
+      load_model: false,
+      start_epoch: 0,
+      pre_train_hidden_dim: 300,
+      pre_train_training_size: 50000,
+    }
   },
   methods: {
-    showModelTrainingPopup(){
-        this.modelNamePopupVisible=true
+    showModelTrainingPopup() {
+      this.modelNamePopupVisible = true
     },
-    trainModel(){
-        HTTP.post('train_model/',this.modelForm).then(res=>{
-          console.log("train model res", res)
-          this.modelNamePopupIsLoading=false
-          this.modelNamePopupVisible=false
-          this.$notification['success']({
-            message: `Model ${this.modelForm.modelName} training`,
-            description: "Your model is being trained now. You can check the status in the models page"
-          })
-        }).catch(err=>{
-            this.$notification['error']({
-                message: "Model failed to start training",
-                description: "Please try again later"
-            })
+    trainModel() {
+      const embeddingsArr = this.modelForm.params.embeddings.split(".");
+      this.modelForm.params['emb_dim'] = parseInt(embeddingsArr[embeddingsArr.length - 1].replace("d", ""));
+
+      HTTP.post('train_model/', this.modelForm).then(res => {
+        console.log("train model res", res)
+        this.modelNamePopupIsLoading = false
+        this.modelNamePopupVisible = false
+        this.$notification['success']({
+          message: `Model ${this.modelForm.modelName} training`,
+          description: "Your model is being trained now. You can check the status in the models page"
         })
+      }).catch(err => {
+        this.$notification['error']({
+          message: "Model failed to start training",
+          description: "Please try again later"
+        })
+      })
     }
   },
   created() {
@@ -73,5 +88,12 @@ const vm = new Vue({
         this.importDataHeading = 'Upload Documents';
       }
     });
+    Object.keys(this.defaultParams).forEach(param => {
+      if (Array.isArray(this.defaultParams[param])) {
+        this.modelForm.params[param] = this.defaultParams[param][0];
+      } else {
+        this.modelForm.params[param] = this.defaultParams[param];
+      }
+    })
   },
 });

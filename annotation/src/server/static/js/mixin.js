@@ -57,14 +57,26 @@ const annotationMixin = {
 
       modelNamePopupVisible: false,
       modelNamePopupIsLoading: false,
-      modelForm: {
-        modelName: "",
-        settings: {
-            "key1": "10",
-            "key2": "20",
-            "key3": "30",
-        },
+        modelForm: {
+        experiment_name: "",
+        params: {},
         "include_documents": true,
+      },
+      defaultParams: {
+        match_batch_size: 50,
+        unlabeled_batch_size: 100,
+        learning_rate: 0.1,
+        epochs: 20,
+        embeddings: ["charngram.100d", "fasttext.en.300d", "fasttext.simple.300d", "glove.42B.300d",
+            "glove.840B.300d", "glove.twitter.27B.25d", "glove.twitter.27B.50d", "glove.twitter.27B.100d",
+            "glove.twitter.27B.200d", "glove.6B.50d", "glove.6B.100d", "glove.6B.200d", "glove.6B.300d"],
+        gamma: 0.5,
+        hidden_dim: 100,
+        random_state: 42,
+        load_model: false,
+        start_epoch: 0,
+        pre_train_hidden_dim: 300,
+        pre_train_training_size: 50000,
       }
     };
   },
@@ -241,7 +253,13 @@ const annotationMixin = {
 
   created() {
     let update = false;
-
+    Object.keys(this.defaultParams).forEach(param => {
+      if (Array.isArray(this.defaultParams[param])) {
+        this.modelForm.params[param] = this.defaultParams[param][0];
+      } else {
+        this.modelForm.params[param] = this.defaultParams[param];
+      }
+    })
     if (window.localStorage.getItem('project') === null) {
       update = true;
     } else if (JSON.parse(window.localStorage.getItem("project"))["id"] === null && JSON.parse(window.localStorage.getItem("newly_created")) === true) {

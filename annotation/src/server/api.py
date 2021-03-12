@@ -750,10 +750,10 @@ class TrainModelAPIView(APIView):
 	queryset = Document.objects.all()
 
 	def post(self, request, project_id):
-		model_name = request.data['modelName']
+		model_name = request.data['experiment_name']
 		# call model_settings, params <- if annoying, don't worry
 		# model_name -> experiment_name
-		model_settings = request.data['settings']
+		model_settings = request.data['params']
 		model_settings["experiment_name"] = model_name
 		include_documents = request.data['include_documents']
 		
@@ -797,10 +797,10 @@ class TrainModelAPIView(APIView):
 
 	def generate_json_for_model_training_api(self, project_id, model_settings, include_documents):
 		data_info = {"label_space": [], "annotated": [], "unlabeled": []}
-		
+		project = get_object_or_404(Project, pk=project_id)
+
 		model_settings["dataset_size"] = project.documents.filter(annotated=False).count()
 
-		project = get_object_or_404(Project, pk=project_id)
 		model_settings["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
