@@ -6,7 +6,7 @@
       <i class="el-icon-close el-icon--right" @click="removeLabel"
          v-if="!this.$route.path.endsWith('annotate') && this.labelInfo.text"/>
     </el-tag>
-    <el-tag class="label-keyboard-shortcut" style="background-color: white">
+    <el-tag class="label-keyboard-shortcut" style="background-color: white" v-if=showShortcut>
       <b>{{ labelInfo.shortcut | displayShortcut }}</b>
     </el-tag>
   </div>
@@ -15,8 +15,7 @@
 <script>
 export default {
   name: "Label",
-  //TODO showShortcut need to be used in recommendations
-  props: {labelInfo: Object, showShortcut: Boolean},
+  props: {labelInfo: Object, showShortcut: {type: Boolean, default: true}},
   methods: {
     removeLabel() {
       this.$http.delete(`/projects/${this.$store.getters.getProjectInfo.id}/labels/${this.labelInfo.id}`).then(res => {
@@ -78,7 +77,6 @@ export default {
               return this.$http
                   .post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${lastAnnotationId}/ner/`, nerData)
             } else if (this.$store.getters.getProjectInfo.task == 3) {
-              //TODO
               let reData = this.$store.getters["annotation/getRESelection"];
               return this.$http
                   .post(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${lastAnnotationId}/re/`, reData)
