@@ -40,7 +40,7 @@
       <el-divider/>
 
       <el-row>
-        <el-button type="primary" @click="saveSettings">SAVE</el-button>
+        <el-button type="primary" @click="saveSettings(true)">SAVE</el-button>
         <el-button type="danger" @click="resetSettings">REST</el-button>
         <el-button type="warning" @click="goToHistoricalAnnotations" v-if="annotationSettings.history">Upload Historical
           Annotations
@@ -69,12 +69,15 @@ export default {
             this.annotationSettings = res;
           })
     },
-    saveSettings() {
+    saveSettings(goToNextStep) {
       return this.$http
           .put(`/projects/${this.$store.getters.getProjectInfo.id}/settings/`, this.annotationSettings)
           .then(res => {
             console.log("setting saved", res)
             this.annotationSettings = res;
+            if (goToNextStep) {
+              this.goNextStep();
+            }
           })
     },
     resetSettings() {
@@ -82,6 +85,10 @@ export default {
     },
     goToHistoricalAnnotations() {
       this.$router.push({name: "HistoricalAnnotations"})
+    },
+    goNextStep() {
+      this.$store.commit('updateActionRelatedInfo', {step: 4});
+      this.$router.push({name: "Annotate"})
     }
   },
   created() {

@@ -14,12 +14,18 @@
 
 <script>
 import SelectedLabelListRow from "@/components/project/annotation/sa/SelectedLabelListRow";
+import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
 
 export default {
   name: "SentimentAnalysisAnnotation",
   components: {SelectedLabelListRow},
   data() {
     return {}
+  },
+  created() {
+    if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+      this.$store.commit("showAnnotationGuidePopup", DIALOG_TYPE.Annotation.SA);
+    }
   }
 }
 </script>

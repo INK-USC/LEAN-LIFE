@@ -21,6 +21,11 @@ export const DIALOG_TYPE = {
 	"UploadDataSet": "UploadDataSet",
 	"CreatingLabels": "CreatingLabels",
 	"ConfiguringOptionalAnnotationSettings": "ConfiguringOptionalAnnotationSettings",
+	"Annotation": {
+		"SA": "SA",
+		"NER": "NER",
+		"RE": "RE"
+	}
 }
 export const ACTION_TYPE = {
 	CREATE: "create",

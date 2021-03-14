@@ -28,6 +28,7 @@
 
 <script>
 import Recommendation from "@/components/project/annotation/shared/Recommendation";
+import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
 
 export default {
   name: "NamedEntityRecognitionAnnotation",
@@ -133,6 +134,9 @@ export default {
   },
   created() {
     // console.log(this.$store.getters["document/getCurDoc"])
+    if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+      this.$store.commit("showAnnotationGuidePopup", DIALOG_TYPE.Annotation.NER);
+    }
   },
   computed: {
     chunks() {

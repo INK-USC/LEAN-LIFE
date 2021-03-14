@@ -26,6 +26,10 @@
     }
   }
 }
+
+.el-dialog__body {
+  padding-top: 0;
+}
 </style>
 <script>
 import NavBar from "@/components/NavBar";

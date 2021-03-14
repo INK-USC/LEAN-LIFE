@@ -24,6 +24,10 @@ const store = new Vuex.Store({
 			targetDialogType: "",
 			dialogVisible: false,
 		},
+		annotationGuidePopupInfo: {
+			targetDialogType: "",
+			dialogVisible: false,
+		}
 	},
 	mutations: {
 		login(state, loginCredential) {
@@ -65,6 +69,13 @@ const store = new Vuex.Store({
 			state.simplePopupInfo.dialogVisible = false;
 			state.simplePopupInfo.targetDialogType = "";
 		},
+		showAnnotationGuidePopup(state, targetDialogType) {
+			state.annotationGuidePopupInfo.dialogVisible = true;
+			state.annotationGuidePopupInfo.targetDialogType = targetDialogType;
+		},
+		hideAnnotationGuidePopup(state) {
+			state.annotationGuidePopupInfo.dialogVisible = false;
+		}
 	},
 	getters: {
 		getUserInfo: state => {
@@ -87,6 +98,9 @@ const store = new Vuex.Store({
 		},
 		getSimplePopupInfo: state => {
 			return state.simplePopupInfo;
+		},
+		getAnnotationGuidePopupInfo: state => {
+			return state.annotationGuidePopupInfo
 		},
 		getActionType: state => {
 			return state.actionRelatedInfo.actionType;

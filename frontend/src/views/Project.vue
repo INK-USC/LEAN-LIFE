@@ -10,6 +10,7 @@
       </el-main>
     </el-container>
     <SimplePopup/>
+    <AnnotationGuidePopup/>
   </div>
 
 </template>
@@ -18,10 +19,11 @@
 import SimplePopup from "@/components/popups/SimplePopup";
 import ProjectSideBar from "@/components/project/overview/ProjectSideBar";
 import AnnotationSideBar from "@/components/project/annotation/AnnotationSideBar";
+import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
 
 export default {
   name: "Project",
-  components: {AnnotationSideBar, ProjectSideBar, SimplePopup},
+  components: {AnnotationGuidePopup, AnnotationSideBar, ProjectSideBar, SimplePopup},
 }
 </script>
 

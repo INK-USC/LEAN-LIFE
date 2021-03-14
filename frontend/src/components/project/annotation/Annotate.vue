@@ -1,11 +1,19 @@
 <template>
   <el-row>
-    <h1>
-      Annotate page
-      <span v-if="this.$store.getters.getProjectInfo.task==1">(Sentiment Analysis)</span>
-      <span v-if="this.$store.getters.getProjectInfo.task==2">(Named Entity Recognition)</span>
-      <span v-if="this.$store.getters.getProjectInfo.task==3">(Relation Extraction)</span>
-    </h1>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div>
+        <el-button icon="el-icon-back" @click="$router.back()">Back</el-button>
+      </div>
+      <h1 style="flex: 1">
+        Annotate page
+        <span v-if="this.$store.getters.getProjectInfo.task==1">(Sentiment Analysis)</span>
+        <span v-if="this.$store.getters.getProjectInfo.task==2">(Named Entity Recognition)</span>
+        <span v-if="this.$store.getters.getProjectInfo.task==3">(Relation Extraction)</span>
+      </h1>
+      <div>
+        <TrainModelButton/>
+      </div>
+    </div>
 
     <el-progress :percentage="annotationCompletionPercentage"
                  :format="getProgressBarLabel" type="line" :stroke-width="30" text-inside/>
@@ -56,10 +64,12 @@ import RelationExtractionAnnotation from "@/components/project/annotation/re/Rel
 import NaturalLanguageExplanationPopup
   from "@/components/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
 import TriggerExplanationPopup from "@/components/explanation/TriggerExplanation/TriggerExplanationPopup";
+import TrainModelButton from "@/components/project/annotation/shared/TrainModelButton";
 
 export default {
   name: "Annotate",
   components: {
+    TrainModelButton,
     TriggerExplanationPopup,
     NaturalLanguageExplanationPopup,
     RelationExtractionAnnotation,

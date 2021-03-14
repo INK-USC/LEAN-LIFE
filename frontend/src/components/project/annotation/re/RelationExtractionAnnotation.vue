@@ -29,6 +29,7 @@
 
 <script>
 import RelationDisplay from "@/components/project/annotation/re/RelationDisplay";
+import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
 
 export default {
   name: "RelationExtractionAnnotation",
@@ -190,6 +191,11 @@ export default {
         end_offset: this.$store.getters['document/getCurDoc'].text.length
       })
       return res;
+    }
+  },
+  created() {
+    if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
+      this.$store.commit("showAnnotationGuidePopup", DIALOG_TYPE.Annotation.RE);
     }
   }
 
