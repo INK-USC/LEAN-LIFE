@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" v-if="this.$store.getters.getActionType==='CREATE'">
+  <el-dialog :visible.sync="dialogVisible">
     <h1 slot="title">
       <i class="el-icon-info"/>
       {{ this.$store.getters.getAnnotationGuidePopupInfo.targetDialogType }} Annotation Guideline

@@ -49,10 +49,10 @@
         </el-button>
       </el-col>
     </el-row>
-
+    {{ this.$store.getters.getActionType }}
+    <AnnotationGuidePopup v-if="this.$store.getters.getActionType===getAllActionType().CREATE"/>
     <NaturalLanguageExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===2"/>
     <TriggerExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===3"/>
-
   </el-row>
 </template>
 
@@ -65,10 +65,13 @@ import NaturalLanguageExplanationPopup
   from "@/components/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
 import TriggerExplanationPopup from "@/components/explanation/TriggerExplanation/TriggerExplanationPopup";
 import TrainModelButton from "@/components/project/annotation/shared/TrainModelButton";
+import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
+import {ACTION_TYPE} from "@/utilities/constant";
 
 export default {
   name: "Annotate",
   components: {
+    AnnotationGuidePopup,
     TrainModelButton,
     TriggerExplanationPopup,
     NaturalLanguageExplanationPopup,
@@ -99,6 +102,9 @@ export default {
             this.$store.dispatch('document/fetchDocuments')
           })
       this.goToNextDoc(true)
+    },
+    getAllActionType() {
+      return ACTION_TYPE;
     }
   },
   computed: {
