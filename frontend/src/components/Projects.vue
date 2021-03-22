@@ -1,20 +1,22 @@
 <template>
   <div>
-    <h1>
-      Hello, {{ this.$store.getters.getUserInfo.username |capitalize }}
-    </h1>
-    <el-row>
-      <el-button type="primary" @click="()=> {this.selectedProject=null; this.dialogVisible = true}">CREATE PROJECT
-      </el-button>
-    </el-row>
+    <div style="text-align:center">
+      <h1>
+        Hello, {{ this.$store.getters.getUserInfo.username | capitalize }}
+      </h1>
+      <el-row>
+        <el-button type="primary" @click="()=> {this.selectedProject=null; this.dialogVisible = true}">CREATE PROJECT
+        </el-button>
+      </el-row>
+    </div>
+
     <el-row>
       <el-col :span="12" :offset="6">
         <el-table :data="projects" stripe :default-sort="{prop: 'updated_at', order:'descending'}">
           <el-table-column prop="name" label="Name" sortable>
             <template slot-scope="scope">
-              <el-link type="primary" @click="handleProjectSelected(scope.$index, scope.row)">{{
-                  scope.row.name
-                }}
+              <el-link type="primary" @click="handleProjectSelected(scope.$index, scope.row)">
+                {{ scope.row.name }}
               </el-link>
             </template>
           </el-table-column>
@@ -23,14 +25,14 @@
                            :filters="this.filters"
                            :filter-method="filterTask"/>
           <el-table-column prop="updated_at" label="Last Updated" :formatter="dateFormat" sortable/>
-          <el-table-column
-              label="Operations">
+          <el-table-column label="Operations">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"/> Edit
+              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"/>
+                Edit
               </el-button>
               <el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)"
                              style="margin-left: 10px">
-                <el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/> Delete</el-button>
+                <el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/>Delete</el-button>
               </el-popconfirm>
             </template>
           </el-table-column>

@@ -28,7 +28,7 @@
                    :total="this.$store.getters['document/getDocuments'].totalDocCount"
                    :page-size="this.$store.getters['document/getDocuments'].pageSize"
                    :current-page="this.$store.getters['document/getDocuments'].curPage"
-                   @current-change="pageChanged"/>
+                   @current-change="pageChanged" style="text-align: center"/>
   </el-col>
 </template>
 

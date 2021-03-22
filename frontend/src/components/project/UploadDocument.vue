@@ -2,17 +2,17 @@
   <el-row>
     <el-col>
       <el-card>
-        <div slot=header style="display: flex">
+        <div slot=header>
           <h3>Import your corpus below</h3>
         </div>
-        <div style="text-align: left">
+        <div>
           <div>In order to start the annotation process, a corpus <u>must</u> be uploaded</div>
           <div>We accept datasets in the following formats:</div>
           <ul>
             <li>
               <b>JSON (recommended)</b>
               <br/><u>Format:</u>
-              <pre>
+              <pre style="width: fit-content;padding-left: 20px; padding-right: 20px; height: fit-content">
                 <code v-if="this.$store.getters.getProjectInfo.task!==3">
 {
   "data" : [
@@ -69,11 +69,17 @@
                   associated with the text
                 </li>
                 <p><u>Example 1:</u></p>
-                <el-table :data="CSV_TABLE_EXAMPLE_1" stripe border>
-                  <el-table-column prop="text" label="text"/>
-                  <el-table-column prop="foo" label="foo" width="60"/>
-                  <el-table-column prop="bar" label="bar" width="60"/>
-                </el-table>
+                <el-row>
+                  <el-col :span="12">
+                    <el-table :data="CSV_TABLE_EXAMPLE_1" stripe border>
+                      <el-table-column prop="text" label="text"/>
+                      <el-table-column prop="foo" label="foo" width="60"/>
+                      <el-table-column prop="bar" label="bar" width="60"/>
+                    </el-table>
+                  </el-col>
+                </el-row>
+
+
                 <p v-if="this.$store.getters.getProjectInfo.task === 3">Needed Fields are: <b>word</b>, <b>label</b></p>
                 <table style="" v-if="this.$store.getters.getProjectInfo.task === 3">
                   <tr>
@@ -109,10 +115,13 @@
                   text
                 </li>
                 <u v-if="this.$store.getters.getProjectInfo.task !== 3">Example 2:</u>
-
-                <el-table :data=" CSV_TABLE_EXAMPLE_1" stripe border :show-header="false">
-                  <el-table-column prop="text"/>
-                </el-table>
+                <el-row>
+                  <el-col :span="12">
+                    <el-table :data=" CSV_TABLE_EXAMPLE_1" stripe border :show-header="false">
+                      <el-table-column prop="text"/>
+                    </el-table>
+                  </el-col>
+                </el-row>
               </ol>
             </li>
             <li>
@@ -121,7 +130,7 @@
           </ul>
         </div>
 
-        <el-form :model="this.fileForm">
+        <el-form :model="this.fileForm" style="text-align: center">
           <el-form-item>
             <el-radio v-model="fileForm.fileType" label="JSON" border>JSON file</el-radio>
             <el-radio v-model="fileForm.fileType" label="CSV" border v-if="this.$store.getters.getProjectInfo.task!=3">

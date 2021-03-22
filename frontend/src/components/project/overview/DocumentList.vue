@@ -1,11 +1,10 @@
 <template>
   <div>
-    <div style="display: flex; flex-direction: column; align-items: center">
+    <div style="text-align: center">
       <div>
         <h1>All Uploaded Documents</h1>
         <el-progress type="circle" :percentage="percentageCompleted" :format="percentageText"/>
       </div>
-
       <el-input v-model="searchQuery" placeholder="Type to search for documents" style="width: 50%"
                 prefix-icon="el-icon-search" clearable/>
     </div>
@@ -24,7 +23,7 @@
                    :total="this.$store.getters['document/getDocuments'].totalDocCount"
                    :page-size="this.$store.getters['document/getDocuments'].pageSize"
                    :current-page="this.$store.getters['document/getDocuments'].curPage"
-                   @current-change="pageChanged"/>
+                   @current-change="pageChanged" style="text-align: center"/>
   </div>
 </template>
 

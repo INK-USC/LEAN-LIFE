@@ -4,7 +4,7 @@
       <div>
         <el-button icon="el-icon-back" @click="$router.back()">Back</el-button>
       </div>
-      <h1 style="flex: 1">
+      <h1 style="text-align: center">
         Annotate page
         <span v-if="this.$store.getters.getProjectInfo.task==1">(Sentiment Analysis)</span>
         <span v-if="this.$store.getters.getProjectInfo.task==2">(Named Entity Recognition)</span>
@@ -49,7 +49,6 @@
         </el-button>
       </el-col>
     </el-row>
-    {{ this.$store.getters.getActionType }}
     <AnnotationGuidePopup v-if="this.$store.getters.getActionType===getAllActionType().CREATE"/>
     <NaturalLanguageExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===2"/>
     <TriggerExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===3"/>
