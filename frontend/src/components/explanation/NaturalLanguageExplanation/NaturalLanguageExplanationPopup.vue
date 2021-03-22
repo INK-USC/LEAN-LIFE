@@ -27,15 +27,13 @@
           <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between">
             <el-autocomplete v-model="reasons[index].text" placeholder="Please explain why"
                              :fetch-suggestions="searchExplanationTemplate" style="width: 98%" clearable/>
-            <el-button icon="el-icon-delete" @click="deleteExplanation(index)" :disabled="reasons.length==1"
-            />
+            <el-button icon="el-icon-delete" @click="deleteExplanation(index)" :disabled="reasons.length==1"/>
           </div>
         </el-form-item>
         <el-form-item>
           <el-button @click="addAnotherExplanation"
                      style="width: 100%; border: 1px dotted" type="primary"
-                     :disabled="this.reasons[this.reasons.length-1].text.trim()===''"
-          >
+                     :disabled="this.reasons[this.reasons.length-1].text.trim()===''">
             <i class="el-icon-plus"/>
             Add additional explanation
           </el-button>
@@ -68,11 +66,60 @@ export default {
     }
   },
   methods: {
+    updateSuggestion() {
+      let suggestions = [];
+      const commonTemplates = ["The [word|phrase] '____' appears in the text."];
+      const nerAndRETemplates = [
+        "The [word|phrase]  '____'  appears to the [right|left] of 'REPLACE' by at most  ____  words.",
+        "The [word|phrase]  '____'  appears to the [right|left] of 'REPLACE' by at least  ____  words.",
+        "The [word|phrase]  '____'  appears directly to the [right|left] of 'REPLACE'",
+        "The [word|phrase]  '____'  appears within  ____  words of 'REPLACE'",
+        "The [word|phrase]  '____'  appears within 1 word of 'REPLACE'",
+      ]
+      const reTemplates = [
+        "The [word|phrase]  '____'  appears between 'REPLACE-1' and 'REPLACE-2'",
+        "The word  '____'  is the only word between 'REPLACE-1' and 'REPLACE-2'",
+        "There are no [more|less] than  ____   words between 'REPLACE-1' and 'REPLACE-2'",
+        "There is one word between 'REPLACE-1' and 'REPLACE-2'",
+        "'REPLACE-1' comes before 'REPLACE-2' by at [most|least]  ____  words",
+        "'REPLACE-1' comes directly before 'REPLACE-2'",
+      ]
+      if (this.$store.getters.getProjectInfo.task === 3) {
+        reTemplates.forEach(template => {
+          const preFilledTemplate = template.replace("REPLACE-1", this.$store.getters["annotation/getRESelection"].sbj_text).replace("REPLACE-2", this.$store.getters["annotation/getRESelection"].obj_text);
+          suggestions.push(preFilledTemplate);
+        })
+      }
+      if (this.$store.getters.getProjectInfo.task > 1) {
+        nerAndRETemplates.forEach(template => {
+          let word = ""
+          if (this.$store.getters.getProjectInfo.task === 2) {
+            word = this.$store.getters["document/getCurDoc"].text.substring(this.$store.getters["annotation/getNERSelection"].selectionStart, this.$store.getters["annotation/getNERSelection"].selectionEnd)
+          } else if (this.$store.getters.getProjectInfo.task === 3) {
+            word = `[${this.$store.getters["annotation/getRESelection"].sbj_text} | ${this.$store.getters["annotation/getRESelection"].obj_text}]`
+          }
+          const preFilledTemplate = template.replace("REPLACE", word);
+          suggestions.push(preFilledTemplate);
+        })
+      }
+      commonTemplates.forEach(template => {
+        suggestions.push(template);
+      })
+      return suggestions;
+    },
     searchExplanationTemplate(queryString, cb) {
-      let results = queryString ? [] : [{
-        "value": "The [word|phrase] '____' appears in the text.",
-        "link": "The [word|phrase] '____' appears in the text."
-      }]
+      let results = [];
+
+      if (queryString) {
+        results = [];
+      } else {
+        this.updateSuggestion().forEach(sug => {
+          results.push({
+            "value": sug,
+            "link": sug
+          })
+        })
+      }
       cb(results)
     },
     addAnotherExplanation() {
