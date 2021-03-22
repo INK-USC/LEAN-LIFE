@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-dialog
-        :visible.sync="dialogVisible" width="60%">
+    <el-dialog :visible.sync="dialogVisible" width="50%" style="text-align: center;">
       <h1 slot="title">
         <i class="el-icon-info"></i>
         {{ this.dialogContents[this.$store.getters.getSimplePopupInfo.targetDialogType].title }}

@@ -1,10 +1,10 @@
 <template>
   <el-dialog :visible.sync="dialogVisible">
-    <h1 slot="title">
+    <h1 slot="title" style="text-align: center">
       <i class="el-icon-info"/>
       {{ this.$store.getters.getAnnotationGuidePopupInfo.targetDialogType }} Annotation Guideline
     </h1>
-    <div>
+    <div style="text-align: center">
       <div style="font-size: 20px">Here's a quick animation on the different ways you can annotate a document</div>
       <img style="margin-top: 20px" :src="getImg()"/>
     </div>
