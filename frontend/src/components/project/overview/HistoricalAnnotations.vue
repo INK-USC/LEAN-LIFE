@@ -52,49 +52,52 @@
       </code>
       </pre>
     </div>
-    <el-upload drag accept="text/json" ref="uploadInput" action="" :http-request="uploadFile">
-      <i class="el-icon-upload"></i>
-      <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
-    </el-upload>
-    <el-row style="margin-top: 20px">
-      <el-radio v-model="action" border label="merge">Merge</el-radio>
-      <el-radio v-model="action" border label="replace">Replace</el-radio>
-    </el-row>
+    <div style="text-align: center">
+      <el-upload drag accept="text/json" ref="uploadInput" action="" :http-request="uploadFile">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+      </el-upload>
+      <el-row style="margin-top: 20px">
+        <el-radio v-model="action" border label="merge">Merge</el-radio>
+        <el-radio v-model="action" border label="replace">Replace</el-radio>
+      </el-row>
 
-    <el-table :data="annotations">
-      <el-table-column type="index" width="50"/>
+      <el-table :data="annotations">
+        <el-table-column type="index" width="50"/>
 
-      <el-table-column prop="word_1" label="Subject" v-if="this.$store.getters.getProjectInfo.task===3"/>
+        <el-table-column prop="word_1" label="Subject" v-if="this.$store.getters.getProjectInfo.task===3"/>
 
-      <el-table-column prop="word" label="Word" v-if="this.$store.getters.getProjectInfo.task===2"/>
-      <el-table-column prop="label" :label="this.$store.getters.getProjectInfo.task===2?'Label': 'Relation'">
-        <template slot-scope="scope">
-          {{ scope.row.label }}
-        </template>
-      </el-table-column>
+        <el-table-column prop="word" label="Word" v-if="this.$store.getters.getProjectInfo.task===2"/>
+        <el-table-column prop="label" :label="this.$store.getters.getProjectInfo.task===2?'Label': 'Relation'">
+          <template slot-scope="scope">
+            {{ scope.row.label }}
+          </template>
+        </el-table-column>
 
-      <el-table-column prop="word_2" label="Object" v-if="this.$store.getters.getProjectInfo.task===3"/>
+        <el-table-column prop="word_2" label="Object" v-if="this.$store.getters.getProjectInfo.task===3"/>
 
-      <el-table-column label="User Uploaded">
-        <template slot-scope="scope">
-          {{ scope.row.user_provided }}
-        </template>
-      </el-table-column>
-      <el-table-column>
-        <template slot-scope="scope">
-          <el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)"
-                         style="margin-left: 10px">
-            <el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/> Delete</el-button>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination background layout="prev, pager, next" :total="this.pagination.totalDocs"
-                   @current-change="pageChanged"/>
+        <el-table-column label="User Uploaded">
+          <template slot-scope="scope">
+            {{ scope.row.user_provided }}
+          </template>
+        </el-table-column>
+        <el-table-column>
+          <template slot-scope="scope">
+            <el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)"
+                           style="margin-left: 10px">
+              <el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/> Delete</el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :total="this.pagination.totalDocs"
+                     @current-change="pageChanged"/>
 
-    <el-button :disabled="!canGoToAnnotate" :type="canGoToAnnotate?'success':''" style="width: 50%; margin-top: 20px">
-      Go to annotate
-    </el-button>
+      <el-button :disabled="!canGoToAnnotate" :type="canGoToAnnotate?'success':''" style="width: 50%; margin-top: 20px">
+        Go to annotate
+      </el-button>
+    </div>
+
   </el-card>
 </template>
 
