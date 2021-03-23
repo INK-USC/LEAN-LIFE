@@ -50,6 +50,7 @@
                         <th>Project Name</th>
                         <th>Project Task</th>
                         <th>Training Status</th>
+                        <th>Stage</th>
                         <th>Time Spent</th>
                         <th>Time Left</th>
                         <th>Best Training Loss</th>
@@ -66,8 +67,9 @@
                         <td>${ row.project_task }</td>
 
                         <td>${row.training_status}</td>
+                        <td>${row.stage}</td>
                         <td>${row.time_spent? row.time_spent : "N/A"}</td>
-                        <td>${row.time_left? row.time_left : "0"}</td>
+                        <td>${(row.time_left && row.time_left>= 0)? row.time_left : "N/A"}</td>
                         <td>${row.best_train_loss? row.best_train_loss : "N/A"}</td>
                         <td>${row.file_size? row.file_size :"N/A"}</td>
                         <td>

@@ -220,7 +220,7 @@ const annotationMixin = {
           this.modelNamePopupIsLoading=false
           this.modelNamePopupVisible=false
           this.$notification['success']({
-            message: `Model ${this.modelForm.modelName} training`,
+            message: `Model ${this.modelForm.experiment_name} training`,
             description: "Your model is being trained now. You can check the status in the models page"
           })
         }).catch(err=>{

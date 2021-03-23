@@ -692,7 +692,8 @@ class ModelAPIView(APIView):
 			                  'project_task': model_dict[model_name]['project_task'],
 			                  'training_status': "Finished" if cur_meta['is_trained'] else "Training",
 			                  "time_spent":  self.get_training_updates(model_name)["time_spent"],
-			                  "time_left":  self.get_training_updates(model_name)["time_left"]
+			                  "time_left":  self.get_training_updates(model_name)["time_left"],
+			                  "stage": self.get_training_updates(model_name)["stage"]
 			                  }
 
 			# cur_model_json['time_spent'] = training_info['time_spent']
