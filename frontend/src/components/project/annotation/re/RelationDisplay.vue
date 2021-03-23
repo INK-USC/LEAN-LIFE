@@ -43,7 +43,17 @@ export default {
       })
     },
     showExplanationPopup() {
-      this.$store.dispatch("explanation/showExplanationPopup", {annotationId: this.relation.base_ann_id})
+      console.log("relation", this.relation)
+      this.$store.dispatch("annotation/setRESelection", {
+        objStart: this.relation.obj_start_offset,
+        objEnd: this.relation.obj_end_offset,
+        sbjStart: this.relation.sbj_start_offset,
+        sbjEnd: this.relation.sbj_end_offset,
+        objText: this.objText,
+        sbjText: this.sbjText,
+      }).then(() => {
+        this.$store.dispatch("explanation/showExplanationPopup", {annotationId: this.relation.base_ann_id})
+      })
     }
   },
   computed: {
