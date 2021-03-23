@@ -19,7 +19,6 @@
              style="cursor: pointer" @click="removeAnnotation(chunk)"/>
         </span>
       </div>
-
     </el-row>
 
     <Recommendation/>
@@ -129,7 +128,12 @@ export default {
       if (chunk.label === -1) {
         return;
       }
-      this.$store.dispatch("explanation/showExplanationPopup", {annotationId: chunk.base_ann_id})
+      this.$store.dispatch("annotation/setNERSelection", {
+        selectionStart: chunk.start_offset,
+        selectionEnd: chunk.end_offset
+      }).then(() => {
+        this.$store.dispatch("explanation/showExplanationPopup", {annotationId: chunk.base_ann_id})
+      });
     }
   },
   created() {

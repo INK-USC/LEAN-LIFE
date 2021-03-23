@@ -72,7 +72,7 @@ export default {
     },
     recommendationChunks() {
       const chunks = [];
-      if (!this.recommendations) {
+      if (!this.recommendations || this.recommendations.length === 0) {
         return [];
       }
       for (let i = 0; i < this.recommendations.length; i++) {
