@@ -1,8 +1,13 @@
+import sys
+import pathlib
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+sys.path.append(PATH_TO_PARENT)
 import numpy as np
 import json
-from CCG import constants
-from CCG import utils
-from CCG import util_classes as classes
+from CCG import CCG_constants as constants
+from CCG import CCG_utils as utils
+from CCG import CCG_util_classes as classes
 import os
 import pickle
 import torch.nn as nn
@@ -15,6 +20,7 @@ import random
 import numpy as np
 import pdb
 import dill
+import logging
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -152,7 +158,7 @@ class TrainedCCGParser():
 
         #     if verbose:
         #         if i > 0 and i % cut_off == 0:
-        #             print("Parser: 20% more explanations parsed")
+        #             logging.info("Parser: 20% more explanations parsed")
         
         # with open("loaded_data.p", "wb") as f:
         #     dill.dump(self.loaded_data, f)
@@ -228,9 +234,9 @@ class TrainedCCGParser():
             if r_sum/total_data_points > self.high_end_filter_pct or r_sum < self.low_end_filter_count:
                 functions_to_delete.append(i)
         
-        # print("Total Hits {}".format(sum(row_sums)))
+        # logging.info("Total Hits {}".format(sum(row_sums)))
         
-        # print("Count Filter {}".format(functions_to_delete))
+        # logging.info("Count Filter {}".format(functions_to_delete))
 
         matrix = np.delete(matrix, functions_to_delete, 0)
         functions_to_delete.sort(reverse=True)
@@ -247,11 +253,11 @@ class TrainedCCGParser():
             row_hash = hash(str(list(row))) # same as babble-labbel
             if row_hash in hashes:
                 functions_to_delete.append(i)
-                # print("{} conflicted with {}".format(i, hashes[row_hash]))
+                # logging.info("{} conflicted with {}".format(i, hashes[row_hash]))
             else:
                 hashes[row_hash] = i
 
-        # print("Hash Filter {}".format(functions_to_delete))
+        # logging.info("Hash Filter {}".format(functions_to_delete))
         functions_to_delete.sort(reverse=True)
         for index in functions_to_delete:
             del labeling_functions[index]
@@ -365,32 +371,32 @@ class CCGParserTrainer():
     def train(self, matrix_filter=False, build_soft_functions=True, verbose=True):
         self.load_data(self.params["explanation_file"])
         if verbose:
-            print("Parser: Loaded explanation data")
+            logging.info("Parser: Loaded explanation data")
         self.parser.create_and_set_grammar()
         if verbose:
-            print("Parser: Created and Set Grammar")
+            logging.info("Parser: Created and Set Grammar")
         self.parser.tokenize_explanations()
         if verbose:
-            print("Parser: Tokenized Explanations")
+            logging.info("Parser: Tokenized Explanations")
         self.parser.build_labeling_rules()
         if verbose:
-            print("Parser: Built Labeling Rules")
+            logging.info("Parser: Built Labeling Rules")
         if matrix_filter:
             self.prepare_unlabeled_data(self.params["unlabeled_data_file"])
             if verbose:
-                print("Parser: Prepared unlabeled data")
+                logging.info("Parser: Prepared unlabeled data")
             self.parser.matrix_filter(self.unlabeled_data, self.params["task"])
             if verbose:
-                print("Parser: Filtered out bad explanations")
+                logging.info("Parser: Filtered out bad explanations")
         else:
             self.parser.set_final_datastructures(self.params["task"])
             if verbose:
-                print("Parser: Set labeling functions")
+                logging.info("Parser: Set labeling functions")
         if build_soft_functions:
             self.parser.build_soft_labeling_functions()
             if verbose:
-                print("Parser: Built soft labeling functions")
-        print("Parser: Done")
+                logging.info("Parser: Built soft labeling functions")
+        logging.info("Parser: Done")
     
     def get_parser(self):
         return self.parser

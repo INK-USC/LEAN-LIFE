@@ -1,20 +1,25 @@
 import sys
-sys.path.append(".")
-sys.path.append("../")
+import pathlib
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+# sys.path.append("../")
+sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
 import json
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 import torch
 import random
 import pickle
-from training.util_classes import PreTrainingFindModuleDataset
-from training.util_functions import find_array_start_position, generate_save_string, tokenize,\
-                             build_vocab, convert_text_to_tokens, extract_queries_from_explanations,\
-                             build_custom_vocab
+from training.next_util_classes import PreTrainingFindModuleDataset
+from training.next_util_functions import find_array_start_position, generate_save_string, tokenize,\
+                                         build_vocab, convert_text_to_tokens, extract_queries_from_explanations,\
+                                         build_custom_vocab
 from tqdm import tqdm
 import re
 import numpy as np
 import pdb
+import logging
 
 possible_embeddings = ['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
@@ -113,9 +118,9 @@ def build_variable_length_text_pre_training_dataset(data, vocab, split_name, sav
     token_seqs, queries, labels = build_synthetic_pretraining_triples(data, vocab, tokenize, custom_vocab)
     dataset = PreTrainingFindModuleDataset(token_seqs, queries, labels, pad_idx)
 
-    print("Finished building {} dataset of size: {}".format(split_name, str(len(token_seqs))))
+    logging.info("Finished building {} dataset of size: {}".format(split_name, str(len(token_seqs))))
 
-    file_name = "../data/pre_train_data/{}_data_{}.p".format(split_name, save_string)
+    file_name = PATH_TO_PARENT + "../data/pre_train_data/{}_data_{}.p".format(split_name, save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump(dataset, f)
@@ -152,9 +157,9 @@ def tokenize_explanation_queries(explanation_data, vocab, label_filter, save_str
 
     tokenized_queries = convert_text_to_tokens(queries, vocab, tokenize)
 
-    print("Finished tokenizing actual queries, count: {}".format(str(len(tokenized_queries))))
+    logging.info("Finished tokenizing actual queries, count: {}".format(str(len(tokenized_queries))))
 
-    file_name = "../data/pre_train_data/sim_data_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/pre_train_data/sim_data_{}.p".format(save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump({"queries" : tokenized_queries, "labels" : labels}, f)
@@ -193,7 +198,7 @@ def build_real_query_eval_dataset(explanation_data, vocab, label_filter, dataset
     
     eval_dataset_2 = PreTrainingFindModuleDataset(tokenized_sentences, tokenized_queries, labels, vocab["<pad>"])
 
-    file_name = "../data/pre_train_data/rq_data_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/pre_train_data/rq_data_{}.p".format(save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump(eval_dataset_2, f)
@@ -225,7 +230,7 @@ def build_pre_train_find_datasets(text_data, explanation_data, save_string, embe
 
     """
     if not embedding_name in possible_embeddings:
-        print("Not Valid Embedding Option")
+        logging.info("Not Valid Embedding Option")
         return
     
     if sample_rate > 0:

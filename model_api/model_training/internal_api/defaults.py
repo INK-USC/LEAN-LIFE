@@ -1,4 +1,4 @@
-FIND_MODULE_DEFAULTS : {
+FIND_MODULE_DEFAULTS = {
     "lower_bound" : -20.0,
     "pre_train_batch_size" : 64,
     "pre_train_eval_batch_size" : 128,
@@ -14,11 +14,23 @@ FIND_MODULE_DEFAULTS : {
     "pre_train_random_state" : 42
 }
 
-BILSTM_DEFAULTS : {
-    
+BILSTM_DEFAULTS = {
+    "clip_gradient_size" : 5.0,
+    "layer_x_directions" : 4,
+    "match_batch_size" : 50, 
+    "unlabeled_batch_size" : 100,
+    "learning_rate" : 0.1,
+    "epochs" : 75,
+    "gamma" : 0.7,
+    "random_state" : 42,
+    "embeddings" : "glove.840B.300d",
+    "emb_dim" : 300,
+    "hidden_dim" : 100,
+    "none_label_key" : None,
+    "eval_batch_size" : 100  
 }
 
-TRAINING_DEFAULTS : {
+TRAINING_DEFAULTS = {
     "load_model" : False,
     "start_epoch" : 0
 }

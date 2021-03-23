@@ -1,7 +1,12 @@
 import re
 import string
-from CCG import constants
-from CCG import util_classes
+import pathlib
+import sys
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+sys.path.append(PATH_TO_PARENT)
+from CCG import CCG_constants as constants
+from CCG import CCG_util_classes as util_classes
 import pdb
 import copy
 from nltk.ccg import chart, lexicon

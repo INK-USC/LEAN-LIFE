@@ -1,3 +1,9 @@
+
+import pathlib
+import sys
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+sys.path.append(PATH_TO_PARENT)
 from CCG import strict_grammar_functions as gram_f
 from CCG import soft_grammar_functions as soft_gram_f
 import torch

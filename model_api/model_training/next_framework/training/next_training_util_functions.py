@@ -1,14 +1,19 @@
+import sys
+import pathlib
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+# sys.path.append("../")
+sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
 import pickle
 import json
 import random
-from training.util_functions import generate_save_string, convert_text_to_tokens, tokenize, extract_queries_from_explanations, clean_text, build_vocab, build_custom_vocab, load_spacy_to_custom_dataset_ner_mapping
-from training.constants import PARSER_TRAIN_SAMPLE, UNMATCH_TYPE_SCORE, TACRED_LABEL_MAP, DEV_F1_SAMPLE
-from training.util_classes import BaseVariableLengthDataset, UnlabeledTrainingDataset, TrainingDataset
-import sys
-sys.path.append(".")
-sys.path.append("../")
+from training.next_util_functions import generate_save_string, convert_text_to_tokens, tokenize, extract_queries_from_explanations,\
+                                         clean_text, build_vocab, build_custom_vocab, load_spacy_to_custom_dataset_ner_mapping
+from training.next_constants import PARSER_TRAIN_SAMPLE, UNMATCH_TYPE_SCORE, TACRED_LABEL_MAP, DEV_F1_SAMPLE
+from training.next_util_classes import BaseVariableLengthDataset, UnlabeledTrainingDataset, TrainingDataset
 from CCG.parser import CCGParserTrainer
-from CCG.utils import generate_phrase
+from CCG.CCG_utils import generate_phrase
 from CCG.soft_grammar_functions import NER_LABEL_SPACE
 import spacy
 import torch
@@ -19,9 +24,9 @@ import dill
 import pdb
 from tqdm import tqdm
 import numpy as np
+import logging
 
 nlp = spacy.load("en_core_web_sm")
-MODEL_API_PATH = "../model_training/next_framework/"
 
 def batch_type_restrict_re(relation, phrase_inputs, relation_ner_types):
     entity_types = relation_ner_types[relation]
@@ -104,14 +109,14 @@ def create_parser(parser_training_data, explanation_path, task="re", explanation
     parser_trainer = None
     
     if task == "re":
-        parser_trainer = CCGParserTrainer(task explanation_path, "", parser_training_data, explanation_data)
+        parser_trainer = CCGParserTrainer(task, explanation_path, "", parser_training_data, explanation_data)
     elif task == "sa":
         parser_trainer = CCGParserTrainer(task, explanation_path, "", parser_training_data, explanation_data)
     
     parser_trainer.train()
     parser = parser_trainer.get_parser()
 
-    with open(MODEL_API_PATH + "data/training_data/parser_debug.p", "wb") as f:
+    with open(PATH_TO_PARENT + "../data/training_data/parser_debug.p", "wb") as f:
         dill.dump(parser, f)
 
     return parser
@@ -120,10 +125,10 @@ def match_training_data(labeling_functions, train, task, function_ner_types={}):
 
     phrases = [generate_phrase(entry, nlp) for entry in train]
 
-    with open(MODEL_API_PATH + "data/training_data/train_phrases_debug.p", "wb") as f:
+    with open(PATH_TO_PARENT + "../data/training_data/train_phrases_debug.p", "wb") as f:
         pickle.dump(phrases, f)
 
-    # with open(MODEL_API_PATH + "data/training_data/train_phrases_debug.p", "rb") as f:
+    # with open(PATH_TO_PARENT + "../data/training_data/train_phrases_debug.p", "rb") as f:
     #     phrases = pickle.load(f)
 
     matched_data_tuples = []
@@ -154,13 +159,13 @@ def match_training_data(labeling_functions, train, task, function_ner_types={}):
         if not_matched:
             unlabeled_data_phrases.append(phrase)
     
-    with open(MODEL_API_PATH + "data/training_data/matched_data_tuples_debug.p", "wb") as f:
+    with open(PATH_TO_PARENT + "../data/training_data/matched_data_tuples_debug.p", "wb") as f:
         pickle.dump(matched_data_tuples, f)
 
-    with open(MODEL_API_PATH + "data/training_data/matched_indices_debug.p", "wb") as f:
+    with open(PATH_TO_PARENT + "../data/training_data/matched_indices_debug.p", "wb") as f:
         pickle.dump(matched_indices, f)
     
-    with open(MODEL_API_PATH + "data/training_data/unlabeled_data_debug.p", "wb") as f:
+    with open(PATH_TO_PARENT + "../data/training_data/unlabeled_data_debug.p", "wb") as f:
         pickle.dump(unlabeled_data_phrases, f)
 
     return matched_data_tuples, unlabeled_data_phrases, matched_indices
@@ -171,9 +176,9 @@ def build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to
 
     dataset = UnlabeledTrainingDataset(seq_tokens, seq_phrases, pad_idx)
 
-    print("Finished building unlabeled dataset of size: {}".format(str(len(seq_tokens))))
+    logging.info("Finished building unlabeled dataset of size: {}".format(str(len(seq_tokens))))
 
-    file_name = MODEL_API_PATH + "data/training_data/unlabeled_data_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/unlabeled_data_{}.p".format(save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump(dataset, f)
@@ -186,9 +191,9 @@ def build_labeled_dataset(sentences, labels, vocab, save_string, split, label_ma
 
     dataset = TrainingDataset(seq_tokens, label_ids, pad_idx)
 
-    print("Finished building {} dataset of size: {}".format(split, str(len(seq_tokens))))
+    logging.info("Finished building {} dataset of size: {}".format(split, str(len(seq_tokens))))
 
-    file_name = MODEL_API_PATH + "data/training_data/{}_data_{}.p".format(split, save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/{}_data_{}.p".format(split, save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump(dataset, f)
@@ -204,9 +209,9 @@ def build_word_to_idx(raw_explanations, vocab, save_string):
     
     tokenized_queries = convert_text_to_tokens(quoted_words, vocab, lambda x: x.split())
 
-    print("Finished tokenizing actual queries, count: {}".format(str(len(tokenized_queries))))
+    logging.info("Finished tokenizing actual queries, count: {}".format(str(len(tokenized_queries))))
 
-    file_name = MODEL_API_PATH + "data/training_data/query_tokens_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/query_tokens_{}.p".format(save_string)
     with open(file_name, "wb") as f:
         pickle.dump(tokenized_queries, f)
 
@@ -214,7 +219,7 @@ def build_word_to_idx(raw_explanations, vocab, save_string):
     for i, quoted_word in enumerate(quoted_words):
         quoted_words_to_index[quoted_word] = i
     
-    file_name = MODEL_API_PATH + "data/training_data/word2idx_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/word2idx_{}.p".format(save_string)
     with open(file_name, "wb") as f:
         pickle.dump(quoted_words_to_index, f)
 
@@ -237,11 +242,11 @@ def apply_strict_matching(text_data, explanation_data, task):
     else:
         matched_data_tuples, _, matched_indices = match_training_data(strict_labeling_functions, text_data, task, function_ner_types)
 
-    return matched_data_tuples, 
+    return matched_data_tuples, matched_indices
 
 
-def build_datasets_from_text(text_data, vocab_, explanation_data, save_string, label_map, label_filter=None,
-                             sample_rate=-1.0, task="re", dataset="tacred"):
+def build_datasets_from_text(text_data, vocab_, explanation_data, custom_vocab, save_string, label_map,
+                             label_filter=None, sample_rate=-1.0, task="re", dataset="tacred"):
     if type(vocab_) == str:
         with open(vocab_, "rb") as f:
             vocab = pickle.load(f)
@@ -266,7 +271,6 @@ def build_datasets_from_text(text_data, vocab_, explanation_data, save_string, l
     else:
         matched_data_tuples, unlabeled_data_phrases, _ = match_training_data(strict_labeling_functions, text_data, task, function_ner_types)
     
-    custom_vocab = build_custom_vocab(dataset, vocab_length=len(vocab))
     spacy_to_custom_ner_mapping = load_spacy_to_custom_dataset_ner_mapping(dataset)
 
     build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to_custom_ner_mapping, custom_vocab)
@@ -283,7 +287,7 @@ def build_datasets_from_text(text_data, vocab_, explanation_data, save_string, l
 
     function_labels = _prepare_labels([entry[1] for entry in soft_matching_functions], label_map)
 
-    file_name = MODEL_API_PATH + "data/training_data/labeling_functions_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/labeling_functions_{}.p".format(save_string)
     with open(file_name, "wb") as f:
         dill.dump({"function_pairs" : soft_matching_functions,
                      "labels" : function_labels}, f)
@@ -477,11 +481,9 @@ def prep_and_tune_none_label_threshold(model, h0, c0, eval_dataset, device, batc
 
     none_label_threshold_entropy, best_f1 = tune_none_label_threshold(entropy_values, predict_labels, labels,\
                                                                         none_label_id, num_labels)
-    print(best_f1)
 
     none_label_threshold_max_value, best_f1 = tune_none_label_threshold(max_prob_values, predict_labels, labels,\
                                                                           none_label_id, num_labels, False)
-    print(best_f1)
 
     return none_label_threshold_entropy, none_label_threshold_max_value
     

@@ -2,6 +2,7 @@
 import torch
 import random
 from abc import ABC, abstractmethod
+import logging
 
 class BaseVariableLengthDataset(ABC):
     @abstractmethod
@@ -58,7 +59,7 @@ class PreTrainingFindModuleDataset(BaseVariableLengthDataset):
         self.pad_idx = pad_idx
         assert len(self.tokens) == len(self.queries)
         assert len(self.tokens) == len(self.labels)
-        print("Dataset built, count: {}".format(str(len(self.tokens))))
+        logging.info("Dataset built, count: {}".format(str(len(self.tokens))))
     
     def as_batches(self, batch_size, seed=0, shuffle=True):
         """
@@ -110,7 +111,7 @@ class TrainingDataset(BaseVariableLengthDataset):
         self.pad_idx = pad_idx
         assert len(self.tokens) == len(self.labels)
         self.length = len(self.tokens)
-        print("Dataset built, count: {}".format(str(self.length)))
+        logging.info("Dataset built, count: {}".format(str(self.length)))
     
     def as_batches(self, batch_size, seed=0, shuffle=True, sample=-1):
         """
@@ -167,7 +168,7 @@ class UnlabeledTrainingDataset(BaseVariableLengthDataset):
         self.phrases = phrases
         self.pad_idx = pad_idx
         assert len(self.tokens) == len(self.phrases)
-        print("Dataset built, count: {}".format(str(len(self.tokens))))
+        logging.info("Dataset built, count: {}".format(str(len(self.tokens))))
     
     def as_batches(self, batch_size, seed=0, shuffle=True):
         """

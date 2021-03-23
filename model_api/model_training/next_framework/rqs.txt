@@ -117,10 +117,10 @@ thinc==7.4.1
 threadpoolctl==2.1.0
 tokenizers==0.9.4
 toml==0.10.1
-torch==1.7.0+cu101
+torch==1.7.0
 torchaudio==0.7.0
 torchtext==0.8.0
-torchvision==0.8.1+cu101
+torchvision==0.8.1
 tornado==6.0.4
 tqdm==4.50.0
 traitlets==4.3.3

@@ -1,5 +1,9 @@
 import json
-import constants as const
+import sys
+import pathlib
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+sys.path.append(PATH_TO_PARENT)
+import fast_api_constants as const
 import requests
 
 def _create_ner_key(start_offset, end_offset):
@@ -269,18 +273,20 @@ def _process_annotations(annotated_docs, project_type):
     
     return list(sentence_label_pairs.values()), list(explanation_triples.values())
 
-def _read_lean_life_dataset(json_data):
+def _read_lean_life_dataset(json_data, project_type):
     """
         Read in a LEAN_LIFE Dataset file and convert it into the needed datastructures for training
 
         Arguments:
-            file_obj (File) : Python File Object
-        
+            json_data (LeanLifeData) : json_schema.LeanLifeData
+            project_type       (str) : string indicating project type
+
         Returns:
-            training_pairs, explanation_triples, label_space, unlabeled_docs : arr, arr, arr, arr, str
+            label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs,  : dict, arr, arr, arr, arr
     """
     label_space = json_data.label_space
     label_space = [label.text for label in label_space if not label.user_provided]
+    label_space = {label : i for i, label in enumerate(label_space)}
     ner_label_space = [label.text for label in label_space if label.user_provided and len(label.text) > 0]
     unlabeled_docs = json_data.unlabeled
     if project_type != const.LEAN_LIFE_RE_PROJECT:
@@ -294,27 +300,34 @@ def _read_lean_life_dataset(json_data):
     else:
         training_pairs, explanation_triples = [], []
     
-    return label_space, unlabeled_docs, explanation_triples, , training_pairs
+    return label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs
 
-def prepare_next_data(json_data, lean_life=True):
+def prepare_next_data(json_data, project_type="", lean_life=True):
     """
         Given a post request indicating a training job should be kicked off, organize data into the needed
         datastructures for training. It doesn't fully complete the pre-processing, allowing for flexibility
-        in the future. For example, currently we "and" all explanations associated with an annotation, that
-        policy will probably be changed. So these are more useful intermediary data-structures. We currently
+        in the future. For example, currently we "and" all explanations associated with an annotation (internal_main.py),
+        that policy will probably be changed. So these are more useful intermediary data-structures. We currently
         create training_pairs as well, but these are not being used.
 
         Arguments:
-            file_obj  (File) : Python File Object
-            lean_life (bool) : boolean indicating whether file is a lean_life file or a user provided file
+            json_data (LeanLifeData|ExplanationTrainingPayload) : json_schema.LeanLifeData or json_schema.ExplanationTrainingPayload
+            project_type                                  (str) : string indicating project type for lean_life data
+            lean_life                                    (bool) : boolean indicating whether file is a lean_life file or a user provided payload
     """
     if lean_life:
-        label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = _read_lean_life_dataset(json_data)
+        label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = _read_lean_life_dataset(json_data, project_type)
     else:
         # training_pairs = json_data.training_pairs
-        explanation_triples = json_data.explanation_triples
         label_space = json_data.label_space
-        unlabeled_docs = json_data.unlabeled_text
+        if hasattr(json_data, "unlabeled_text"):
+            unlabeled_docs = json_data.unlabeled_text
+        else:
+            unlabeled_docs = []
+        if hasattr(json_data, "explanation_triples"):
+            explanation_triples = json_data.explanation_triples
+        else:
+            explanation_triples = []
         if hasattr(json_data, "ner_label_space"):
             ner_label_space = json_data.ner_label_space
         else:
@@ -322,37 +335,39 @@ def prepare_next_data(json_data, lean_life=True):
     
     return label_space, unlabeled_docs, explanation_triples, ner_label_space
 
-def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epoch, current_iteration,
-                          time_spent, best_train_loss):
+def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, best_train_loss, stage):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the latest model training
         status. Django API takes this information and writes to a local file, so that when the front-end
         requests an update, the Django API can read from this file and update accordingly.
 
         Arguments:
-            model_name           (str) : name of model being trained
+            experiment_name      (str) : name of model being trained
             cur_epoch            (int) : current epoch for training
             total_epochs         (int) : total epochs needed for training
-            interations_in_epoch (int) : how many iterations it takes to complete one epoch
-            current_iteration    (int) : what iteration in the current epoch is the training script on
             time_spent           (int) : how much time has passed in seconds
             best_train_loss    (float) : best training loss so far
+            stage                (str) : message to indicate stage of pipeline, and what stage the time
+                                         estimate is referring to
         
         Returns:
             (int) : status code from Django API after receiving request
     """
-    finished_pct = cur_epoch / total_epochs
-    finished_pct += current_iteration / iterations_in_epoch * (1/total_epochs)
-    approximate_total_time = time_spent / finished_pct
-    time_left = int(approximate_total_time - time_spent)
+    if cur_epoch > 0 :
+        finished_pct = cur_epoch / total_epochs
+        approximate_total_time = time_spent / finished_pct
+        time_left = int(approximate_total_time - time_spent)
+    else:
+       time_left = -1 
 
     update_repr = {
-        model_name : {
+        experiment_name : {
             "cur_epoch" : cur_epoch,
             "total_epochs" : total_epochs,
             "time_spent" : time_spent,
             "time_left" : time_left,
-            "best_train_loss" : best_train_loss
+            "best_train_loss" : best_train_loss,
+            "stage" : stage
         }
     }
 
@@ -361,15 +376,16 @@ def update_model_training(model_name, cur_epoch, total_epochs, iterations_in_epo
 
     return response.status_code
 
-def send_model_metadata(model_name, save_path, best_train_loss=None, file_size=None):
+def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
 
         Arguments:
-            model_name        (str) : name of model being trained
+            experiment_name   (str) : name of model being trained
             save_path         (str) : where the model has been saved
             best_train_loss (float) : best training loss so far
+            file_size         (int) : size of model params file in bytes
         
         Returns:
             (int) : status code from Django API after receiving request
@@ -377,7 +393,7 @@ def send_model_metadata(model_name, save_path, best_train_loss=None, file_size=N
     if best_train_loss and file_size:
         is_trained = True
         metadata_repr = {
-            model_name : {
+            experiment_name : {
                 "is_trained" : is_trained,
                 "save_path" : save_path,
                 "best_train_loss" : best_train_loss,
@@ -387,7 +403,7 @@ def send_model_metadata(model_name, save_path, best_train_loss=None, file_size=N
     else:
         is_trained = False
         metadata_repr = {
-            model_name : {
+            experiment_name : {
                 "is_trained" : is_trained,
                 "save_path" : save_path
             }

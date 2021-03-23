@@ -1,15 +1,21 @@
 import sys
-sys.path.append(".")
-sys.path.append("../")
+import pathlib
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+# sys.path.append(".")
+# sys.path.append("../")
+sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
 import spacy
 from torchtext.data import Field, Example, Dataset
 import pickle
 import re
 import torch
 import collections
-from training.constants import TACRED_NERS, SPACY_TO_TACRED, SPACY_NERS
+from training.next_constants import TACRED_NERS, SPACY_TO_TACRED, SPACY_NERS
 from CCG.soft_grammar_functions import NER_LABEL_SPACE
+import logging
 
+MODEL_API_PATH = "../model_training/next_framework/"
 nlp = spacy.load("en_core_web_sm")
 
 def load_spacy_to_custom_dataset_ner_mapping(dataset):
@@ -41,23 +47,41 @@ def set_re_dataset_ner_label_space(dataset, custom_ners=[]):
     set_ner_label_space(temp)
     set_ner_label_space(custom_ners)
 
-def _build_tacred_custom_vocab(vocab_length):
+def _build_custom_vocab(tokens, vocab_length):
     custom_vocab = {}
     cur_key = vocab_length
-    for key in TACRED_NERS:
-        custom_vocab["SUBJ-{}".format(key)] = cur_key
+    for token in tokens:
+        custom_vocab[token] = cur_key
         cur_key += 1
-        custom_vocab["OBJ-{}".format(key)] = cur_key
-        cur_key += 1
+    
+    return custom_vocab
+
+def _build_re_custom_tokens(ner_labels):
+    tokens  = []
+    for label in ner_labels:
+        tokens.append("SUBJ-{}".format(key))
+        tokens.append("OBJ-{}".format(key))
+    return ner_labels
+
+def _build_tacred_custom_vocab(vocab_length):
+    cur_key = vocab_length
+    tokens = _build_re_custom_tokens(list(TACRED_NERS.keys()))
+    custom_vocab = _build_custom_vocab(tokens, vocab_length)
         
     return custom_vocab
 
-def build_custom_vocab(dataset, vocab_length):
+def build_custom_vocab(dataset, vocab_length, tokens=[], type_str=""):
     custom_vocab = {}
     
-    if dataset == "tacred":
-        custom_vocab = _build_tacred_custom_vocab(vocab_length)
-    # elif...
+    if len(tokens) == 0:
+        if dataset == "tacred":
+            custom_vocab = _build_tacred_custom_vocab(vocab_length)
+        # elif...
+    else:
+        if type_str == "re":
+            custom_vocab = _build_custom_vocab(_build_re_custom_tokens(tokens), vocab_length)
+        else:
+            custom_vocab = _build_custom_vocab(tokens, vocab_length)
         
     return custom_vocab
 
@@ -185,10 +209,10 @@ def build_vocab(train, embedding_name, save_string="", save=True):
     text_field.build_vocab(train_dataset, vectors=embedding_name)
     vocab = text_field.vocab
 
-    print("Finished building vocab of size {}".format(str(len(vocab))))
+    logging.info("Finished building vocab of size {}".format(str(len(vocab))))
 
     if save:
-        file_name = "../data/vocabs/vocab_{}.p".format(save_string)
+        file_name = MODEL_API_PATH + "/data/vocabs/vocab_{}.p".format(save_string)
 
         with open(file_name, "wb") as f:
             pickle.dump(vocab, f)

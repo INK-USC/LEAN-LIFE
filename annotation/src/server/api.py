@@ -761,7 +761,7 @@ class TrainModelAPIView(APIView):
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
 		# return Response(data=json_object)
-		# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/next/kickoff/lean-life/", json=json_object).content)
+		# model_training_api_response = json.loads(requests.post("http://localhost:9000/training/next/lean-life/", json=json_object).content)
 		#TODO test
 		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 		self.write_to_model_metadata_file(project_id, model_name)
