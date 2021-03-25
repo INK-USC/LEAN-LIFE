@@ -1,3 +1,8 @@
+"""
+    File the contains input and output data schemas for Fast Api Calls
+
+    Allows for data validation to be done by Fast Api, as well as error reporting and interactive documentation
+"""
 from pydantic import BaseModel
 from typing import Any, List, Dict, Tuple, Union, Optional
 from typing_extensions import Literal
@@ -372,7 +377,7 @@ class MatchedDataOutput(BaseModel):
 class StrictMatchPayload(BaseModel):
     explanation_triples : List[ExplanationTriple]
     unlabeled_text : List[str]
-    task : str
+    task : Literal["sa", "re"]
 
     class Config:
         schema_extra = {

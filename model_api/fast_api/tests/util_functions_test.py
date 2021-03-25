@@ -1,19 +1,19 @@
-import sys
 import json
+import sys
 sys.path.append("../")
-import util_functions as util_f
-import constants as const
+import fast_api_constants as const
 import json_schema as schema
+import fast_api_util_functions as util_f
 
 with open("re_test_dataset.json") as f:
     re_data = json.load(f)
 
-re_data = schema.LeanLifeDataset.parse_obj(re_data)
+re_data = schema.LeanLifeData.parse_obj(re_data)
 
 with open("sa_test_dataset.json") as f:
     sa_data = json.load(f)
 
-sa_data = schema.LeanLifeDataset.parse_obj(sa_data)
+sa_data = schema.LeanLifeData.parse_obj(sa_data)
 
 def test_create_ner_key():
     start_offset = 10
@@ -223,7 +223,6 @@ def test_process_sa_annotated_doc_no_annotation():
 
 def test_process_annotations_sa():
     annotated_docs = sa_data.annotated
-    project_type = sa_data.project_type
     
     actual_sentence_label_pairs = [
         ("this is some random text that we're going to say has a positive label.", 'pos'),
@@ -242,13 +241,12 @@ def test_process_annotations_sa():
         }
     ]
 
-    sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
+    sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, const.LEAN_LIFE_SA_PROJECT)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
     assert actual_explanation_triples == explanation_triples
 
 def test_process_annotations_re():
     annotated_docs = re_data.annotated
-    project_type = re_data.project_type
     
     actual_sentence_label_pairs = [
         ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1'),
@@ -278,13 +276,13 @@ def test_process_annotations_re():
         }
     ]
 
-    sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, project_type)
+    sentence_label_pairs, explanation_triples = util_f._process_annotations(annotated_docs, const.LEAN_LIFE_RE_PROJECT)
     assert set(actual_sentence_label_pairs) == set(sentence_label_pairs)
     assert actual_explanation_triples == explanation_triples
 
 def test_read_lean_life_dataset_sa():
-    training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(sa_data)
-    
+    label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = util_f._read_lean_life_dataset(sa_data, const.LEAN_LIFE_SA_PROJECT)
+
     actual_training_pairs = [
         ("this is some random text that we're going to say has a positive label.", 'pos'),
         ("this is some random text that we're going to say has a negative label.", 'neg'),
@@ -315,9 +313,10 @@ def test_read_lean_life_dataset_sa():
     assert actual_explanation_triples == explanation_triples
     assert set(actual_label_space) == set(label_space)
     assert set(actual_unlabeled_docs) == set(unlabeled_docs)
+    assert ner_label_space == []
 
 def test_read_lean_life_dataset_re():
-    training_pairs, explanation_triples, label_space, unlabeled_docs = util_f._read_lean_life_dataset(re_data)
+    label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = util_f._read_lean_life_dataset(re_data, const.LEAN_LIFE_RE_PROJECT)
     
     actual_training_pairs = [
         ("this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into.", 'relation-1'),
@@ -348,6 +347,7 @@ def test_read_lean_life_dataset_re():
     ]
 
     actual_label_space = ["relation-1", "relation-2"]
+    actual_ner_label_space = ['RAND', 'TEMP', 'NER_TYPE']
     actual_unlabeled_docs = [
         'SUBJ-TEMP1 OBJ-TEMP2 text',
         'OBJ-TEMP1 SUBJ-TEMP2 text'
@@ -356,4 +356,5 @@ def test_read_lean_life_dataset_re():
     assert set(actual_training_pairs) == set(training_pairs)
     assert actual_explanation_triples == explanation_triples
     assert set(actual_label_space) == set(label_space)
+    assert set(actual_ner_label_space) == set(ner_label_space)
     assert set(actual_unlabeled_docs) == set(unlabeled_docs)

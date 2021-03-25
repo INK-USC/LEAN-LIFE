@@ -1,10 +1,13 @@
+"""
+    Utility Functions used by Fast API to prepare data and send requests back to annotation tool's frontend
+"""
 import json
-import sys
 import pathlib
+import requests
+import sys
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
 import fast_api_constants as const
-import requests
 
 def _create_ner_key(start_offset, end_offset):
     """
@@ -36,10 +39,10 @@ def _create_re_pair(annotation, text, ner_mentions):
             relation_text, label : text where NERs that form the relation are indicated/normalized,
                                    label is a string that completes the relation (subj, label, obj)
     """
-    subj_start_offset = annotation["sbj_start_offset"]
-    subj_end_offset = annotation["sbj_end_offset"]
-    obj_start_offset = annotation["obj_start_offset"]
-    obj_end_offset = annotation["obj_end_offset"]
+    subj_start_offset = int(annotation["sbj_start_offset"])
+    subj_end_offset = int(annotation["sbj_end_offset"])
+    obj_start_offset = int(annotation["obj_start_offset"])
+    obj_end_offset = int(annotation["obj_end_offset"])
     label = annotation["label_text"]
 
     subj_ner_key = _create_ner_key(subj_start_offset, subj_end_offset)
@@ -158,7 +161,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     explanations = annotated_doc.explanations
     annotations = annotated_doc.annotations
     for annotation in annotations:
-        if annotation["user_provided"]:
+        if eval(annotation["user_provided"]):
             key = _create_ner_key(annotation["start_offset"], annotation["end_offset"])
             label = annotation["label_text"]
             ner_mentions[key] = label
@@ -167,7 +170,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     
     for annotation in re_data:
         relation_text, label = _create_re_pair(annotation, text, ner_mentions)
-        temp_sentence_label_pairs[annotation["id"]] = (relation_text, label)
+        temp_sentence_label_pairs[int(annotation["id"])] = (relation_text, label)
     
     if len(re_data) == 0:
         relation_texts, labels = _generate_no_label_pairs(ner_mentions, text)
@@ -176,7 +179,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
             temp_fake_id += -1
     
     for explanation in explanations:
-        annotation_id = explanation["annotation_id"]
+        annotation_id = int(explanation["annotation_id"])
         explanation_text = explanation["text"]
         relation_text = temp_sentence_label_pairs[annotation_id][0]
         label = temp_sentence_label_pairs[annotation_id][1]
@@ -216,13 +219,13 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
     annotations = annotated_doc.annotations
     if len(annotations):
         for annotation in annotations:
-            temp_sentence_label_pairs[annotation["id"]] = (text, annotation["label_text"])
+            temp_sentence_label_pairs[int(annotation["id"])] = (text, annotation["label_text"])
     else:
         temp_sentence_label_pairs[temp_fake_id] = (text, "")
         temp_fake_id += -1
 
     for explanation in explanations:
-        annotation_id = explanation["annotation_id"]
+        annotation_id = int(explanation["annotation_id"])
         explanation_text = explanation["text"]
         label = temp_sentence_label_pairs[annotation_id][1]
         if annotation_id in temp_explanation_triples:
@@ -285,9 +288,9 @@ def _read_lean_life_dataset(json_data, project_type):
             label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs,  : dict, arr, arr, arr, arr
     """
     label_space = json_data.label_space
+    ner_label_space = [label.text for label in label_space if label.user_provided and len(label.text) > 0]
     label_space = [label.text for label in label_space if not label.user_provided]
     label_space = {label : i for i, label in enumerate(label_space)}
-    ner_label_space = [label.text for label in label_space if label.user_provided and len(label.text) > 0]
     unlabeled_docs = json_data.unlabeled
     if project_type != const.LEAN_LIFE_RE_PROJECT:
         unlabeled_docs = [doc.text for doc in unlabeled_docs]
@@ -295,7 +298,7 @@ def _read_lean_life_dataset(json_data, project_type):
         annotated_unlabeled_docs = [doc for doc in unlabeled_docs if hasattr(doc, "annotations")]
         unlabeled_docs = [text for doc in annotated_unlabeled_docs for text in _procress_re_unlabeled_doc(doc)]
     annotated_docs = json_data.annotated
-    if len(annoted_docs):
+    if len(annotated_docs):
         training_pairs, explanation_triples = _process_annotations(annotated_docs, project_type)
     else:
         training_pairs, explanation_triples = [], []
