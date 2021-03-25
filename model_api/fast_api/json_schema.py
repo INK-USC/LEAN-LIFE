@@ -302,10 +302,10 @@ class ExplanationTrainingPayload(BaseModel):
                     "pre_train_build_data" : True,
                     "build_data" : True,
                     "relation_ner_types" : {
-                        "label-1" : ("PERSON", "TITLE"),
-                        "label-2" : ("PERSON", "PERSON"),
-                        "label-3" : ("PERSON", "CITY"),
-                        "label-4" : ("CITY", "CITY")
+                        "label-1" : ("PERSON", "PERSON"),
+                        "label-2" : ("PERSON", "DATE"),
+                        "label-3" : ("ORGANIZATION", "ORGANIZATION"),
+                        "label-4" : ("PERSON", "PERSON")
                     },
                     "none_label_key" : "no_relation"
                 },
@@ -317,18 +317,38 @@ class ExplanationTrainingPayload(BaseModel):
                     "no_relation" : 4
                 },
                 "explanation_triples" : [
-                    {"text" : "Example sentence one.", "explanation" : "Here is explanation 1", "label" : "label-1"},
-                    {"text" : "Example sentence two.", "explanation" : "Here is explanation 2", "label" : "label-2"},
-                    {"text" : "Example sentence three.", "explanation" : "Here is explanation 3", "label" : "label-2"},
-                    {"text" : "Example sentence four.", "explanation" : "Here is explanation 4", "label" : "label-3"},
-                    {"text" : "Example sentence five.", "explanation" : "Here is explanation 5", "label" : "label-4"},
+                    {
+                        "text" : "SUBJ-PERSON 's daughter OBJ-PERSON said Tuesday that her uncle was `` doing very well '' in his lengthy recovery , and was following very closely a gender equality bill under debate.",
+                        "explanation" : "The phrase \"'s daughter\" links SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+                        "label" : "label-1"
+                    },
+                    {
+                        "text" : "SUBJ-PERSON was born OBJ-DATE , in Nashville , Tenn , and graduated with honors from the University of Alabama.",
+                        "explanation" : "SUBJ and OBJ sandwich the phrase \"was born\" and there are no more than three words between SUBJ and OBJ",
+                        "label" : "label-2"
+                    },
+                    {
+                        "text" : "Under the agreement , AT&T will begin offering SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION service after Jan. 31 , when AT&T 's current agreement with Dish Network expires.",
+                        "explanation" : "There are no more than five words between SUBJ and OBJ and \"as part of its\" appears between SUBJ and OBJ",
+                        "label" : "label-3"
+                    },
+                    {
+                        "text" : "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH Monday at the age of 78 , was a complicated person , and any attempt to sum up her life and work will necessarily turn into a string of contradictions.",
+                        "explanation" : "Between SUBJ and OBJ the phrase \"who died of\" occurs and there are no more than five words between SUBJ and OBJ",
+                        "label" : "label-2"
+                    },
+                    {
+                        "text" : "The style and concept is inspired by three generations of women in their family , with the name `` Der\u00e9on '' paying tribute to SUBJ-PERSON 's grandmother , OBJ-PERSON.",
+                        "explanation" : "The phrase \"'s grandmother\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+                        "label" : "label-4"
+                    }
                 ],
                 "unlabeled_text" : [
                     "At the same time, Chief Financial Officer SUBJ-PERSON will become OBJ-TITLE, succeeding Stephen Green who is leaving to take a government job.",
                     "U.S. District Court Judge OBJ-PERSON in mid-February issued an injunction against Wikileaks after the Zurich-based Bank SUBJ-PERSON accused the site of posting sensitive account information stolen by a disgruntled former employee.",
                     "OBJ-CITY 2009-07-07 11:07:32 UTC French media earlier reported that SUBJ-PERSON , ranked 119 , was found dead by his girlfriend in the stairwell of his Paris apartment."
                 ],
-                "ner_label_space" : ["PERSON", "CITY", "TITLE"]
+                "ner_label_space" : ["PERSON", "CITY", "TITLE", "ORGANIZATION", "CAUSE_OF_DEATH", "DATE"]
             }
         }
 
@@ -358,11 +378,31 @@ class StrictMatchPayload(BaseModel):
         schema_extra = {
             "example": {
                 "explanation_triples" : [
-                    {"text" : "Example sentence one.", "explanation" : "Here is explanation 1", "label" : "label-1"},
-                    {"text" : "Example sentence two.", "explanation" : "Here is explanation 2", "label" : "label-2"},
-                    {"text" : "Example sentence three.", "explanation" : "Here is explanation 3", "label" : "label-2"},
-                    {"text" : "Example sentence four.", "explanation" : "Here is explanation 4", "label" : "label-3"},
-                    {"text" : "Example sentence five.", "explanation" : "Here is explanation 5", "label" : "label-4"},
+                    {
+                        "text" : "SUBJ-PERSON 's daughter OBJ-PERSON said Tuesday that her uncle was `` doing very well '' in his lengthy recovery , and was following very closely a gender equality bill under debate.",
+                        "explanation" : "The phrase \"'s daughter\" links SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+                        "label" : "label-1"
+                    },
+                    {
+                        "text" : "SUBJ-PERSON was born OBJ-DATE , in Nashville , Tenn , and graduated with honors from the University of Alabama.",
+                        "explanation" : "SUBJ and OBJ sandwich the phrase \"was born\" and there are no more than three words between SUBJ and OBJ",
+                        "label" : "label-2"
+                    },
+                    {
+                        "text" : "Under the agreement , AT&T will begin offering SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION service after Jan. 31 , when AT&T 's current agreement with Dish Network expires.",
+                        "explanation" : "There are no more than five words between SUBJ and OBJ and \"as part of its\" appears between SUBJ and OBJ",
+                        "label" : "label-3"
+                    },
+                    {
+                        "text" : "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH Monday at the age of 78 , was a complicated person , and any attempt to sum up her life and work will necessarily turn into a string of contradictions.",
+                        "explanation" : "Between SUBJ and OBJ the phrase \"who died of\" occurs and there are no more than five words between SUBJ and OBJ",
+                        "label" : "label-2"
+                    },
+                    {
+                        "text" : "The style and concept is inspired by three generations of women in their family , with the name `` Der\u00e9on '' paying tribute to SUBJ-PERSON 's grandmother , OBJ-PERSON.",
+                        "explanation" : "The phrase \"'s grandmother\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+                        "label" : "label-4"
+                    }
                 ],
                 "unlabeled_text" : [
                     "At the same time, Chief Financial Officer SUBJ-PERSON will become OBJ-TITLE, succeeding Stephen Green who is leaving to take a government job.",
