@@ -32,7 +32,7 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
     """
     params = lean_life_payload.params
     lean_life_data = lean_life_payload.lean_life_data
-    prepped_data = util_f.prepare_next_data(lean_life_data, task=params["project_type"])
+    prepped_data = util_f.prepare_next_data(lean_life_data, task=params.project_type)
     label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
     if len(ner_label_space) == 0:
         ner_label_space = None
@@ -40,7 +40,7 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(train_next_framework_lean_life(params, label_space,
+    return schema.SavePathOutput(train_next_framework_lean_life(params.__dict__, label_space,
                                                                 unlabeled_docs,
                                                                 explanation_triples,
                                                                 ner_label_space))
@@ -53,14 +53,14 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
         and required paramaters.
     """
     prepped_data = util_f.prepare_next_data(api_payload, lean_life=False)
-    label_space, unlabeled_docs, explanation_data, ner_label_space = prepped_data
+    label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
     if len(ner_label_space) == 0:
         ner_label_space = None
     if len(unlabeled_docs) == 0:
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(train_next_framework(params, label_space, unlabeled_docs,
+    return schema.SavePathOutput(train_next_framework(params.__dict__, label_space, unlabeled_docs,
                                                       explanation_triples, ner_label_space))
 
 @app.post("/training/next/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
@@ -69,7 +69,7 @@ async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
         Endpoint used to evaluate a classifier trained via the next framework. Please refer to the docs or
         `json_schema.py` to understand both the supported and required paramaters.
     """
-    params = api_payload.params
+    params = api_payload.params.__dict__
     params["label_map"] = api_payload.label_space
     params["eval_data"] = api_payload.eval_data
     return schema.NextEvalDataOutput(evaluate_next(params))
@@ -95,5 +95,5 @@ async def strict_match_data(api_payload: schema.StrictMatchPayload):
         a pool of unlabeled sentences. Please refer to the docs or `json_schema.py` to
         understand the required paramaters.
     """
-    return schema.MatchedDataOutput(apply_strict_matching(api_payload))
+    return schema.MatchedDataOutput(apply_strict_matching(api_payload.__dict__))
 

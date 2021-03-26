@@ -1,9 +1,22 @@
-import sys
+"""
+"""
+import argparse
+import csv
+import logging
+import os
 import pathlib
+import pickle
+import random
+import sys
+import time
+import dill
+from tqdm import tqdm
+import numpy as np
+from transformers import AdamW
+import torch
+import torch.nn as nn
+from torch.optim import SGD
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
-# sys.path.append("../")
-# sys.path.append("../../")
 sys.path.append(PATH_TO_PARENT)
 sys.path.append(PATH_TO_PARENT + "../")
 sys.path.append(PATH_TO_PARENT + "../../")
@@ -18,20 +31,8 @@ from next_framework.training.next_util_functions import similarity_loss_function
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES
 from next_framework.models import Find_Module, BiLSTM_Att_Clf
-import torch
-from transformers import AdamW
-import pickle
-from tqdm import tqdm
-import torch.nn as nn
-import numpy as np
-import argparse
-import random
-import csv
-import logging
-import time
-import os
-from torch.optim import SGD
-import dill
+
+
 
 def _check_or_load_defaults(payload, default, key):
     if key in payload:
@@ -40,6 +41,18 @@ def _check_or_load_defaults(payload, default, key):
         return default[key]
 
 def pre_train_find_module_pipeline(payload):
+    """
+        Pipeline that takes in a payload of parameters and optionally data, and will preform the following steps:
+            1. Read parameters sent in and fill with default values where appropriate
+            2. Builds datasets that will be needed for training. The datasets will be cached, future experiments
+               running off the same data will not need data to be passed in.
+            3. Loads cached data and sets up model, loading a previously checkpointed model if needed
+            4. Trains a Find_Module model instance
+            5. Evaluates the model and will halt early if an F1 score of 90 percent is reached. Will also checkpoint
+               a model each time it improves over its current best f1 score.
+            6. Save performance data across epochs to a csv data.
+    """
+    # Step 1.
     start_time = time.time()
 
     pos_weight = FIND_MODULE_DEFAULTS["pos_weight"]
@@ -79,6 +92,7 @@ def pre_train_find_module_pipeline(payload):
     if payload["leanlife"]:
         update_model_training(experiment_name, -1, epochs, -1, -1, "starting pre_training pipeline")
 
+    # Step 2.
     if build_data:
         text_data = payload["training_data"]
         explanation_data = payload["explanation_data"]
@@ -87,6 +101,7 @@ def pre_train_find_module_pipeline(payload):
             time_spent = time.time() - start_time
             update_model_training(experiment_name, -1, epochs, time_spent, -1, "built pre_training data")
     
+    # Step 3.
     with open(PATH_TO_PARENT + "../next_framework/data/pre_train_data/train_data_{}.p".format(save_string), "rb") as f:
         train_dataset = pickle.load(f)
     
@@ -203,6 +218,7 @@ def pre_train_find_module_pipeline(payload):
         time_spent = time.time() - start_time
         update_model_training(experiment_name, -1, epochs, time_spent, -1, "starting pre-training")
 
+    # Step 4.
     start_time = time.time()
     for epoch in range(start_epoch, start_epoch+epochs):
         logging.info('\n Epoch {:} / {:}'.format(epoch + 1, start_epoch+epochs))
@@ -249,6 +265,7 @@ def pre_train_find_module_pipeline(payload):
         train_avg_find_loss = find_total_loss / batch_count
         train_avg_sim_loss = sim_total_loss / batch_count
 
+        # Step 5.
         logging.info("Starting Primary Evaluation")
         eval_results = evaluate_find_module(primary_eval_path, real_query_tokens, query_index_matrix, neg_query_index_matrix, lower_bound,
                                             model, find_loss_function, sim_loss_function, eval_batch_size, gamma)
@@ -296,7 +313,8 @@ def pre_train_find_module_pipeline(payload):
 
         if best_f1_score > 0.9:
             break
-
+    
+    # Step 6.
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/loss_per_epoch_Find-Module-pt_{}.csv".format(experiment_name), "w") as f:
         writer=csv.writer(f)
         writer.writerow(['train_loss','train_find_loss', 'train_sim_loss', 'dev_loss', 'dev_find_loss', 'dev_sim_loss', 'dev_f1_score'])
@@ -320,12 +338,26 @@ def pre_train_find_module_pipeline(payload):
     
     return save_path
     
-def train_next_bilstm_pipeline(payload):    
+def train_next_bilstm_pipeline(payload):
+    """
+        Pipeline that takes in a payload of parameters and optionally data, and will preform the following steps:
+            0. If needed will kick off a pre_training job for the Find_Module needed for the NExT Framework Training Algo
+            1. Read parameters sent in and fill with default values where appropriate
+            2. Builds datasets that will be needed for training. The datasets will be cached, future experiments
+               running off the same data will not need data to be passed in.
+            3. Loads cached data and sets up model, loading a previously checkpointed model if needed
+            4. Trains a BiLSTM+Att classifier instance using the NExT Framework's Training Algorithm
+            5. Optionally evaluates a model if a evaluation data is sent and checkpoints when prior f1 
+               performance. Otherwise just saves after every epoch.
+            6. Save performance data across epochs to a csv data.
+    """
+    # Step 0.
     if payload["stage"] == "both":
         _ = pre_train_find_module_pipeline(payload)
 
     start_time = time.time()
     
+    # Step 1.
     build_data = payload["build_data"]
     experiment_name = payload["experiment_name"]
     dataset_name = payload["dataset_name"]
@@ -414,6 +446,7 @@ def train_next_bilstm_pipeline(payload):
     if payload["leanlife"]:
         update_model_training(experiment_name, -1, epochs, -1, -1, "starting training pipeline")
 
+    # Step 2.
     if build_data:
         text_data = payload["training_data"]
         explanation_data = payload["explanation_data"]
@@ -429,6 +462,7 @@ def train_next_bilstm_pipeline(payload):
             time_spent = time.time() - start_time
             update_model_training(experiment_name, -1, epochs, time_spent, -1, "built training data")
     
+    # Step 3.
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/unlabeled_data_{}.p".format(save_string), "rb") as f:
         unlabeled_data = pickle.load(f)
     
@@ -530,8 +564,8 @@ def train_next_bilstm_pipeline(payload):
         update_model_training(experiment_name, -1, epochs, time_spent, -1, "starting training")
     
     start_time = time.time()
-
-    # TRAINING
+    
+    # Step 4. TRAINING
     for epoch in range(start_epoch, start_epoch+epochs):
         logging.info('\n Epoch {:} / {:}'.format(epoch + 1, start_epoch+epochs))
 
@@ -614,6 +648,7 @@ def train_next_bilstm_pipeline(payload):
         
         loss_per_epoch.append((train_avg_loss, train_avg_strict_loss, train_avg_soft_loss))
         
+        # Step 5.
         if len(eval_path):
             dev_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes, batch_size=eval_batch_size, none_label_id=none_label_id)
         
@@ -652,6 +687,7 @@ def train_next_bilstm_pipeline(payload):
             time_spent = time.time() - start_time
             update_model_training(experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "training")
     
+    # Step 6.
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
         writer=csv.writer(f)
         writer.writerow(['train_avg_loss', 'train_avg_strict_loss', 'train_avg_soft_loss'])
@@ -675,6 +711,16 @@ def train_next_bilstm_pipeline(payload):
     return save_path
 
 def strict_match_pipeline(payload):
+    """
+        Takes in explanation data, and a source of unlabeled data and will annotate the unlabeled data
+        with the explanations provided. Converts explanations into binary labeling functions and if an
+        explanation applies to a datapoint the label associated with the explanation is now associated
+        with the datapoint.
+
+        Returns:
+            arr, arr : first array is of tuples (text, label),
+                       second array is of tuples (index_of_text in unlabeled data, index_of_explanation in explanatation data)
+    """
     text_data = payload["unlabeled_text"]
     explanation_data = payload["explanation_triples"]
     task = payload["task"]
@@ -682,9 +728,11 @@ def strict_match_pipeline(payload):
     
     return matched_tuples, matched_indices
 
-# Given data and labels and an experiment name
-# we will load the model and evaluate
 def evaluate_next_clf(payload):
+    """
+        Given a tuples of text and labels, and an experiment name, we will load the appropriate
+        saved model and evaluate it against the data provided.
+    """
     experiment_name = payload["experiment_name"]
     dataset_name = payload["dataset_name"]
     train_dataset_size = payload["train_dataset_size"]
