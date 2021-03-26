@@ -10,6 +10,7 @@
     To access interactive docs and dummy test data navigate to http://127.0.0.1:9000/docs after running the
     above command
 """
+import json
 import os
 import sys
 import torch
