@@ -31,6 +31,8 @@ BILSTM_DEFAULTS = {
 }
 
 TRAINING_DEFAULTS = {
+    "pre_train_load_model" : False,
     "load_model" : False,
+    "pre_train_start_epoch" : 0,
     "start_epoch" : 0
 }

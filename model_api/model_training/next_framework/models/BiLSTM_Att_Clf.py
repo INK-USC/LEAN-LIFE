@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as f
 
 class BiLSTM_Att_Clf(nn.Module):
+    """
+        BiLSTM + Attention Classifier. Uses a single layer head to do the final classification.
+    """
     def __init__(self, emb_weight, padding_idx, emb_dim, hidden_dim, cuda, number_of_classes, custom_token_count=0,
                  n_layers=2, encoding_dropout=0.5, padding_score=-1e30):
         """

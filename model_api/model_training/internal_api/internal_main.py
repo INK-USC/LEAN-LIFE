@@ -15,7 +15,7 @@ import warnings
 from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
-from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, evaluate_next_clf
+from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, evaluate_next_clf_pipeline
 
 
 def _remove_trailing_period(string):
@@ -60,7 +60,7 @@ def train_next_framework_lean_life(params, label_space, unlabeled_docs=None, exp
 
     params["leanlife"] = True
 
-    return train_next_framework(params, label_space, unlabeled_data, explanation_data, ner_label_space)
+    return train_next_framework(params, label_space, unlabeled_docs, explanation_data, ner_label_space)
 
 def train_next_framework(params, label_space, unlabeled_data=None, explanation_data=None, ner_label_space=None):
     """
@@ -113,7 +113,7 @@ def train_next_framework(params, label_space, unlabeled_data=None, explanation_d
     
     # provides a warning of the lack of ner_labels if the task is re
     if task == "re": 
-        if ner_labels == None:
+        if ner_label_space == None:
             warning_msg = """
                 Knowledge of the NER label space is generally needed for relation extraction.
                 We will used SPACY's NER labels as default, but please provide a custom label
@@ -121,7 +121,7 @@ def train_next_framework(params, label_space, unlabeled_data=None, explanation_d
             """
             warnings.warn(warning_msg)
         else:
-            params["ner_labels"] = ner_labels 
+            params["ner_labels"] = ner_label_space 
 
     params["label_map"] = label_space
     
@@ -137,4 +137,4 @@ def apply_strict_matching(payload):
 
 def evaluate_next(payload):
     """Just passes along the payload"""
-    return evaluate_next_clf(payload)
+    return evaluate_next_clf_pipeline(payload)

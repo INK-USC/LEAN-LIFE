@@ -136,13 +136,13 @@ class LeanLifeData(BaseModel):
             "example": {
                 "label_space" : [
                     {
-                        "id" : 1, "text" : "NER-TYPE-1", "user_provided" : True
+                        "id" : 1, "text" : "NER_TYPE_1", "user_provided" : True
                     },
                     {
-                        "id" : 2, "text" : "NER-TYPE-2", "user_provided" : True
+                        "id" : 2, "text" : "NER_TYPE_2", "user_provided" : True
                     },
                     {
-                        "id" : 3, "text" : "NER-TYPE-3", "user_provided" : True
+                        "id" : 3, "text" : "NER_TYPE_3", "user_provided" : True
                     },
                     {
                         "id" : 4, "text" : "relation-1", "user_provided" : False
@@ -157,21 +157,21 @@ class LeanLifeData(BaseModel):
                         "annotations" : [
                             {
                                 "id" : 1,
-                                "label_text" : "NER-TYPE-1",
+                                "label_text" : "NER_TYPE_1",
                                 "start_offset" : 13, 
                                 "end_offset" : 19,
                                 "user_provided" : True
                             },
                             {
                                 "id" : 2,
-                                "label_text" : "NER-TYPE-2",
+                                "label_text" : "NER_TYPE_2",
                                 "start_offset" : 53, 
                                 "end_offset" : 57,
                                 "user_provided" : True
                             },
                             {
                                 "id" : 3,
-                                "label_text" : "NER-TYPE-3",
+                                "label_text" : "NER_TYPE_3",
                                 "start_offset" : 62, 
                                 "end_offset" : 69,
                                 "user_provided" : True
@@ -198,19 +198,19 @@ class LeanLifeData(BaseModel):
                         "explanations" : [
                             {
                                 "annotation_id" : 4,
-                                "text" : "This is the first explanation for annotation 4"
+                                "text" : "SUBJ appears to the left of OBJ."
                             },
                             {
                                 "annotation_id" : 4,
-                                "text" : "This is the second explanation for annotation 4"
+                                "text" : "The phrase 'random text' appears in the sentence"
                             },
                             {
                                 "annotation_id" : 4,
-                                "text" : "This is the third explanation for annotation 4"
+                                "text" : "There is one 1 word between SUBJ and OBJ"
                             },
                             {
                                 "annotation_id" : 5,
-                                "text" : "Annotation 5 has only one explanation"
+                                "text" : "The phrase 'example' is to right of SUBJ by at most 7 words."
                             }
                         ]
                     },
@@ -219,21 +219,21 @@ class LeanLifeData(BaseModel):
                         "annotations" : [
                             {
                                 "id" : 1,
-                                "label_text" : "NER-TYPE-1",
+                                "label_text" : "NER_TYPE_1",
                                 "start_offset" : 5, 
                                 "end_offset" : 13,
                                 "user_provided" : True
                             },
                             {
                                 "id" : 2,
-                                "label_text" : "NER-TYPE-1",
+                                "label_text" : "NER_TYPE_1",
                                 "start_offset" : 21, 
                                 "end_offset" : 30,
                                 "user_provided" : True
                             },
                             {
                                 "id" : 3,
-                                "label_text" : "NER-TYPE-3",
+                                "label_text" : "NER_TYPE_3",
                                 "start_offset" : 60, 
                                 "end_offset" : 68,
                                 "user_provided" : True
@@ -249,14 +249,14 @@ class LeanLifeData(BaseModel):
                         "annotations" : [
                             {
                                 "id" : 1,
-                                "label_text" : "NER-TYPE-1",
+                                "label_text" : "NER_TYPE_1",
                                 "start_offset" : 0, 
                                 "end_offset" : 4,
                                 "user_provided" : True
                             },
                             {
                                 "id" : 2,
-                                "label_text" : "NER-TYPE-2",
+                                "label_text" : "NER_TYPE_2",
                                 "start_offset" : 5, 
                                 "end_offset" : 14,
                                 "user_provided" : True
@@ -268,7 +268,7 @@ class LeanLifeData(BaseModel):
                         "annotations" : [
                             {
                                 "id" : 1,
-                                "label_text" : "NER-TYPE-1",
+                                "label_text" : "NER_TYPE_1",
                                 "start_offset" : 0, 
                                 "end_offset" : 4,
                                 "user_provided" : True
@@ -358,8 +358,8 @@ class ExplanationTrainingPayload(BaseModel):
         }
 
 class MatchedDataOutput(BaseModel):
-    matched_tuples = List[Tuple[str, str]]
-    matched_indices = List[Tuple[str, str]]
+    matched_tuples : List[Tuple[str, str]]
+    matched_indices : List[Tuple[str, str]]
 
     class Config:
         schema_extra = {

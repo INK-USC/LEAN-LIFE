@@ -1,29 +1,44 @@
-import sys
+import logging
 import pathlib
-PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
-# sys.path.append("../")
-sys.path.append(PATH_TO_PARENT)
-sys.path.append(PATH_TO_PARENT + "../")
-import spacy
-from torchtext.data import Field, Example, Dataset
 import pickle
 import re
+import sys
+import spacy
 import torch
-import collections
-from training.next_constants import TACRED_NERS, SPACY_TO_TACRED, SPACY_NERS
+from torchtext.data import Field, Example, Dataset
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
 from CCG.soft_grammar_functions import NER_LABEL_SPACE
-import logging
+from training.next_constants import TACRED_NERS, SPACY_TO_TACRED, SPACY_NERS
 
-MODEL_API_PATH = "../model_training/next_framework/"
 nlp = spacy.load("en_core_web_sm")
 
 def load_spacy_to_custom_dataset_ner_mapping(dataset):
+    """
+        Function used to load dictionary that maps SPACY NERs to Custom NERs if user has defined one.
+
+        After creating constant value in `next_constants.py`, please update this function so that the
+        appropriate map is loaded
+
+        Arguments:
+            dataset (str) : name of dataset
+        Returns:
+            dict : key - spacy NER, value - Custom NER
+    """
     if dataset == "tacred":
         return SPACY_TO_TACRED
     return {}
 
 def set_ner_label_space(labels):
+    """
+        In order for certain soft-matching functions to work a global NER_LABEL_SPACE parameter must be set.
+        This function handles the setting of that param and ensures that ids of labels don't overlap and
+        duplicates aren't made.
+
+        Arguments:
+            labels (arr) : array of label names to add to the NER_LABEL_SPACE
+    """
     if len(NER_LABEL_SPACE) > 0:
         largest_key = max(list(NER_LABEL_SPACE.values()))
     else:
@@ -35,6 +50,13 @@ def set_ner_label_space(labels):
             current_key += 1
 
 def set_re_dataset_ner_label_space(dataset, custom_ners=[]):
+    """
+        A wrapper function that for an RE tasks sets the global NER_LABEL_SPACE
+
+        Arguments:
+            dataset       (str) : name of dataset
+            customer_ners (arr) : array of ners provided by user
+    """
     temp = SPACY_NERS[:]
     
     custom_mapping = load_spacy_to_custom_dataset_ner_mapping(dataset)
@@ -48,6 +70,9 @@ def set_re_dataset_ner_label_space(dataset, custom_ners=[]):
     set_ner_label_space(custom_ners)
 
 def _build_custom_vocab(tokens, vocab_length):
+    """
+        Helper function for building custom vocab
+    """
     custom_vocab = {}
     cur_key = vocab_length
     for token in tokens:
@@ -57,13 +82,25 @@ def _build_custom_vocab(tokens, vocab_length):
     return custom_vocab
 
 def _build_re_custom_tokens(ner_labels):
+    """
+        For RE tasks we employ the strategy below to create custom-tokens for our vocab:
+            Per each ner_label, create two tokens SUBJ-NER_LABEL, OBJ-NER_LABEL
+            These tokens make up the custom vocab
+        
+        Arguments:
+            ner_labels (arr) : array of ner label names
+    """
     tokens  = []
     for label in ner_labels:
-        tokens.append("SUBJ-{}".format(key))
-        tokens.append("OBJ-{}".format(key))
-    return ner_labels
+        tokens.append("SUBJ-{}".format(label))
+        tokens.append("OBJ-{}".format(label))
+    return tokens
 
 def _build_tacred_custom_vocab(vocab_length):
+    """
+        For the TACRED dataset we defined a function to build its custom vocab
+        You can also define similar functions to be used in `build_custom_vocab`
+    """
     cur_key = vocab_length
     tokens = _build_re_custom_tokens(list(TACRED_NERS.keys()))
     custom_vocab = _build_custom_vocab(tokens, vocab_length)
@@ -71,6 +108,22 @@ def _build_tacred_custom_vocab(vocab_length):
     return custom_vocab
 
 def build_custom_vocab(dataset, vocab_length, tokens=[], type_str=""):
+    """
+        We offer three different ways to set a custom vocab:
+            1. Define a function above and call it by sending in you datasets name (as is done for tacred)
+            2. If your the task is "re", we create the re custom vocab out out ner labels
+               check `_build_re_custom_tokens()` for more
+            3. Otherwise if you send in tokens we will create a custom_vocab out of them
+        
+        Arguments:
+            dataset      (str) : name of dataset
+            vocab_length (int) : non-custom vocab length
+            tokens       (arr) : array of tokens to build a custom vocab out of
+            type_str     (str) : indicating name of task
+        
+        Returns:
+            dict : key - token, value - token_id
+    """
     custom_vocab = {}
     
     if len(tokens) == 0:
@@ -148,18 +201,18 @@ def tokenize(sentence, tokenizer=nlp):
     obj_replacement = None
 
     if "SUBJ-" in sentence and "OBJ-" in sentence:
-        sbj_replacement = re.search(r"SUBJ-[A-Z_'s,]+", sentence).group(0).strip()
+        sbj_replacement = re.search(r"SUBJ-[A-Z_'s,0-9]+", sentence).group(0).strip()
         sbj_replacement = sbj_replacement.replace("'s", "")
         sbj_replacement = sbj_replacement.replace(",", "")
-        obj_replacement = re.search(r"OBJ-[A-Z_'s,]+", sentence).group(0).strip()
+        obj_replacement = re.search(r"OBJ-[A-Z_'s,0-9]+", sentence).group(0).strip()
         obj_replacement = obj_replacement.replace("'s", "")
         obj_replacement = obj_replacement.replace(",", "")
-        sentence = re.sub(r"SUBJ-[A-Z_]+", "SUBJ", sentence)
-        sentence = re.sub(r"SUBJ-[A-Z_'s]+", "SUBJ's", sentence)
-        sentence = re.sub(r"SUBJ-[A-Z_]+,", "SUBJ,", sentence)
-        sentence = re.sub(r"OBJ-[A-Z_]+", "OBJ", sentence)
-        sentence = re.sub(r"OBJ-[A-Z_'s]+", "OBJ's ", sentence)
-        sentence = re.sub(r"OBJ-[A-Z_]+,", "OBJ,", sentence)
+        sentence = re.sub(r"SUBJ-[A-Z_0-9]+", "SUBJ", sentence)
+        sentence = re.sub(r"SUBJ-[A-Z_'s0-9]+", "SUBJ's", sentence)
+        sentence = re.sub(r"SUBJ-[A-Z_0-9]+,", "SUBJ,", sentence)
+        sentence = re.sub(r"OBJ-[A-Z_0-9]+", "OBJ", sentence)
+        sentence = re.sub(r"OBJ-[A-Z_'s0-9]+", "OBJ's ", sentence)
+        sentence = re.sub(r"OBJ-[A-Z_0-9]+,", "OBJ,", sentence)
     
     sentence = clean_text(sentence)
 
@@ -212,7 +265,7 @@ def build_vocab(train, embedding_name, save_string="", save=True):
     logging.info("Finished building vocab of size {}".format(str(len(vocab))))
 
     if save:
-        file_name = MODEL_API_PATH + "/data/vocabs/vocab_{}.p".format(save_string)
+        file_name = PATH_TO_PARENT + "data/vocabs/vocab_{}.p".format(save_string)
 
         with open(file_name, "wb") as f:
             pickle.dump(vocab, f)

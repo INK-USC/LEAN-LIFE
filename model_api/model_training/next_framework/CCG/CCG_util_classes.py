@@ -1,4 +1,6 @@
-import pdb
+"""
+    Classes used in converting explanations to labeling functions
+"""
 def tokens_to_string(tokens):
     return " ".join(tokens)
 

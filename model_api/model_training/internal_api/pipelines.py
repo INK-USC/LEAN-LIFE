@@ -1,4 +1,5 @@
 """
+    Actual Pipelines that are called by internal_api's `internal_main.py` functions
 """
 import argparse
 import csv
@@ -35,7 +36,7 @@ from next_framework.models import Find_Module, BiLSTM_Att_Clf
 
 
 def _check_or_load_defaults(payload, default, key):
-    if key in payload:
+    if key in payload and payload[key] != None:
         return payload[key]
     else:
         return default[key]
@@ -133,7 +134,8 @@ def pre_train_find_module_pipeline(payload):
     # we do this due to parsing. Look at tokenize() in:
     # model_api/model_training/next_framework/training/util_functions.py
     else:
-        if len(ner_labels) > 0 and task == "re":
+        if task == "re" and len(payload["ner_labels"]) == 0:
+            ner_labels = payload["ner_labels"]
             custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
         else:
             # finally, if the task is not "re", and you just want to set a custom vocab
@@ -346,10 +348,11 @@ def train_next_bilstm_pipeline(payload):
             2. Builds datasets that will be needed for training. The datasets will be cached, future experiments
                running off the same data will not need data to be passed in.
             3. Loads cached data and sets up model, loading a previously checkpointed model if needed
-            4. Trains a BiLSTM+Att classifier instance using the NExT Framework's Training Algorithm
-            5. Optionally evaluates a model if a evaluation data is sent and checkpoints when prior f1 
+            4. If needed will compute soft-match scores
+            5. Trains a BiLSTM+Att classifier instance using the NExT Framework's Training Algorithm
+            6. Optionally evaluates a model if a evaluation data is sent and checkpoints when prior f1 
                performance. Otherwise just saves after every epoch.
-            6. Save performance data across epochs to a csv data.
+            7. Save performance data across epochs to a csv data.
     """
     # Step 0.
     if payload["stage"] == "both":
@@ -380,6 +383,8 @@ def train_next_bilstm_pipeline(payload):
     hidden_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "hidden_dim")
     random_state = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "random_state")
     none_label_key = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "none_label_key")
+
+    full_batch_size = match_batch_size + unlabeled_batch_size
 
     load_model = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "load_model")
     start_epoch = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "start_epoch")
@@ -489,16 +494,6 @@ def train_next_bilstm_pipeline(payload):
         device = torch.device("cuda")
     else:
         device = torch.device("cpu")
-    
-    find_module = Find_Module.Find_Module(vocab.vectors, pad_idx, emb_dim, find_module_hidden_dim,
-                                          torch.cuda.is_available(), custom_token_count=custom_vocab_length)
-        
-    find_module.load_state_dict(torch.load(find_module_path))
-
-    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
-                                        torch.cuda.is_available(), number_of_classes,
-                                        custom_token_count=custom_vocab_length)
-    del vocab
 
     epochs = epochs
     epoch_string = str(epochs)
@@ -531,9 +526,6 @@ def train_next_bilstm_pipeline(payload):
                         best_dev_f1_score = float(row[-1])
         
         logging.info("loaded past results")
-    
-    clf = clf.to(device)
-    find_module = find_module.to(device)
 
     # Get queries ready for Find Module
     lfind_query_tokens, _ = BaseVariableLengthDataset.variable_length_batch_as_tensors(tokenized_queries, pad_idx)
@@ -542,19 +534,59 @@ def train_next_bilstm_pipeline(payload):
     # Preping Soft Labeling Function Data
     soft_labeling_functions = soft_labeling_functions_dict["function_pairs"]
     soft_labeling_function_labels = soft_labeling_functions_dict["labels"]
+    
+    h0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
+    c0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
+    nn.init.xavier_normal_(h0)
+    nn.init.xavier_normal_(c0)
+    
+    # Step 4.
+    if args.build_data:
+        find_module = Find_Module.Find_Module(vocab.vectors, pad_idx, emb_dim, find_module_hidden_dim,
+                                              torch.cuda.is_available(), custom_token_count=custom_vocab_length)
+        
+        find_module.load_state_dict(torch.load(args.find_module_path))
+        find_module = find_module.to(device)
+        find_module.eval()
+        function_scores = {}
+        for i, batch in enumerate(tqdm(unlabeled_data.as_batches(batch_size=full_batch_size, shuffle=False))):
+            unlabeled_tokens, unlabeled_token_lengths, phrases, _ = batch
+            unlabeled_tokens = unlabeled_tokens.to(device)
+            phrase_input = build_phrase_input(phrases, pad_idx, task).to(device).detach()
+            b_size, seq_length = unlabeled_tokens.shape
+            mask_mat = build_mask_mat_for_batch(seq_length).to(device).detach()
+            with torch.no_grad():
+                lfind_output = find_module.soft_matching_forward(unlabeled_tokens.detach(), lfind_query_tokens, lower_bound).detach() # B x seq_len x Q
 
+                for j, pair in enumerate(soft_labeling_functions):
+                    func, rel = pair
+                    batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach() # 1 x B
+
+                    type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach() # 1 x B
+                    final_scores = batch_scores * type_restrict_multiplier # 1 x B
+                    final_scores = final_scores.cpu()
+                    if j in function_scores:
+                        function_scores[j] = torch.cat([function_scores[j], final_scores], dim=1)
+                    else:
+                        function_scores[j] = final_scores
+        
+        soft_scores = torch.cat([function_scores[key] for key in function_scores]).permute(1, 0) # len(data) x number_of_explanations
+
+        with open("../data/training_data/soft_scores_{}.p".format(experiment_name), "wb") as f:
+            pickle.dump(soft_scores, f)
+    
+    else:
+        with open("../data/training_data/soft_scores_{}.p".format(experiment_name), "rb") as f:
+            soft_scores = pickle.load(f)
+    
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)    
+    clf = clf.to(device)
     optimizer = SGD(clf.parameters(), lr=learning_rate)
-    
-    h0_hard = torch.empty(n_layer_x_n_directions, match_batch_size, hidden_dim).to(device)
-    c0_hard = torch.empty(n_layer_x_n_directions, match_batch_size, hidden_dim).to(device)
-    nn.init.xavier_normal_(h0_hard)
-    nn.init.xavier_normal_(c0_hard)
 
-    h0_soft = torch.empty(n_layer_x_n_directions, unlabeled_batch_size, hidden_dim).to(device)
-    c0_soft = torch.empty(n_layer_x_n_directions, unlabeled_batch_size, hidden_dim).to(device)
-    nn.init.xavier_normal_(h0_soft)
-    nn.init.xavier_normal_(c0_soft)
-    
+    del vocab
+
     # define loss functions
     strict_match_loss_function  = nn.CrossEntropyLoss()
     soft_match_loss_function = nn.CrossEntropyLoss(reduction='none')
@@ -565,17 +597,16 @@ def train_next_bilstm_pipeline(payload):
     
     start_time = time.time()
     
-    # Step 4. TRAINING
+    # Step 5. TRAINING
     for epoch in range(start_epoch, start_epoch+epochs):
         logging.info('\n Epoch {:} / {:}'.format(epoch + 1, start_epoch+epochs))
 
         total_loss, strict_total_loss, soft_total_loss = 0, 0, 0
         batch_count = 0
         clf.train()
-        find_module.eval()
 
-        for step, batch_pair in enumerate(tqdm(zip(strict_match_data.as_batches(batch_size=match_batch_size, seed=epoch),\
-                                                   unlabeled_data.as_batches(batch_size=unlabeled_batch_size, seed=epoch*seed)))):
+        for step, batch_pair in enumerate(tqdm(zip(strict_match_data.as_batches(batch_size=full_batch_size, seed=epoch),\
+                                                   unlabeled_data.as_batches(batch_size=full_batch_size, seed=epoch*seed)))):
             
             # prepping batch data
             strict_match_data_batch, unlabeled_data_batch = batch_pair
@@ -585,46 +616,23 @@ def train_next_bilstm_pipeline(payload):
             strict_match_tokens = strict_match_tokens.to(device)
             strict_match_labels = strict_match_labels.to(device)
 
-            unlabeled_tokens, unlabeled_token_lengths, phrases = unlabeled_data_batch
+            unlabeled_tokens, unlabeled_token_lengths, phrases, batch_indices = unlabeled_data_batch
+            tensor_indices = torch.tensor(batch_indices)
+            batch_soft_scores = torch.index_select(soft_scores, 0, tensor_indices).to(device)
             unlabeled_tokens = unlabeled_tokens.to(device)
 
-            phrase_input = build_phrase_input(phrases, pad_idx, task).to(device).detach()
-            _, seq_length = unlabeled_tokens.shape
-            mask_mat = build_mask_mat_for_batch(seq_length).to(device).detach()
+            pseudo_labels = torch.index_select(soft_labeling_function_labels, 0, torch.argmax(batch_soft_scores, dim=1))
+            bound = torch.max(batch_soft_scores, dim=1).values
+            unlabeled_label_weights = nn.functional.softmax(10 * bound, dim=0)
 
             # clear previously calculated gradients 
-            clf.zero_grad()  
-
-            # UPDATE THIS SECTION AFTER MERGING ZIQI CODE
-            with torch.no_grad():
-                lfind_output = find_module.soft_matching_forward(unlabeled_tokens.detach(), lfind_query_tokens, lower_bound).detach() # B x seq_len x Q
+            clf.zero_grad()
             
-                function_batch_scores = []
-                for pair in soft_labeling_functions:
-                    func, rel = pair
-                    try:
-                        batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach() # 1 x B
-                    except:
-                        batch_scores = torch.zeros((1, unlabeled_batch_size)).to(device).detach()
-                    
-                    if relation_ner_types != None:
-                        type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach() # 1 x B
-                        final_scores = batch_scores * type_restrict_multiplier # 1 x B
-                    else:
-                        final_scores = batch_scores
-                    function_batch_scores.append(final_scores)
-            
-                function_batch_scores_tensor = torch.cat(function_batch_scores, dim=0).detach().permute(1,0) # B x Q
-                unlabeled_label_index = torch.argmax(function_batch_scores_tensor, dim=1) # B
-                
-                unlabeled_labels = torch.tensor([soft_labeling_function_labels[index] for index in unlabeled_label_index]).to(device).detach() # B
-                unlabeled_label_weights = nn.functional.softmax(torch.amax(function_batch_scores_tensor, dim=1), dim=0) # B
-            
-            strict_match_predictions = clf.forward(strict_match_tokens, strict_match_lengths, h0_hard, c0_hard)
-            soft_match_predictions = clf.forward(unlabeled_tokens, unlabeled_token_lengths, h0_soft, c0_soft)
+            strict_match_predictions = clf.forward(strict_match_tokens, strict_match_lengths, h0, c0)
+            soft_match_predictions = clf.forward(unlabeled_tokens, unlabeled_token_lengths, h0, c0)
 
             strict_match_loss = strict_match_loss_function(strict_match_predictions, strict_match_labels)
-            soft_match_loss = torch.sum(soft_match_loss_function(soft_match_predictions, unlabeled_labels) * unlabeled_label_weights)
+            soft_match_loss = torch.sum(soft_match_loss_function(soft_match_predictions, pseudo_labels) * weight)
             combined_loss = strict_match_loss + gamma * soft_match_loss
 
             strict_total_loss = strict_total_loss + strict_match_loss.item()
@@ -648,7 +656,7 @@ def train_next_bilstm_pipeline(payload):
         
         loss_per_epoch.append((train_avg_loss, train_avg_strict_loss, train_avg_soft_loss))
         
-        # Step 5.
+        # Step 6.
         if len(eval_path):
             dev_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes, batch_size=eval_batch_size, none_label_id=none_label_id)
         
@@ -687,7 +695,7 @@ def train_next_bilstm_pipeline(payload):
             time_spent = time.time() - start_time
             update_model_training(experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "training")
     
-    # Step 6.
+    # Step 7.
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
         writer=csv.writer(f)
         writer.writerow(['train_avg_loss', 'train_avg_strict_loss', 'train_avg_soft_loss'])
@@ -728,7 +736,7 @@ def strict_match_pipeline(payload):
     
     return matched_tuples, matched_indices
 
-def evaluate_next_clf(payload):
+def evaluate_next_clf_pipeline(payload):
     """
         Given a tuples of text and labels, and an experiment name, we will load the appropriate
         saved model and evaluate it against the data provided.

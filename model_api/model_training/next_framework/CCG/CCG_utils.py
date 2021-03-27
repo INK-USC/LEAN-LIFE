@@ -1,15 +1,16 @@
+"""
+    Functions that are used in the pipeline to convert explanations into labeling functions
+"""
+import copy
+import pathlib
 import re
 import string
-import pathlib
 import sys
+from nltk.ccg import chart, lexicon
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
 sys.path.append(PATH_TO_PARENT)
 from CCG import CCG_constants as constants
 from CCG import CCG_util_classes as util_classes
-import pdb
-import copy
-from nltk.ccg import chart, lexicon
 
 def _find_quoted_phrases(explanation):
     """

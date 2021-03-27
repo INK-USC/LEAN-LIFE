@@ -2,8 +2,6 @@ PARSER_TRAIN_SAMPLE = 50000
 
 DEV_F1_SAMPLE = 20000
 
-# NUMBER_OF_TUNEABLE_VECTORS = 10000
-
 FIND_MODULE_HIDDEN_DIM = 300
 
 UNMATCH_TYPE_SCORE = 0
@@ -11,6 +9,9 @@ UNMATCH_TYPE_SCORE = 0
 SPACY_NERS = ['', 'CARDINAL', 'DATE', 'EVENT', 'FAC', 'GPE', 'LANGUAGE', 'LAW', 'LOC', 'MONEY', 'NORP',
               'ORDINAL', 'ORG', 'PERCENT', 'PERSON', 'PRODUCT', 'QUANTITY', 'TIME', 'WORK_OF_ART']
 
+# HERE is where you can add conversions from spaCy's label space into your own
+# You CANNOT pass this in, must add a constant value in here and then update
+# `load_spacy_to_custom_dataset_ner_mapping()` in next_util_functions.py
 SPACY_TO_TACRED = {
     'CARDINAL' : 'NUMBER',
     'GPE' : 'STATE_OR_PROVINCE',
@@ -18,10 +19,15 @@ SPACY_TO_TACRED = {
     'ORG' : 'ORGANIZATION'
 }
 
+# HERE is where you can add your own data's NER label space, though it is better to just pass it in.
 TACRED_NERS = ['PERSON', 'ORGANIZATION', 'DATE', 'NUMBER', 'TITLE', 'COUNTRY', 'LOCATION', 'CITY', 'MISC',
                'STATE_OR_PROVINCE', 'DURATION', 'NATIONALITY', 'CAUSE_OF_DEATH', 'CRIMINAL_CHARGE', 'RELIGION',
                'URL', 'IDEOLOGY']
 
+# HERE is where you can add your own data's mapping between a relation and the entity types associated with it
+# It is BETTER to just pass this datstructure in.
+# It is used when providing soft-scores to a sentence:
+#   if the NER types of the SUBJ and OBJ in the sentence match the explanation's label's NER types apply score, else score is 0
 TACRED_ENTITY_TYPES = {
     'per:title': ('PERSON', 'TITLE'),
     'org:top_members/employees': ('ORGANIZATION', 'PERSON'),
@@ -66,6 +72,7 @@ TACRED_ENTITY_TYPES = {
     'per:country_of_death': ('PERSON', 'COUNTRY')
  }
 
+# USED in run_scripts ONLY, not used in pipeline code.
 TACRED_LABEL_MAP = {
     'per:title': 0,
     'org:top_members/employees': 1,
@@ -111,6 +118,7 @@ TACRED_LABEL_MAP = {
     'no_relation': 41
 }
 
+# USED in run_scripts ONLY, not used in pipeline code.
 TACRED_LABEL_REVERSE_MAP = {
     0: 'per:title',
     1: 'org:top_members/employees',

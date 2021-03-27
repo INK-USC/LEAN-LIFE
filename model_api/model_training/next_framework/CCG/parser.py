@@ -1,26 +1,36 @@
+"""
+    Actual pipeline logic of converting explanations into labeling functions.
+
+    Use the CCGParserTrainer to train a TrainedCCGParser
+
+    TrainedCCGParser has these useful attributes on it:
+        semantic_reps - semantic_rep version of labeling function
+        labeling_functions - strict labeling functions
+        soft_labeling_functions - soft labeling functions
+        filtered_raw_explanations - the actual raw explanation text that made it through
+        soft_label_function_to_semantic_map - map from soft_label_function back to semantic_rep of the function
+
+"""
+from collections import namedtuple
+import copy
+import dill
+import json
+import logging
+import os
+import pickle
 import sys
 import pathlib
-PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
-sys.path.append(PATH_TO_PARENT)
+import random
+from nltk.ccg import chart, lexicon
 import numpy as np
-import json
+import spacy
+import torch.nn as nn
+import torch
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+sys.path.append(PATH_TO_PARENT)
 from CCG import CCG_constants as constants
 from CCG import CCG_utils as utils
 from CCG import CCG_util_classes as classes
-import os
-import pickle
-import torch.nn as nn
-import torch
-import copy
-from collections import namedtuple
-from nltk.ccg import chart, lexicon
-import spacy
-import random
-import numpy as np
-import pdb
-import dill
-import logging
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -163,6 +173,7 @@ class TrainedCCGParser():
         with open("loaded_data.p", "wb") as f:
             dill.dump(self.loaded_data, f)
         
+        # Useful to read in cached loaded_data when debugging
         # with open("../training/loaded_data.p", "rb") as f:
         #     self.loaded_data = dill.load(f)
         
@@ -365,6 +376,8 @@ class CCGParserTrainer():
         
         with open("training_phrases.p", "wb") as f:
             pickle.dump(self.unlabeled_data, f)
+        
+        # Useful to read in processed unlabeled data when debugging
         # with open("training_phrases.p", "rb") as f:
         #     self.unlabeled_data = pickle.load(f)
 

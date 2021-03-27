@@ -329,6 +329,8 @@ def prepare_next_data(json_data, project_type="", lean_life=True):
             unlabeled_docs = []
         if hasattr(json_data, "explanation_triples"):
             explanation_triples = json_data.explanation_triples
+            for i, triple in enumerate(explanation_triples):
+                explanation_triples[i] = triple.dict() 
         else:
             explanation_triples = []
         if hasattr(json_data, "ner_label_space"):
@@ -374,10 +376,12 @@ def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, 
         }
     }
 
-    end_point = const.LEAN_LIFE_URL + "update/training_status/"
-    response = requests.post(end_point, json=update_repr)
+    print(update_repr)
 
-    return response.status_code
+    # end_point = const.LEAN_LIFE_URL + "update/training_status/"
+    # response = requests.post(end_point, json=update_repr)
+
+    # return response.status_code
 
 def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None):
     """
@@ -411,8 +415,10 @@ def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_s
                 "save_path" : save_path
             }
         }
+    
+    print(update_repr)
 
-    end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
-    response = requests.post(end_point, json=metadata_repr)
+    # end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
+    # response = requests.post(end_point, json=metadata_repr)
 
-    return response.status_code
+    # return response.status_code

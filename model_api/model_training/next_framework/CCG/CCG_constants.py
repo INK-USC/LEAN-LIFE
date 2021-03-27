@@ -1,12 +1,13 @@
-
+"""
+    Constant file holding important grammar information
+"""
 import pathlib
 import sys
+import torch
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
 sys.path.append(PATH_TO_PARENT)
 from CCG import strict_grammar_functions as gram_f
 from CCG import soft_grammar_functions as soft_gram_f
-import torch
 
 SPACE = "SPACE"
 PUNCT = "PUNCT"
@@ -17,6 +18,8 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         Det :: NP/N
         Adj :: N/N
         arg => NP {None}
+        #$True => (S\\VP)/PP {None}
+        #$False => (S\\VP)/PP {None}
         $And => var\\.,var/.,var {\\x y.'@And'(x,y)}
         $Or => var\\.,var/.,var {\\x y.'@Or'(x,y)}
         $Not => (S\\NP)\\(S\\NP) {None}
@@ -26,6 +29,8 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $All => NP/NP {None}
         $Any => NP/N {None}
         $None => N {None}
+        #$Is => (S\\NP)/NP {\\y x.'@Is'(x,y)}
+        #$Is => (S\\NP)/(S\\NP) {\\y x.'@Is'(x,y)}
         $Is => (S\\NP)/PP {\\y x.'@Is'(x,y)}   # word 'a' occurs between <S> and <O>
         $Is => (S\\NP)\\PP {\\y x.'@Is'(x,y)}  # between <S> and <O> occurs word 'a'
         $Is => (S\\PP)\\NP {\\x y.'@Is'(x,y)}  # between <S> and <O> word 'a' occurs
@@ -33,6 +38,9 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         #$Exists => S\\NP {None}
         $Int => Adj {None} #There are no words between <S> and <O>
         $AtLeastOne => NP/N {None}
+        #$Equals => (S\\NP)/NP {None}
+        #$NotEquals => (S\\NP)/NP {None}
+        
         
         $LessThan => PP/PP/N {\\x y.'@LessThan'(y,x)} #There are less than 3 words between <S> and <O>   
         $AtMost => PP/PP/N {\\x y.'@AtMost'(y,x)} #There are at most 3 words between <S> and <O>
@@ -44,8 +52,14 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $AtLeast => PP/N {\\x.'@AtLeast1'(y,x)}   #same as above
         $MoreThan => PP/N {\\x.'@MoreThan1'(y,x)} #same as above
 
-        $In => PP/NP {\\x.'@In0'(x)} #never called?
+        #$In => S\\NP/NP {None} 
+        $In => PP/NP {\\x.'@In0'(x)} 
+        $Contains => S\\NP/NP {None} #The sentence contains two words
         $Separator => var\\.,var/.,var {\\x y.'@And'(x,y)} #connection between two words
+        #$Processive => NP/N\\N {None}
+        #$Count => N {None}
+        #$Tuple => N {None}
+        #$ArgXListAnd => NP {None}
         $EachOther => N {None}
         $Token => N {\\x.'@Word'(x)}
         $Word => NP/N {\\x.'@Word'(x)}
@@ -55,16 +69,19 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $Word => NP {'tokens'} #There are no more than 3 words between <S> and <O>
         
         $Char => N {None} #same as above
+        #$Lower => Adj {None}
+        #$Capital => Adj {None}
         $StartsWith => S\\NP/NP {\\y x.'@StartsWith'(x,y)}
         $EndsWith => S\\NP/NP {\\y x.'@EndsWith'(x,y)}
         $Left => PP/NP {\\x.'@Left0'(x)} # the word 'a' is before <S>
         $Left => (S\\NP)/NP {\\y x.'@Left'(y,x)}  #Precedes
         $Right => PP/NP {\\x.'@Right0'(x)}# the word 'a' ia after <S>
         $Right => (S\\NP)/NP {\\y x.'@Right'(y,x)} 
+        #$Within => ((S\\NP)\\(S\\NP))/NP {None} # the word 'a' is within 2 words after <S>
+        #$Within => (NP\\NP)/NP {None}
         $Within => PP/PP/N {\\x y.'@AtMost'(y,x)} #Does Within has other meaning.
         $Sentence => NP {'Sentence'}
-        $Contains => S\\NP/NP {\\x y. '@In1'(y, x)} #y contains x
-        $In => S\\NP/NP {\\x y. '@In1'(x, y)} # y is in x
+        
         $Between => (S/S)/NP {\\x y.'@between'(x,y)}
         $Between => S/NP {\\x.'@between'(x)}
         $Between => PP/NP {\\x.'@between'(x)}
@@ -78,7 +95,11 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $NorpNER => NP {'@Norp'}
         $ArgX => NP {'ArgX'}
         $ArgY => NP {'ArgY'}
+        #$will => S\\NP/VP {None}
+        #$Which => (NP\\NP)/(S/NP) {None}
+        #$might => S\\NP/VP {None}
         $that => NP/N {None}
+        #$that => (N\\N)/(S/NP) {None} #same as which
         $Apart => (S/PP)\\NP {None}
         $Direct => PP/PP {\\x.'@Direct'(x)} # the word 'a' is right before <S>   
         $Direct => (S\\NP)/PP {\\y x.'@Is'(x,'@Direct'(y))}

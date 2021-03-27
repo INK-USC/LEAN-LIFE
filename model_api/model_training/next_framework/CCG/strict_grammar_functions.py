@@ -1,3 +1,8 @@
+"""
+    Functions that semantic phrases map to when constructing strict-matching functions
+
+    Author: Ziqi
+"""
 compare={                   #eq mt(more than) lt(less than) nmt(no more than) nlt(no less than)
     'eq':lambda a,b:a==b,
     'mt':lambda a,b:a>b,

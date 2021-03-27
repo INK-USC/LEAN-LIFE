@@ -23,7 +23,7 @@ import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, evaluate_next
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
-os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 app = FastAPI()
 
 @app.post("/training/next/lean-life/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
@@ -33,7 +33,7 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
     """
     params = lean_life_payload.params
     lean_life_data = lean_life_payload.lean_life_data
-    prepped_data = util_f.prepare_next_data(lean_life_data, task=params.project_type)
+    prepped_data = util_f.prepare_next_data(lean_life_data, project_type=params.project_type)
     label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
     if len(ner_label_space) == 0:
         ner_label_space = None
@@ -53,6 +53,7 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
         explanations. Please refer to the docs or `json_schema.py` to understand both the supported 
         and required paramaters.
     """
+    params = api_payload.params
     prepped_data = util_f.prepare_next_data(api_payload, lean_life=False)
     label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
     if len(ner_label_space) == 0:
@@ -61,7 +62,7 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(train_next_framework(params.__dict__, label_space, unlabeled_docs,
+    return schema.SavePathOutput(train_next_framework(params.dict(), label_space, unlabeled_docs,
                                                       explanation_triples, ner_label_space))
 
 @app.post("/training/next/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
@@ -70,7 +71,7 @@ async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
         Endpoint used to evaluate a classifier trained via the next framework. Please refer to the docs or
         `json_schema.py` to understand both the supported and required paramaters.
     """
-    params = api_payload.params.__dict__
+    params = api_payload.params.dict()
     params["label_map"] = api_payload.label_space
     params["eval_data"] = api_payload.eval_data
     return schema.NextEvalDataOutput(evaluate_next(params))
@@ -96,5 +97,6 @@ async def strict_match_data(api_payload: schema.StrictMatchPayload):
         a pool of unlabeled sentences. Please refer to the docs or `json_schema.py` to
         understand the required paramaters.
     """
-    return schema.MatchedDataOutput(apply_strict_matching(api_payload.__dict__))
-
+    api_payload = api_payload.dict()
+    result = apply_strict_matching(api_payload)
+    return schema.MatchedDataOutput.parse_obj({"matched_tuples" : result[0], "matched_indices" : result[1]})

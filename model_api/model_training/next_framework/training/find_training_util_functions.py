@@ -1,25 +1,26 @@
-import sys
-import pathlib
-PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
-# sys.path.append(".")
-# sys.path.append("../")
-sys.path.append(PATH_TO_PARENT)
-sys.path.append(PATH_TO_PARENT + "../")
+"""
+    Functions used to train and evaluate Find Module. Used in `pre_train_find_module_pipeline`.
+"""
 import json
+import logging
+import pathlib
+import pickle
+import random
+import re
+import sys
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 import torch
-import random
-import pickle
+from tqdm import tqdm
+PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
+sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
 from training.next_util_classes import PreTrainingFindModuleDataset
 from training.next_util_functions import find_array_start_position, generate_save_string, tokenize,\
                                          build_vocab, convert_text_to_tokens, extract_queries_from_explanations,\
                                          build_custom_vocab
-from tqdm import tqdm
-import re
-import numpy as np
-import pdb
-import logging
+
 
 possible_embeddings = ['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
