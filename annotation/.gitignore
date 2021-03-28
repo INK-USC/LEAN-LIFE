@@ -3,3 +3,5 @@ src/server/__pycache__/
 src/server/migrations/__pycache__/
 src/server/node_modules/
 src/server/webpack-stats.json
+
+.idea/

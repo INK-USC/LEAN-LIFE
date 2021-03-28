@@ -1,6 +1,8 @@
 # LEAN-LIFE
 **L**abel **E**fficient **A**nnotatio**N** framework that allows for **L**earn**I**ng **F**rom **E**xplanations
 
+(Staging Branch)
+
 [Website](http://inklab.usc.edu/leanlife/)  &nbsp;&nbsp;&nbsp;&nbsp;
 [Paper](https://arxiv.org/abs/2004.07499) &nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -41,7 +43,8 @@ For information on how to use the annotation framework and supported data format
 We strongly encourage community engagement, please refer to our [contribution section](#contributing) for more on how to contribute!
 
 # Release Plan:
-**Next Release Goals:**
+
+**Next Release's Goals:** 4-6 Weeks
 
 * API for training of a downstream model (RE, SA):
   * with natural language explanations, a fixed NExT parser to generate weak labels (RE, SA)
@@ -113,6 +116,22 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
 
 # Contributing
+
+We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
+
+# Misc.
+
+### Feedback
+Feedback is definitely encouraged, please feel free to create an issue and document what you're seeing/wanting to see.
+
+### Mailing List
+To get notifications of major updates to this project, you can join our mailing list [here](https://groups.google.com/forum/#!forum/leanlife)
+
+### Twitter
+For updates on this project and other nlp projects being done at USC, please follow [@nlp_usc](https://twitter.com/nlp_usc)
+
+### Contributors
+Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong
 
 We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
 

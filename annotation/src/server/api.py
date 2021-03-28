@@ -24,14 +24,13 @@ from .models import Project, Label, Document, Setting, NamedEntityAnnotationHist
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
-	NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
-	NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
-	RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
-	NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
-	SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer
-from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
+NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
+NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
+RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
+NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
+SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer, UserSerializer, TaskSerializer
 from .utils import SPACY_WRAPPER
-from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES, RELATION_EXTRACTION_VALUE
+from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES, RELATION_EXTRACTION_VALUE, NAMED_ENTITY_RECOGNITION_VALUE,SENTIMENT_ANALYSIS_VALUE
 import time
 from django.db import transaction
 import pickle
@@ -43,10 +42,13 @@ import os
 import requests
 from .constants import EXPLANATION_CHOICES
 from os import path
+import logging
+logger = logging.getLogger(__name__)
 
 class ImportFileError(Exception):
     def __init__(self, message):
         self.message = message
+
 
 class MethodSerializerView(object):
     '''
@@ -204,9 +206,8 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 		return obj
 
-
-class CustomPagination(PageNumberPagination):
-    page_size = 10
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 10
 
@@ -217,7 +218,7 @@ class DocumentList(generics.ListCreateAPIView):
     search_fields = ('text',)
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
     serializer_class = SingleUserAnnotatedDocumentSerializer
-    pagination_class = CustomPagination
+    pagination_class = LargeResultsSetPagination
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -269,6 +270,7 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 	def patch(self, request, *args, **kwargs):
 		return self.partial_update(request, *args, **kwargs)
 
+
 class BaseAnnotationCreateAndDestroyView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.DestroyModelMixin):
 	permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
@@ -317,7 +319,6 @@ class ExplanationDestroyView(MethodQuerysetView, generics.GenericAPIView, mixins
 		}
 	}
 	serializer_class = None
-
 	def delete(self, request, *args, **kwargs):
 		return self.destroy(request, *args, **kwargs)
 
@@ -406,7 +407,6 @@ class HistoryDestroyView(MethodQuerysetView, generics.GenericAPIView, mixins.Des
 		return self.destroy(request, *args, **kwargs)
 
 
-
 class AnnotationHistoryFileUpload(APIView):
     def _process_ner(self, data, all_labels, user, project, max_batch=500):
         history = []
@@ -482,6 +482,7 @@ class AnnotationHistoryFileUpload(APIView):
                 return Response(status=500)
         except:
             raise ImportFileError("No file was uploaded")
+
 
 class RecommendationList(APIView):
 	pagination_class = None
@@ -929,3 +930,190 @@ class TrainingStatusUpdateAPI(APIView):
 				json.dump(new_data[model_name], f, ensure_ascii=False, indent=1)
 
 		return Response(status=200)
+
+class UserRetrieveAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class TaskRetrieveAPIView(generics.ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class ExplanationAPIView(APIView):
+    def get(self, request, format=None):
+        return Response(EXPLANATION_CHOICES)
+
+class FileUploadAPIView(APIView):
+    class ImportFileError(Exception):
+        def __init__(self, message):
+            self.message = message
+
+    def extract_metadata_csv(self, row, text_col, header_without_text):
+        vals_without_text = [val for i, val in enumerate(row) if i != text_col]
+        return json.dumps(dict(zip(header_without_text, vals_without_text)))
+
+    def csv_to_documents(self, project, data_file, text_key='text', max_batch=500):
+        decoded_data_file = TextIOWrapper(data_file, encoding='utf-8')
+        reader = csv.reader(decoded_data_file)
+        maybe_header = next(reader)
+        if maybe_header:
+            header = False
+            docs = []
+            if text_key in maybe_header:
+                text_col = maybe_header.index(text_key)
+                header_without_text = [title for i, title in enumerate(maybe_header) if i != text_col]
+                header = True
+            elif len(maybe_header) == 1:
+                text_col = 0
+                text = maybe_header[text_col]
+                docs.append(Document(text=text, project=project))
+            else:
+                raise FileUploadAPIView.ImportFileError(
+                    "CSV file must either have a column named '{}' or only have one column.".format(text_key))
+
+            with transaction.atomic():
+                for row in reader:
+                    text = row[text_col]
+                    metadata = self.extract_metadata_csv(row, text_col, header_without_text) if header else '\{\}'
+                    docs.append(Document(text=text, metadata=metadata, project=project))
+                    if len(docs) == max_batch:
+                        Document.objects.bulk_create(docs)
+                        docs = []
+                Document.objects.bulk_create(docs)
+        else:
+            raise FileUploadAPIView.ImportFileError("CSV file is empty")
+
+    def extract_metadata_json(self, entry):
+        if "metadata" in entry:
+            return json.dumps(entry["metadata"])
+        else:
+            temp = {}
+            ignore_keys = set(["text", "annotations", "doc_id", "user"])
+            for key in entry:
+                if key not in ignore_keys:
+                    temp[key] = entry[key]
+            return json.dumps(temp)
+
+    def create_plain_docs_from_json(self, project, data_file, text_key="text", max_batch=500):
+        docs = []
+        try:
+            if data_file.multiple_chunks():
+                data = ijson.items(data_file, "data.item")
+            else:
+                data = json.load(data_file)
+                data = data["data"]
+        except:
+            raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the 'data' key")
+
+        with transaction.atomic():
+            for entry in data:
+                try:
+                    text = entry[text_key]
+                except:
+                    raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
+
+                metadata = self.extract_metadata_json(entry)
+
+                docs.append(Document(text=text, metadata=metadata, project=project))
+                if len(docs) == max_batch:
+                    Document.objects.bulk_create(docs)
+                    docs = []
+
+            Document.objects.bulk_create(docs)
+
+    def create_ner_docs_from_json(self, project, data_file, user, text_key="text"):
+        all_labels = {}
+        try:
+            if data_file.multiple_chunks():
+                data = ijson.items(data_file, "data.item")
+            else:
+                data = json.load(data_file)
+                data = data["data"]
+        except:
+            raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the 'data' key")
+
+        with transaction.atomic():
+            for entry in data:
+                try:
+                    text = entry[text_key]
+                except:
+                    raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
+
+                metadata = self.extract_metadata_json(entry)
+
+                current_doc = Document(text=text, metadata=metadata, project=project)
+                current_doc.save()
+
+                for annotation in entry["annotations"]:
+                    if annotation['label'] not in all_labels:
+                        new_label = Label(text=annotation["label"], project=project, user_provided=True)
+                        new_label.save()
+                        all_labels[annotation["label"]] = new_label
+
+                    cur_annotation = Annotation(user_provided=True, task=project.task, user=user, document=current_doc,
+                                                label=all_labels[annotation["label"]])
+                    cur_annotation.save()
+                    ner_annotation = NamedEntityAnnotation(annotation=cur_annotation,
+                                                           start_offset=annotation["start_offset"],
+                                                           end_offset=annotation["end_offset"])
+                    ner_annotation.save()
+
+    def post(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs.get('project_id'))
+        import_format = request.POST['format']
+        upload_type = request.POST['upload_type']
+        user = self.request.user
+        try:
+            data_file = request.FILES['dataset']
+            if import_format == 'csv':
+                self.csv_to_documents(project, data_file)
+            elif import_format == 'json':
+                if upload_type == "ner":
+                    self.create_ner_docs_from_json(project, data_file, user)
+                else:
+                    self.create_plain_docs_from_json(project, data_file)
+            return Response({"success": "your file has been received"}, status=status.HTTP_202_ACCEPTED, )
+        except FileUploadAPIView.ImportFileError as e:
+            return Response(exception=e)
+        except Exception as e:
+            return Response(exception=e)
+
+
+class DownloadAnnotationAPI(APIView):
+    # permission_classes = ()
+
+    def get(self, request, project_id):
+        user_id = self.request.user.id
+        project = get_object_or_404(Project, pk=project_id)
+        explanation_int = project.explanation_type
+        export_format = request.GET.get('downloadFormat')
+        task_name=project.get_task_name()
+        user_annotations= Annotation.objects.get_annotations_for_export(user_id, task_name, explanation_int)
+        # TODO below step will cause exception in NER
+        dataset = Document.objects.export_project_user_documents(task_name, project_id, user_id, export_format, user_annotations, explanation_int)
+        filename = "_".join(project.name.lower().split())
+        try:
+            if export_format == 'csv':
+                response = self.get_csv(filename, dataset)
+            elif export_format == 'json':
+                response = self.get_json(filename, dataset)
+            return response
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=404, data=e)
+        return Response(status=200, data={"ok"})
+
+    def get_csv(self, filename, dataset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        writer = csv.writer(response)
+        writer.writerows(dataset)
+        return response
+
+    def get_json(self, filename, dataset):
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}.json"'.format(filename)
+        response.write(json.dumps(dataset, ensure_ascii=False, indent=1))
+        return response

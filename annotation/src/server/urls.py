@@ -1,5 +1,7 @@
+from django.conf.urls import url
 from django.urls import path
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from .views import LoginRedirectView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, SettingView, AnnotationHistoryView
@@ -9,13 +11,18 @@ from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
     HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload,ModelAPIView, GenerateMockModelsAPIView, \
     TrainModelAPIView,MockModelTrainingAPI,DownloadModelFile, MockModelFileFetchingView, ModelUpdateAPI,\
-    TrainingStatusUpdateAPI
-    
+    TrainingStatusUpdateAPI, UserRetrieveAPIView, TaskRetrieveAPIView, ExplanationAPIView,\
+    FileUploadAPIView, DownloadAnnotationAPI
+
 router = routers.DefaultRouter()
-router.register(r'projects', ProjectViewSet)
+router.register('projects', ProjectViewSet)
 
 urlpatterns = [
+    url('api/auth/obtain_token/', obtain_jwt_token),
+    url('api/auth/refresh_token/', refresh_jwt_token),
+
     path('', LoginRedirectView.as_view(), name='index'),
+    path('api/projects', ProjectRetrieveView.as_view(), name="get-all-project"),
     path('api/projects/<int:project_id>', ProjectRetrieveView.as_view(), name='project-info'),
     path('api/projects/<int:project_id>/heading_status', ProjectStatsAPI.as_view(), name='project_menu_headers'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
@@ -28,6 +35,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
     path('api/projects/<int:project_id>/labels/<int:label_id>', LabelDetail.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', DocumentList.as_view(), name='docs'),
+    path('api/projects/<int:project_id>/docs/upload/', FileUploadAPIView.as_view(), name="upload file"),
     path('api/projects/<int:project_id>/docs/<int:doc_id>', DocumentDetail.as_view(), name='doc'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', BaseAnnotationCreateAndDestroyView.as_view(), name='create_annotation'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:pk>', BaseAnnotationCreateAndDestroyView.as_view(), name='delete_annotation'),
@@ -44,6 +52,10 @@ urlpatterns = [
     path('api/model_training_mock/', MockModelTrainingAPI.as_view(), name="mock_model_training_api"),
     path('api/models/', ModelAPIView.as_view(), name="get_model"),
     path('api/models/generate_mock_files/', GenerateMockModelsAPIView.as_view(), name="generate_mock_models"),
+    path('api/projects/<int:project_id>/download_annotations', DownloadAnnotationAPI.as_view(), name='downlooad_annotation'),
+    path('api/users/', UserRetrieveAPIView.as_view(), name="get_users"),
+    path('api/tasks/', TaskRetrieveAPIView.as_view(), name="get_tasks"),
+    path('api/explanations/', ExplanationAPIView.as_view(), name="get_explanation"),
     path('projects/', edit_form, name='projects'),
     path('projects/<int:project_id>/update', edit_form, name='update_projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),

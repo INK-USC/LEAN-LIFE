@@ -19,7 +19,7 @@ class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Task
         fields = ('id', 'name')
@@ -79,7 +79,7 @@ class AnnotationWithExtensionSerializer(serializers.ModelSerializer):
             extension = instance.get_extended_annotation()
             serializer = instance.get_extended_annotation_serializer()
             return serializer(extension).data
-    
+
     class Meta:
         model = Annotation
         fields = ('id', 'label', 'extended_annotation', 'user_provided')
@@ -158,7 +158,7 @@ class TriggerExplanationSerializer(serializers.ModelSerializer):
     class Meta:
         model = TriggerExplanation
         fields = ('id', 'trigger_id', 'start_offset', 'end_offset')
-    
+
     def create(self, validated_data):
         return TriggerExplanation.objects.create(**validated_data)
 
@@ -168,7 +168,7 @@ class NaturalLanguageExplanationSerializer(serializers.ModelSerializer):
     class Meta:
         model = NaturalLanguageExplanation
         fields = ('id', 'text')
-    
+
     def create(self, validated_data):
         return NaturalLanguageExplanation.objects.create(**validated_data)
 
@@ -195,7 +195,7 @@ class NamedEntityAnnotationHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = NamedEntityAnnotationHistory
         fields = ('id', 'word', 'label', 'annotation', 'user_provided')
-    
+
     def create(self, validated_data):
         return NamedEntityAnnotationHistory.objects.create(**validated_data)
 
@@ -203,7 +203,14 @@ class RelationExtractionAnnotationHistorySerializer(serializers.ModelSerializer)
     class Meta:
         model = RelationExtractionAnnotationHistory
         fields = ('id', 'word_1', 'word_2', 'label', 'annotation', 'user_provided')
-    
+
     def create(self, validated_data):
         return RelationExtractionAnnotationHistory.objects.create(**validated_data)
 
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'id')
