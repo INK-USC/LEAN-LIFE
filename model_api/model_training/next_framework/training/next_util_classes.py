@@ -21,8 +21,8 @@ class BaseVariableLengthDataset(ABC):
                 dtype      (any) : the type of data the fill_value is
             
             Returns:
-                torch.tensor : tensor that represents the batch sent in, 
-                               dims : (n, max_seq_len)
+                torch.tensor, arr : tensor that represents the batch sent in, 
+                                    dims -- (n, max_seq_len). array of lengths for each sequence.
         """
         n_ex = len(batch)
         max_len = max(len(seq) for seq in batch)
@@ -130,7 +130,7 @@ class TrainingDataset(BaseVariableLengthDataset):
                 shuffle   (bool) : whether to shuffle data before batching
 
             Returns:
-                batch_tokens, batch_queries, batch_labels : per batch the tokens, queries and labels
+                batch_tokens, batch_lengths, batch_labels : per batch the tokens, seq_lengths and labels
                                                             needed for training
         """
         if shuffle:
@@ -188,7 +188,7 @@ class UnlabeledTrainingDataset(BaseVariableLengthDataset):
                 shuffle   (bool) : whether to shuffle data before batching
 
             Returns:
-                batch_tokens, batch_queries, batch_labels, batch_indices : per batch the tokens, queries, labels and
+                batch_tokens, batch_lengths, batch_labels, batch_indices : per batch the tokens, seq lengths, labels and
                                                                            correpsonding indices needed
                                                                            for unlabeled data training
         """

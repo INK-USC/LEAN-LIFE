@@ -41,6 +41,7 @@ class Find_Module(nn.Module):
                 sliding_win_size    (int) : size of window to consider when building pooled representations
                                             for a token (as of now this is fixed at 3)
                 padding_score     (float) : score of padding tokens during attention calculation
+                custom_token_count  (int) : size of custom vocabulary
         """
         super(Find_Module, self).__init__()
 
