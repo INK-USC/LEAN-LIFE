@@ -102,7 +102,7 @@ def _build_tacred_custom_vocab(vocab_length):
         You can also define similar functions to be used in `build_custom_vocab`
     """
     cur_key = vocab_length
-    tokens = _build_re_custom_tokens(list(TACRED_NERS.keys()))
+    tokens = _build_re_custom_tokens(TACRED_NERS)
     custom_vocab = _build_custom_vocab(tokens, vocab_length)
         
     return custom_vocab

@@ -1,6 +1,6 @@
 import sys
 sys.path.append("../training/")
-from util_classes import PreTrainingFindModuleDataset, BaseVariableLengthDataset, TrainingDataset
+from next_util_classes import PreTrainingFindModuleDataset, BaseVariableLengthDataset, TrainingDataset
 import torch
 
 tokens = [

@@ -2,8 +2,9 @@ import spacy
 import sys
 import pickle
 import json
+import pdb
 sys.path.append("../")
-from CCG import utils
+from CCG import CCG_utils as utils
 from CCG.parser import CCGParserTrainer, TrainedCCGParser
 
 nlp = spacy.load("en_core_web_sm")
@@ -148,7 +149,7 @@ def test_prepare_token_for_rule_addition():
 
 def test_generate_phrase():
     sentence = "His wife, OBJ-PERSON, often accompanied him on SUBJ-PERSON SUBJ-PERSON expeditions, as she did in 1947, when she became the first woman to climb Mount McKinley"
-    phrase_tokens = ['His', 'wife', ',', 'OBJ', ',', 'often', 'accompanied', 'him', 'on', 'SUBJ', 'expeditions', ',', 'as', 'she', 'did', 'in', '1947', ',', 'when', 'she', 'became', 'the', 'first', 'woman', 'to', 'climb', 'Mount', 'McKinley']
+    phrase_tokens = ['his', 'wife', ',', 'obj', ',', 'often', 'accompanied', 'him', 'on', 'subj', 'expeditions', ',', 'as', 'she', 'did', 'in', '1947', ',', 'when', 'she', 'became', 'the', 'first', 'woman', 'to', 'climb', 'mount', 'mckinley']
     # the last two NER labels are wrong, but are the output of spaCy's NER tagger.
     phrase_ners = ['', '', '', 'PERSON', '', '', '', '', '', 'PERSON', '', '', '', '', '', '', 'DATE', '', '', '', '', '', 'ORDINAL', '', '', '', 'PERSON', 'PERSON']
     phrase_subj_posi = 9
@@ -161,7 +162,7 @@ def test_generate_phrase():
     assert phrase.obj_posi == phrase_obj_posi
 
     sentence = "SUBJ-PERSON's mother OBJ-PERSON was a singer in the dance group Soul II Soul, which had hits in the 1980s and 1990s."
-    phrase_tokens = ['SUBJ', "'s", 'mother', 'OBJ', 'was', 'a', 'singer', 'in', 'the', 'dance', 'group', 'Soul', 'II', 'Soul', ',', 'which', 'had', 'hits', 'in', 'the', '1980s', 'and', '1990s', '.']
+    phrase_tokens = ['subj', "'s", 'mother', 'obj', 'was', 'a', 'singer', 'in', 'the', 'dance', 'group', 'soul', 'ii', 'soul', ',', 'which', 'had', 'hits', 'in', 'the', '1980s', 'and', '1990s', '.']
     phrase_ners = ['PERSON', '', '', 'PERSON', '', '', '', '', '', '', '', 'PRODUCT', 'PRODUCT', 'PRODUCT', '', '', '', '', '', '', 'DATE', '', 'DATE', '']
     phrase_subj_posi = 0
     phrase_obj_posi = 3
@@ -173,10 +174,10 @@ def test_generate_phrase():
     assert phrase.obj_posi == phrase_obj_posi
 
     sentence = "GAMEDAY VS BUFORD TODAY AT 5:30 AT HOME ! ! ! NEVER BEEN SO EXCITED #revenge"
-    phrase_tokens = ['GAMEDAY', 'VS', 'BUFORD', 'TODAY', 'AT', '5:30', 'AT', 'HOME', '!', '!', '!', 'NEVER', 'BEEN', 'SO', 'EXCITED', '#', 'revenge']
+    phrase_tokens = ['gameday', 'vs', 'buford', 'today', 'at', '5:30', 'at', 'home', '!', '!', '!', 'never', 'been', 'so', 'excited', '#', 'revenge']
     phrase_ners = ['ORG', '', '', '', '', 'TIME', '', '', '', '', '', '', '', '', '', '', '']
-    phrase_subj_posi = len(phrase_tokens)
-    phrase_obj_posi = len(phrase_tokens)
+    phrase_subj_posi = 2*len(phrase_tokens)
+    phrase_obj_posi = 2*len(phrase_tokens)
     phrase = utils.generate_phrase(sentence, nlp)
     assert len(phrase.tokens) == len(phrase.ners)
     assert phrase.tokens == phrase_tokens
@@ -188,11 +189,13 @@ def test_parse_tokens_re():
     re_ccg_trainer = CCGParserTrainer(task="re", explanation_file="data/tacred_test_explanation_data.json",
                                       unlabeled_data_file="data/tacred_test_unlabeled_data.json")
     explanation_file = re_ccg_trainer.params["explanation_file"]
+
     re_ccg_trainer.load_data(explanation_file)
     parser = re_ccg_trainer.parser
+
     parser.create_and_set_grammar()
     parser_grammar = parser.grammar
-    
+
     re_tokens = [
         ['$The', '$Word', '"PUNCT5sSPACEdaughter"', '$Link', '$ArgX', '$And', '$ArgY', '$And', '$There', '$Is', '$AtMost', '"3"', '$Word', '$Between', '$ArgX', '$And', '$ArgY'],
         ['$ArgX', '$And', '$ArgY', '$SandWich', '$The', '$Word', '"wasSPACEborn"', '$And', '$There', '$Is', '$AtMost', '"3"', '$Word', '$Between', '$ArgX', '$And', '$ArgY'],

@@ -4,7 +4,7 @@ import json
 import pdb
 import pickle
 from CCG.parser import CCGParserTrainer, TrainedCCGParser
-from CCG.utils import prepare_token_for_rule_addition, _find_quoted_phrases
+from CCG.CCG_utils import prepare_token_for_rule_addition, _find_quoted_phrases
 
 ec_ccg_trainer = CCGParserTrainer(task="ec", explanation_file="data/ec_test_data.json",
                                   unlabeled_data_file="data/carer_test_data.json")
@@ -30,7 +30,7 @@ def test_trainer_load_data_re():
 
 def test_trainer_prepare_unlabeled_data_ec():
     unlabeled_data_file = ec_ccg_trainer.params["unlabeled_data_file"]
-    ec_ccg_trainer.prepare_unlabeled_data(unlabeled_data_file)
+    ec_ccg_trainer.prepare_unlabeled_data(unlabeled_data_file, cache=False)
     unlabeled_data = ec_ccg_trainer.unlabeled_data
     assert len(unlabeled_data) == 1000
     for phrase in unlabeled_data:
@@ -38,7 +38,7 @@ def test_trainer_prepare_unlabeled_data_ec():
 
 def test_trainer_prepare_unlabeled_data_re():
     unlabeled_data_file = re_ccg_trainer.params["unlabeled_data_file"]
-    re_ccg_trainer.prepare_unlabeled_data(unlabeled_data_file)
+    re_ccg_trainer.prepare_unlabeled_data(unlabeled_data_file, cache=False)
     unlabeled_data = re_ccg_trainer.unlabeled_data
     assert len(unlabeled_data) == 1002
     for phrase in unlabeled_data:
@@ -206,8 +206,16 @@ def test_filter_matrix_ec():
     parser.create_and_set_grammar()
     parser.tokenize_explanations()
     parser.build_labeling_rules()
+    
+    # If the below file needs to be changed, this is how it was generated
+    # ec_ccg_trainer.prepare_unlabeled_data(ec_ccg_trainer.params["unlabeled_data_file"])
+    # with open("data/carer_test_data_phrase.p", "wb") as f:
+    #     pickle.dump(ec_ccg_trainer.unlabeled_data, f)
+    # unlabeled_data = ec_ccg_trainer.unlabeled_data
+
     with open("data/carer_test_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
+
     parser.low_end_filter_count = 0
     parser.matrix_filter(unlabeled_data, task="ec")
     # filter count set to zero, so certain explanations don't fire at all on this small sample
@@ -294,8 +302,16 @@ def test_filter_matrix_re():
     parser.create_and_set_grammar()
     parser.tokenize_explanations()
     parser.build_labeling_rules()
+    
+    # If the below file needs to be changed, this is how it was generated
+    # re_ccg_trainer.prepare_unlabeled_data(re_ccg_trainer.params["unlabeled_data_file"])
+    # with open("data/tacred_test_unlabeled_data_phrase.p", "wb") as f:
+    #     pickle.dump(re_ccg_trainer.unlabeled_data, f)
+    # unlabeled_data = re_ccg_trainer.unlabeled_data
+    
     with open("data/tacred_test_unlabeled_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
+
     parser.low_end_filter_count = 0
     parser.matrix_filter(unlabeled_data)
     # filter count set to zero, so certain explanations don't fire at all on this small sample
