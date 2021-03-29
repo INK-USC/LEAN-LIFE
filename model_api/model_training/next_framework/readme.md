@@ -10,12 +10,14 @@ Adaptation of code from here: https://github.com/INK-USC/NExT
 5. place TACRED's train.json, dev.json, test.json into `data` folder
 6. run through `Prepare Tacred Data.ipynb` to prepare TACRED data
 7. `cd training`
-8. `python pre_train_find_module.py --build_data` (defaults achieve 90% f1)
-9. `python train_next_classifier.py --build_data --experiment_name="insertAnyTextHere"` (defaults achieve 42.4% f1)
+8. `python run_scripts/pre_train_find_module.py --build_data`* (defaults achieve 90% f1)
+9. `python run_scripts/train_next_classifier.py --build_data --experiment_name="insertAnyTextHere"`* (defaults achieve 42.4% f1)
     * there are several available params you can set from the command line
     * builds data for both strict and soft labeling, only uses strict data
     * data pre-processing will take sometime, due to tuning of parser.
     * Note: match_batch_size == batch_size in the bilstm case
+
+\* paths will break here, so you will have to update path info if you want to run these scripts. Alternatively you can check out this [repo](https://github.com/Rahul-Khanna/NExT)
 
 For both step 8 and 9, subsequent trials on the same dataset don't need the "--build_data" flag; data that has already been computed does not need to be computed again, it is stored to disk.
 
