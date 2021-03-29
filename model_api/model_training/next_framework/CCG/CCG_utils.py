@@ -508,6 +508,8 @@ def check_clauses_in_parse_filter(semantic_counts):
         key_str = str(key)
         contains_between_clause = _detect_semantic_token(key_str, "@between")
         contains_num_clause = _detect_semantic_token(key_str, "@Num")
+        if contains_between_clause or contains_num_clause:
+            break 
     
     if contains_between_clause or contains_num_clause:
         max_correct_count = 0
