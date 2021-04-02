@@ -40,7 +40,7 @@ export default {
 
     },
     fetchModels() {
-      this.$http.get(`/models`).then(res => {
+      this.$http.get(`/models/`).then(res => {
 
       })
     }
