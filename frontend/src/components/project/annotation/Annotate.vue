@@ -61,8 +61,8 @@ import SentimentAnalysisAnnotation from "@/components/project/annotation/sa/Sent
 import NamedEntityRecognitionAnnotation from "@/components/project/annotation/ner/NamedEntityRecognitionAnnotation";
 import RelationExtractionAnnotation from "@/components/project/annotation/re/RelationExtractionAnnotation";
 import NaturalLanguageExplanationPopup
-  from "@/components/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
-import TriggerExplanationPopup from "@/components/explanation/TriggerExplanation/TriggerExplanationPopup";
+  from "@/components/project/explanation/NaturalLanguageExplanation/NaturalLanguageExplanationPopup";
+import TriggerExplanationPopup from "@/components/project/explanation/TriggerExplanation/TriggerExplanationPopup";
 import TrainModelButton from "@/components/project/annotation/shared/TrainModelButton";
 import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
 import {ACTION_TYPE} from "@/utilities/constant";

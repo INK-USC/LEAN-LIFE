@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import CreateProjectModal from "@/components/CreateProjectModal";
+import CreateProjectModal from "@/components/project/creation/CreateProjectModal";
 import {ACTION_TYPE, PROJECT_TYPE_TO_ID} from "@/utilities/constant";
 
 const {DateTime} = require("luxon");

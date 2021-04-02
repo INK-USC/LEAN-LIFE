@@ -48,10 +48,10 @@
 </template>
 
 <script>
-import SentimentAnalysisBrief from "@/components/explanation/brief/sa/SentimentAnalysisBrief";
+import SentimentAnalysisBrief from "@/components/project/explanation/brief/sa/SentimentAnalysisBrief";
 import NamedEntityRecognitionBrief
-  from "@/components/explanation/brief/ner/NamedEntityRecognitionBrief";
-import RelationExtractionBrief from "@/components/explanation/brief/re/RelationExtractionBrief";
+  from "@/components/project/explanation/brief/ner/NamedEntityRecognitionBrief";
+import RelationExtractionBrief from "@/components/project/explanation/brief/re/RelationExtractionBrief";
 
 
 export default {

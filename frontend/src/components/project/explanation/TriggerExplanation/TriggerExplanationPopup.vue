@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import RelationExtractionBrief from "@/components/explanation/brief/re/RelationExtractionBrief";
-import NamedEntityRecognitionBrief from "@/components/explanation/brief/ner/NamedEntityRecognitionBrief";
-import SentimentAnalysisBrief from "@/components/explanation/brief/sa/SentimentAnalysisBrief";
+import RelationExtractionBrief from "@/components/project/explanation/brief/re/RelationExtractionBrief";
+import NamedEntityRecognitionBrief from "@/components/project/explanation/brief/ner/NamedEntityRecognitionBrief";
+import SentimentAnalysisBrief from "@/components/project/explanation/brief/sa/SentimentAnalysisBrief";
 // Const def to represent an unlabeled chunk.
 const UNLABELED_LABEL_ID = -1;
 // Const def to represent a chunk that is the original selected text.
