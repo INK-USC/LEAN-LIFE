@@ -1,3 +1,4 @@
+// format the annotation for later use in ner/re.
 export function formatAnnotations(doc, projectType) {
 	let res = []
 	for (let i = 0; i < doc.annotations.length; i++) {

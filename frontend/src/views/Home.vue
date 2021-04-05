@@ -5,6 +5,7 @@
 <script>
 // @ is an alias to /src
 
+// home page
 export default {
   name: "Home",
   components: {}

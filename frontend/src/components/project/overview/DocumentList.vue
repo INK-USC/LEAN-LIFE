@@ -28,6 +28,7 @@
 </template>
 
 <script>
+// show all the document for this project
 export default {
   name: "DocumentList",
   data() {
@@ -36,12 +37,15 @@ export default {
     }
   },
   methods: {
+    // go to selected page
     pageChanged(pageNum) {
       this.$store.dispatch("document/updateCurPage", {newPage: pageNum}, {root: true})
     },
+    // show the index of the document
     indexMethod(index) {
       return index + 1;
     },
+    // show the percentage of annotated document
     percentageText(percentage) {
       return `${percentage} % annotated`
     }

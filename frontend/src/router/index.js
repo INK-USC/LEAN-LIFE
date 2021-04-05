@@ -18,7 +18,7 @@ import ModelDownload from "@/components/model/ModelDownload";
 import ExportAnnotations from "@/components/project/overview/ExportAnnotations";
 
 Vue.use(VueRouter);
-
+// ban unauthorized user
 const AuthGuard = (to, from, next) => {
 	let isAuthenticated = false;
 	if (store.getters.getUserInfo) {
@@ -32,7 +32,7 @@ const AuthGuard = (to, from, next) => {
 		next("/login");
 	}
 }
-
+// navigate page based on url
 const routes = [
 	{path: "/", name: "Home", component: Home},
 	{path: "/projects", name: "Projects", beforeEnter: AuthGuard, component: Projects,},

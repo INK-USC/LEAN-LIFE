@@ -102,6 +102,7 @@
 </template>
 
 <script>
+// allow user to historical annotations
 export default {
   name: "HistoricalAnnotations",
   data() {
@@ -118,6 +119,7 @@ export default {
     }
   },
   methods: {
+    // send file to backend and fetch the annotation again
     uploadFile(param) {
       const formData = new FormData();
       const fileObj = param.file;
@@ -149,6 +151,7 @@ export default {
             }
           })
     },
+    // fetch annotation
     fetchAnnotations() {
       this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/history/${this.$store.getters.getProjectInfo.task === 2 ? 'ner' : 're'}/`)
@@ -165,12 +168,15 @@ export default {
             })
           })
     },
+    // delete
     handleDelete(index, row) {
       this.$http.delete(`/projects/${this.$store.getters.getProjectInfo.id}/`)
     },
+    // cancel upload and go back to previous page
     cancelUpload() {
       this.$router.back();
     },
+    // fetch labels
     fetchLabels() {
       return this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/labels/`)
@@ -178,6 +184,7 @@ export default {
             this.labels = res;
           })
     },
+    // go to selected page
     pageChanged(pageNum) {
       this.pagination.curPage = pageNum;
       this.fetchAnnotations();

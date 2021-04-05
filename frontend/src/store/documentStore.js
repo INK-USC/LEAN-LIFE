@@ -1,6 +1,6 @@
 import api from "@/utilities/network";
 import {formatAnnotations, formatExplanations} from "@/store/util";
-
+// store information about document
 const documentStoreModule = {
 	namespaced: true,
 	state: () => ({

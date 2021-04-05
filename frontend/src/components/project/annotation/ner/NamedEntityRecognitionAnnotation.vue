@@ -28,7 +28,7 @@
 <script>
 import Recommendation from "@/components/project/annotation/shared/Recommendation";
 import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
-
+// annotation for NER
 export default {
   name: "NamedEntityRecognitionAnnotation",
   components: {Recommendation},

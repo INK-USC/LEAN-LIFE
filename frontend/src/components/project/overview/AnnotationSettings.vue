@@ -53,6 +53,7 @@
 <script>
 import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
 
+// settings for annotations.
 export default {
   name: "AnnotationSettings",
   data() {
@@ -91,6 +92,7 @@ export default {
       this.$router.push({name: "Annotate"})
     }
   },
+  // on creation, first fetch settings, will get error, then manually save default setting, then fetch again to avoid blank default setting on page
   created() {
     if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
       this.$store.commit("showSimplePopup", DIALOG_TYPE.ConfiguringOptionalAnnotationSettings);

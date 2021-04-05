@@ -12,6 +12,7 @@
 </template>
 
 <script>
+// show a simplified version of NER document.
 export default {
   name: "NamedEntityRecognitionBrief",
   methods: {

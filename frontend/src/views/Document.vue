@@ -1,10 +1,11 @@
 <template>
-	<router-view/>
+  <router-view/>
 </template>
 
 <script>
+// placeholder
 export default {
-	name: "Document"
+  name: "Document"
 }
 </script>
 

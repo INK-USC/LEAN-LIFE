@@ -22,6 +22,7 @@ Vue.use(Vuex, api);
 
 import lineClamp from 'vue-line-clamp'
 
+// general importing, vue settings
 Vue.use(lineClamp, {
 	// plugin options
 })

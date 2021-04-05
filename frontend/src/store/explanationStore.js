@@ -1,3 +1,4 @@
+// store information about explanations
 const explanationStoreModule = {
 	namespaced: true,
 	state: () => ({

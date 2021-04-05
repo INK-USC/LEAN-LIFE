@@ -15,7 +15,7 @@
 <script>
 import SelectedLabelListRow from "@/components/project/annotation/sa/SelectedLabelListRow";
 import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
-
+// annotation for SA
 export default {
   name: "SentimentAnalysisAnnotation",
   components: {SelectedLabelListRow},

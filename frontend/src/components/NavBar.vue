@@ -23,7 +23,7 @@
 </template>
 
 <script>
-
+// nav bar
 export default {
   name: "NavBar",
   components: {},

@@ -1,5 +1,5 @@
 import api from "@/utilities/network";
-
+// store information about annotations for ner and re.
 const annotationStoreModule = {
 	namespaced: true,
 	state: () => ({

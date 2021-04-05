@@ -66,7 +66,7 @@ import TriggerExplanationPopup from "@/components/project/explanation/TriggerExp
 import TrainModelButton from "@/components/project/annotation/shared/TrainModelButton";
 import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
 import {ACTION_TYPE} from "@/utilities/constant";
-
+// base of annotation of all task. Shared by SA, NER, RE
 export default {
   name: "Annotate",
   components: {
@@ -83,16 +83,19 @@ export default {
     return {}
   },
   methods: {
+    // get the string for progress bar
     getProgressBarLabel() {
       let documentInfo = this.$store.getters["document/getDocuments"];
       return `${documentInfo.annotatedDocCount} / ${documentInfo.totalDocCount} documents annotated`
     },
+    // go to next document
     goToNextDoc(isNext) {
       let curDocIndex = this.$store.getters['document/getDocuments'].curDocIndex;
       this.$store.dispatch('document/updateCurDocIndex',
           {curDocIndex: isNext ? curDocIndex + 1 : curDocIndex - 1},
           {root: true})
     },
+    // skip current document and mark it as annotated
     noAnnotation() {
       this.$http
           .patch(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}`,
@@ -107,6 +110,7 @@ export default {
     }
   },
   computed: {
+    // get the percentage of the annotation progress
     annotationCompletionPercentage: function () {
       let documentInfo = this.$store.getters["document/getDocuments"];
       if (documentInfo.totalDocCount == 0) {

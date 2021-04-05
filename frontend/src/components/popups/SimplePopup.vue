@@ -19,7 +19,7 @@
 
 <script>
 import {DIALOG_TYPE} from "@/utilities/constant";
-
+// tell user which step they are on. only show when they first create the project. step is be indicated by DIALOG_TYPE.
 export default {
   name: "SimplePopup",
   data() {

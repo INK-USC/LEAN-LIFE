@@ -20,6 +20,7 @@ import ProjectSideBar from "@/components/project/overview/ProjectSideBar";
 import AnnotationSideBar from "@/components/project/annotation/AnnotationSideBar";
 import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
 
+// placeholder for project page
 export default {
   name: "Project",
   components: {AnnotationSideBar, ProjectSideBar, SimplePopup},

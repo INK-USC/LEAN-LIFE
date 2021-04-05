@@ -33,7 +33,7 @@
 </template>
 
 <script>
-
+// the side navigation bar for document
 export default {
   name: "AnnotationSideBar",
   data() {
@@ -42,9 +42,11 @@ export default {
     }
   },
   methods: {
+    // go to selected document
     goToDocument(index, docInfo) {
       this.$store.dispatch('document/updateCurDocIndex', {curDocIndex: index}, {root: true})
     },
+
     handleDocumentSelected(item) {
       console.log("document selected", item)
     },
@@ -64,6 +66,8 @@ export default {
     //         //TODO send res to vuex
     //       })
     // },
+
+    // go to selected page
     pageChanged(newPage) {
       this.$store.dispatch('document/updateCurPage', {newPage: newPage}, {root: true})
     },

@@ -12,6 +12,7 @@ import explanationStoreModule from "@/store/explanationStore";
 Vue.use(Vuex, api);
 //if need to use axios, use api.get/post
 
+// store info about user, project, step, popup visibility.
 const store = new Vuex.Store({
 	state: {
 		userInfo: null, // store info like userid, used preferred name

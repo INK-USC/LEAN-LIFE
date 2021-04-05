@@ -152,7 +152,7 @@
 
 <script>
 import {ACTION_TYPE, CSV_TABLE_EXAMPLE_1, DIALOG_TYPE} from "@/utilities/constant";
-
+// show user the correct format of their document to upload. and allow them to upload doc
 export default {
   name: "UploadFile",
   data() {

@@ -59,6 +59,7 @@ const SELECTION_LABEL_ID = -2;
 // Const def to represent a chunk that is the original selected text.
 const NOT_YET_PUSHED_ID = -3;
 
+// popup for trigger explanation. will be triggered when user added new annotation and the explanation type is trigger explanation.
 export default {
   name: "TriggerExplanationPopup",
   components: {RelationExtractionBrief, NamedEntityRecognitionBrief, SentimentAnalysisBrief},
@@ -102,6 +103,7 @@ export default {
       };
       return label;
     },
+    // add another explanation
     addAnotherExplanation() {
       this.triggers.push([{
         start_offset: -1,
@@ -112,6 +114,7 @@ export default {
       }]);
       console.log("added", this.triggers)
     },
+    // update selected the range when user highlight words
     setSelectedRange(triggerIndex) {
       let selectionStart = null;
       let selectionEnd = null;
@@ -186,6 +189,7 @@ export default {
 
       }
     },
+    // send explanations to the backend. will first delete the removed explanation, then add the new un-submitted explanation
     submitExplanations() {
       console.log("submit", this.triggers)
       const promisesToDelete = [];
@@ -223,6 +227,7 @@ export default {
 
 
     },
+    // delete trigger group
     removeTrigger(index) {
       console.log("remove trigger", this.triggers, this.triggers[index])
       this.triggers[index].filter(reason => reason.pk_id > 0).forEach(reason => this.reasonsToDelete.push(reason.pk_id))
@@ -231,10 +236,12 @@ export default {
         this.addAnotherExplanation();
       }
     },
+    // delete reason
     removeReason(triggerIndex, chunkIndex, chunk) {
       const reasonIndex = this.triggers[triggerIndex].findIndex(reason => reason.pk_id === chunk.pk_id);
       this.triggers[triggerIndex].splice(reasonIndex, 1).filter(reason => reason.pk_id > 0).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
     },
+    // get the css style for the chunk
     getChunkStyle(chunk, labelId) {
       // Check if the chunk matches the current label ID. If so, we want to
       // highlight the text span.
@@ -257,6 +264,7 @@ export default {
       // Return empty style for a chunk that isn't a label.
       return {};
     },
+    // get the style for trigger
     generateTriggerLabels() {
       const triggerBackgroundColors = ["#95de64", "#5cdbd3", "#85a5ff", "#b37feb"];
       triggerBackgroundColors.forEach((color, index) => {
@@ -281,6 +289,7 @@ export default {
         this.$store.dispatch("explanation/hideExplanationPopup")
       }
     },
+    // generate chunks to assemble the full text
     chunks() {
       const res = [];
       let left = 0;

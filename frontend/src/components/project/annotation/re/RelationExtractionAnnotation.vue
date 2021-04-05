@@ -30,7 +30,7 @@
 <script>
 import RelationDisplay from "@/components/project/annotation/re/RelationDisplay";
 import {ACTION_TYPE, DIALOG_TYPE} from "@/utilities/constant";
-
+// annotation for RE
 export default {
   name: "RelationExtractionAnnotation",
   components: {RelationDisplay},
@@ -49,8 +49,7 @@ export default {
   },
 
   methods: {
-    // TODO: As of right now the 'label' property in the chunk is just a boolean
-    // so there aren't any styles attached to it.
+    // return the css style for the given chunk
     getChunkStyle(chunk) {
       const {label} = chunk;
       if (label == null) {
@@ -88,11 +87,13 @@ export default {
 
       };
     },
+    // return if the annotated chunk is clicked
     chunkIsClicked(chunk) {
       return this.clickedChunks.some(
           ({start_offset, end_offset}) => chunk.start_offset === start_offset && chunk.end_offset === end_offset,
       );
     },
+    // called when user clicked a chunk. if an annotated chunk is clicked, remove the annotation. else add annotation
     handleChunkClick(chunk) {
       if (this.chunkIsClicked(chunk)) {
         this.removeClickedChunk(chunk);
@@ -100,6 +101,7 @@ export default {
         this.addClickedChunk(chunk);
       }
     },
+    // add annotation to the chunk
     addClickedChunk(chunk) {
       if (this.clickedChunks.length == 2) {
         return;
@@ -124,6 +126,7 @@ export default {
         })
       }
     },
+    // remove annotation for the chunk
     removeClickedChunk(chunk) {
       this.clickedChunks = this.clickedChunks.filter(
           ({start_offset, end_offset}) => !(chunk.start_offset === start_offset && chunk.end_offset === end_offset)
@@ -138,12 +141,15 @@ export default {
         })
       }
     },
+    // check if the given chunk is a subject
     chunkIsSubject(chunk) {
       return this.getChunkClickIndex(chunk) === 0;
     },
+    // check if the given chunk is a object
     chunkIsObject(chunk) {
       return this.getChunkClickIndex(chunk) === 1;
     },
+    // get the index of the clicked chunk
     getChunkClickIndex(c) {
       for (let i = 0; i < this.clickedChunks.length; i++) {
         const {start_offset, end_offset} = this.clickedChunks[i];
@@ -157,9 +163,11 @@ export default {
 
   },
   computed: {
+    // get the full text of the current document
     fullText() {
       return this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].text : "";
     },
+    // generate sorted array of annotations by starting position
     sortedNERPositions() {
       let nerPositions = [];
       if (!this.$store.getters['document/getCurDoc']) {
@@ -173,6 +181,7 @@ export default {
       return nerPositions;
 
     },
+    // generate chunks to composite the full text
     chunks() {
       if (!this.$store.getters['document/getCurDoc']) {
         return [];

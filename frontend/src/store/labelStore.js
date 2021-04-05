@@ -1,5 +1,5 @@
 import api from "@/utilities/network";
-
+// store information about label.
 const labelStoreModule = {
 	namespaced: true,
 	state: () => ({

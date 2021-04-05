@@ -27,8 +27,7 @@
 </template>
 
 <script>
-//TODO incomplete. need to show label when clicked
-
+// show recommendation for ner/re
 import Label from "@/components/shared/Label";
 import LabelListRow from "@/components/shared/LabelListRow";
 

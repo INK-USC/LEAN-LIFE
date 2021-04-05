@@ -15,7 +15,7 @@
 </template>
 
 <script>
-
+// guide on how to annotate. will popup when user first go to annotation page. it will be different for SA, NER, RE. only show when they first create project
 export default {
   name: "AnnotationGuidePopup",
   data() {

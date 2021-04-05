@@ -34,6 +34,7 @@
 
 
 <script>
+// train model button to allow user to send parameters and train the model
 //TODO need to set condition to disable train model button
 export default {
   name: "TrainModelButton",
@@ -79,6 +80,7 @@ export default {
     }
   },
   methods: {
+    // submit parameter to backend
     submitTrainingInfo() {
       console.log("form", this.modelForm)
       const embeddingsArr = this.modelForm.params.embeddings.split(".");
@@ -99,6 +101,7 @@ export default {
         })
       })
     },
+    // reset the parameters
     resetToDefault() {
       Object.keys(this.modelForm.params).forEach(param => {
         this.modelForm.params[param] = this.defaultParams[param];

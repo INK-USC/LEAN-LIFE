@@ -39,6 +39,7 @@
 </template>
 
 <script>
+// side navigation bar in the project over view page
 export default {
   name: "ProjectSideBar"
 }

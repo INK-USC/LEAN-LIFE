@@ -3,6 +3,7 @@ import ElementUI from 'element-ui';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_ENDPOINT
 
+// preconfigure axios to simplify requests and intercept error to show notification
 const api = axios.create({
 	// baseURL: process.env.VUE_APP_API_ENDPOINT,
 	headers: {

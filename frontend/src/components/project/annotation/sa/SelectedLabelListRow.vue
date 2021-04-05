@@ -20,7 +20,7 @@
 <script>
 
 import SelectedLabel from "@/components/project/annotation/sa/SelectedLabel";
-
+// put all the selected label in a row
 export default {
   name: "SelectedLabelListRow",
   components: {SelectedLabel},

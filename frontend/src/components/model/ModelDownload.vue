@@ -30,6 +30,7 @@
 </template>
 
 <script>
+// display a list of model user trained
 export default {
   name: "ModelDownload",
   methods: {

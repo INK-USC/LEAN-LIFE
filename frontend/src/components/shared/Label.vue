@@ -13,15 +13,18 @@
 </template>
 
 <script>
+// label
 export default {
   name: "Label",
   props: {labelInfo: Object, showShortcut: {type: Boolean, default: true}},
   methods: {
+    // remove label when x is clicked
     removeLabel() {
       this.$http.delete(`/projects/${this.$store.getters.getProjectInfo.id}/labels/${this.labelInfo.id}`).then(res => {
         this.$store.dispatch('label/fetchLabels', null, {root: true})
       })
     },
+    // add annotation to the doc when clicked
     addAnnotation() {
       if (!this.$route.path.endsWith('annotate')) {
         return;
@@ -116,6 +119,7 @@ export default {
   created() {
   },
   computed: {
+    // compute if the label is clickable
     canClick() {
       if (!this.$store.getters["document/getCurDoc"]) {
         return false;

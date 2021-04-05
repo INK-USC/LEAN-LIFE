@@ -12,6 +12,8 @@
 </template>
 
 <script>
+// show a simplified version of SA document.
+
 export default {
   name: "SentimentAnalysisBrief"
 }

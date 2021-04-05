@@ -53,7 +53,7 @@ import NamedEntityRecognitionBrief
   from "@/components/project/explanation/brief/ner/NamedEntityRecognitionBrief";
 import RelationExtractionBrief from "@/components/project/explanation/brief/re/RelationExtractionBrief";
 
-
+// popup for natural language explanation. will be triggered when user added new annotation and the explanation type is natural language explanation.
 export default {
   name: "NaturalLanguageExplanationPopup",
   components: {RelationExtractionBrief, NamedEntityRecognitionBrief, SentimentAnalysisBrief},
@@ -66,6 +66,7 @@ export default {
     }
   },
   methods: {
+    // add suggestions template to the drop down.
     updateSuggestion() {
       let suggestions = [];
       const commonTemplates = ["The [word|phrase] '____' appears in the text."];
@@ -107,6 +108,7 @@ export default {
       })
       return suggestions;
     },
+    // update the suggestion drop down based on user selection
     searchExplanationTemplate(queryString, cb) {
       let results = [];
 
@@ -122,9 +124,11 @@ export default {
       }
       cb(results)
     },
+    // add another explanation
     addAnotherExplanation() {
       this.reasons.push({text: "", id: -1})
     },
+    // delete explanation
     deleteExplanation(index) {
       let targetExp = this.reasons[index];
       if (targetExp.id !== -1) {
@@ -132,6 +136,7 @@ export default {
       }
       this.reasons.splice(index, 1)
     },
+    // send explanations to the backend. will first delete the removed explanation, then add the new un-submitted explanation
     submitExplanations() {
       this.buttonIsLoading = true;
 

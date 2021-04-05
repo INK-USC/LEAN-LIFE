@@ -22,12 +22,14 @@
 </template>
 
 <script>
+// display relation for subject and object.
 export default {
   name: "RelationDisplay",
   props: {
     relation: Object
   },
   methods: {
+    // delete selected relation when user clicked
     removeSelectedRelation() {
       const docId = this.$store.getters["document/getCurDoc"].id
       console.log("id", docId)
@@ -42,6 +44,7 @@ export default {
         this.$store.dispatch("document/fetchDocuments", {})
       })
     },
+    // user can add explanation
     showExplanationPopup() {
       console.log("relation", this.relation)
       this.$store.dispatch("annotation/setRESelection", {
@@ -57,12 +60,15 @@ export default {
     }
   },
   computed: {
+    // get subject text
     sbjText() {
       return this.$store.getters["document/getCurDoc"].text.slice(this.relation.sbj_start_offset, this.relation.sbj_end_offset)
     },
+    // get object text
     objText() {
       return this.$store.getters["document/getCurDoc"].text.slice(this.relation.obj_start_offset, this.relation.obj_end_offset)
     },
+    // get all the label info
     labelInfo() {
       let label = this.$store.getters["label/getLabels"].find(label => label.id === this.relation.label)
       return label;

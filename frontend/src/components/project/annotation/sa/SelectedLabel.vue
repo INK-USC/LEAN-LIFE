@@ -9,10 +9,12 @@
 </template>
 
 <script>
+// show all the selected label for current doc
 export default {
   name: "SelectedLabel",
   props: {annotationInfo: Object},
   methods: {
+    // remove annotation for current doc
     removeAnnotation() {
       this.$http
           .delete(`/projects/${this.$store.getters.getProjectInfo.id}/docs/${this.$store.getters["document/getCurDoc"].id}/annotations/${this.annotationInfo.id}`)
@@ -30,6 +32,7 @@ export default {
             this.$store.dispatch('document/fetchDocuments')
           })
     },
+    // show the explanation popup
     showExplanationPopup() {
       this.$store.dispatch("explanation/showExplanationPopup", {annotationId: this.annotationInfo.id})
     }

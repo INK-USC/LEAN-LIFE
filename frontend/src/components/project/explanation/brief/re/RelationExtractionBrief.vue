@@ -12,6 +12,7 @@
 
 <script>
 import RelationDisplay from "@/components/project/annotation/re/RelationDisplay";
+// show a simplified version of RE document.
 
 export default {
   name: "RelationExtractionBrief",

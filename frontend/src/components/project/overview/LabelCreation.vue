@@ -89,7 +89,7 @@ const DEFAULT_FORM = {
   hasCtrl: false,
   hasShift: false,
 };
-
+// create label.
 export default {
   name: "LabelCreation",
   components: {LabelListRow, Label},
@@ -101,6 +101,7 @@ export default {
     }
   },
   methods: {
+    // send create label request
     createLabel() {
       this.$http.post(`/projects/${this.$store.getters.getProjectInfo.id}/labels/`, this.submissionForm).then(res => {
         console.log("create label", res)
@@ -123,6 +124,7 @@ export default {
     }
   },
   computed: {
+    // generate the request body
     submissionForm() {
       let shortcut = this.labelCreationForm.hasCtrl ? "ctrl" : "";
       shortcut += this.labelCreationForm.hasShift ? "shift" : "";

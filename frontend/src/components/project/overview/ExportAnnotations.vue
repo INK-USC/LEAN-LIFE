@@ -155,7 +155,7 @@
 
 <script>
 const fileDownload = require('js-file-download');
-//TODO fix style
+// show user the format of their download and allow them to download it.
 export default {
   name: "ExportAnnotations",
   methods: {

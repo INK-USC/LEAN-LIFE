@@ -8,6 +8,7 @@
 <script>
 import Label from "@/components/shared/Label";
 
+// put label in a row
 export default {
   name: "LabelListRow",
   components: {Label},

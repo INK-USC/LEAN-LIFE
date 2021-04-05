@@ -38,7 +38,7 @@
 
 <script>
 import {ACTION_TYPE} from "@/utilities/constant";
-
+// the form when user create/edit a project
 export default {
   name: "CreateProjectModal",
   props: {dialogVisible: Boolean, existingInfo: Object},
@@ -75,6 +75,7 @@ export default {
         this.projectInfo = this.$store.getters.getEmptyProject
       }
     },
+    // submit info to backend to create project if required parts are filled
     createProject() {
       this.$refs['projectInfoForm'].validate(isValid => {
         if (isValid) {
@@ -95,6 +96,7 @@ export default {
       })
     }
   },
+  // on creation, fetch all possible task type, explanation type, and users.
   created() {
     this.$http.get('/tasks/').then(res => {
       this.taskOptions = res.results
