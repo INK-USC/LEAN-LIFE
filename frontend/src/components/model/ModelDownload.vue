@@ -41,6 +41,7 @@ export default {
 
     },
     fetchModels() {
+      //TODO display result after fetching
       this.$http.get(`/models/`).then(res => {
 
       })
@@ -48,6 +49,8 @@ export default {
   },
   created() {
     this.fetchModels();
+    setInterval(() => this.fetchModels(), 5 * 60 * 1000)
+
   }
 }
 </script>
