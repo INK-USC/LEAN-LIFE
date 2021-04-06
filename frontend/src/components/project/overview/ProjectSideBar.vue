@@ -26,13 +26,13 @@
         <i class="el-icon-setting"/>
         <span>Settings</span>
       </el-menu-item>
-      <el-menu-item index="/project/export-annotations">
-        <i class="el-icon-download"/>
-        <span>Export annotation</span>
-      </el-menu-item>
       <el-menu-item index="/project/annotate">
         <i class="el-icon-edit"/>
         <span>Continue annotating</span>
+      </el-menu-item>
+      <el-menu-item index="/project/export-annotations">
+        <i class="el-icon-download"/>
+        <span>Export annotation</span>
       </el-menu-item>
     </el-menu>
   </el-col>
