@@ -57,7 +57,7 @@
               dictionary associated
               with the text
             </li>
-            <li v-if="this.$store.getters.getProjectInfo.task !== 3">
+            <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 20px">
               <b>CSV</b>--<u v-if="this.$store.getters.getProjectInfo.task !== 3">(Two formats are acceptable (but file
               must be using utf-8
               encoding):</u>
@@ -68,7 +68,7 @@
                   metadata dictionary
                   associated with the text
                 </li>
-                <p><u>Example 1:</u></p>
+                <u>Example 1:</u>
                 <el-row>
                   <el-col :span="12">
                     <el-table :data="CSV_TABLE_EXAMPLE_1" stripe border>
@@ -111,10 +111,11 @@
                     <td>foo</td>
                   </tr>
                 </table>
-                <li v-if="this.$store.getters.getProjectInfo.task !== 3">No header, single column file with just
+                <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 10px">No header, single
+                  column file with just
                   text
                 </li>
-                <u v-if="this.$store.getters.getProjectInfo.task !== 3">Example 2:</u>
+                <u v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 10px">Example 2:</u>
                 <el-row>
                   <el-col :span="12">
                     <el-table :data=" CSV_TABLE_EXAMPLE_1" stripe border :show-header="false">
@@ -124,7 +125,7 @@
                 </el-row>
               </ol>
             </li>
-            <li>
+            <li style="margin-top: 20px">
               <b>No commas can be in your text, which is why we strongly recommend using our json import process</b>
             </li>
           </ul>
