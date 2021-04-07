@@ -2,15 +2,34 @@
   <span>
     <el-button @click="trainModelDialogVisible=true">Train Model</el-button>
     <el-dialog title="Train Model" :visible.sync="trainModelDialogVisible">
-      <el-form :model="modelForm" label-width="160px">
-        <el-form-item label="Model Name" required>
+      <el-form :model="modelForm" label-width="170px">
+        <el-form-item required>
+          <span slot="label">
+            Model Name
+            <el-popover trigger="hover" :content="paramsExplanations.experiment_name">
+              <i class="el-icon-question" slot="reference"/>
+            </el-popover>
+          </span>
           <el-input v-model="modelForm.experiment_name"/>
         </el-form-item>
+
         <el-form-item label="Dataset Name" required>
+          <span slot="label">
+            Dataset Name
+            <el-popover trigger="hover" :content="paramsExplanations.dataset_name">
+              <i class="el-icon-question" slot="reference"/>
+            </el-popover>
+          </span>
           <el-input v-model="modelForm.dataset_name"/>
         </el-form-item>
 
         <el-form-item v-for="(param,index) in Object.keys(modelForm.params)" :key="index" :label="param">
+          <span slot="label">
+            {{ param }}
+            <el-popover trigger="hover" :content="paramsExplanations[param]">
+              <i class="el-icon-question" slot="reference"/>
+            </el-popover>
+          </span>
           <el-select v-if="param==='embeddings'" v-model="modelForm.params[param]" style="width: 100%">
             <el-option v-for="op of defaultParams[param]" :key="op" :label="op" :value="op"/>
           </el-select>
@@ -20,7 +39,13 @@
           <el-input v-else v-model="modelForm.params[param]"/>
         </el-form-item>
 
-        <el-form-item label="Send Full Text Data?">
+        <el-form-item>
+          <span slot="label">
+            Send Full Text Data?
+            <el-popover trigger="hover" :content="paramsExplanations.include_documents">
+              <i class="el-icon-question" slot="reference"/>
+            </el-popover>
+          </span>
           <el-switch v-model="modelForm.include_documents">Send full text data?</el-switch>
         </el-form-item>
       </el-form>
@@ -75,6 +100,23 @@ export default {
         start_epoch: 0,
         pre_train_hidden_dim: 300,
         pre_train_training_size: 50000,
+      },
+      paramsExplanations: {
+        experiment_name: "unique string to identify the current training experiment being run. If sent with data, data is prepped and saved to match this experiment name, allowing for subsequent trials to use the cached data associated with the experiment name. The experiment name also uniquely identify saved models.",
+        dataset_name: "Name of the dataset you are training on, needed for loading of dataset specific variables",
+        match_batch_size: "Batch Size for Explanation annotated data",
+        unlabeled_batch_size: "Batch Size for Remaining unlabeled data",
+        learning_rate: "Downstream classifier learning rat",
+        epochs: "Number of epochs downstream classifier will be trained for",
+        embeddings: "Embeddings that should be used when building token representations",
+        gamma: "Weight between soft and hard classification loss; total_loss = hard + gamma * soft",
+        hidden_dim: "Size of hidden vector outputted by downstream BiLSTM classifier in one direction (so full vector size is 2 x hidden_dim)",
+        random_state: "Seed to be used for Random functions",
+        load_model: "Whether to load a previously saved model, the saved model will be loaded according to the passed in Experiment Name",
+        start_epoch: "some explanation", //TODO replace explanation
+        pre_train_hidden_dim: "Size of hidden vector outputted by FIND Module's BiLSTM encoder in one direction (so full vector size is 2 x Pretrain Hidden Dim)",
+        pre_train_training_size: "Size of dataset that should be used for pre-training",
+        "include_documents": "If data for a particular experiment has already been sent to model training and no new annotations occurred, then there is no need to send data again, as the model training API saves data to be used by subsequent trials tied to the same Experiment Name. If data is sent we clear the pre-saved data associated with an experiment name, re-prepare all data and save the newly sent data for subsequent trials. The first time a trial is run for an experiment data must be sent."
       }
 
     }
