@@ -30,7 +30,7 @@
               <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"><i class="el-icon-edit"/>
                 Edit
               </el-button>
-              <el-popconfirm title="Are you sure?" @onConfirm="handleDelete(scope.$index, scope.row)"
+              <el-popconfirm title="Are you sure?" @confirm="handleDelete(scope.$index, scope.row)"
                              style="margin-left: 10px">
                 <el-button size="mini" type="danger" slot="reference"><i class="el-icon-delete"/>Delete</el-button>
               </el-popconfirm>
