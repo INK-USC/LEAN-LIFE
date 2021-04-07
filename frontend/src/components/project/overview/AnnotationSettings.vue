@@ -4,10 +4,11 @@
     <div style="text-align: left">
       <el-row v-if="this.$store.getters.getProjectInfo.task!==1">
         <el-col :span="8">
-          <el-tooltip
-              content="Recommendation options to help in the annotation process, multiple options can be selected at once.">
-            <b>Recommendations</b>
-          </el-tooltip>
+          <b>Recommendations</b>
+          <el-popover trigger="hover" placement="right" style="margin-left: 10px"
+                      content="Recommendation options to help in the annotation process, multiple options can be selected at once">
+            <i class="el-icon-question" slot="reference"/>
+          </el-popover>
         </el-col>
         <el-col :span="16">
           <el-tooltip content="Highlight Noun Phrases as possible Named Entity Spans"
@@ -28,10 +29,11 @@
       </el-row>
       <el-row style="margin-top: 20px;">
         <el-col :span="8">
-          <el-tooltip
-              content="Number of documents that should be retrieved for annotations when the annotator has completed current batch.">
-            <b>Acquire size</b>
-          </el-tooltip>
+          <b>Acquire size</b>
+          <el-popover trigger="hover" placement="right" style="margin-left: 10px"
+                      content="Number of documents that should be retrieved for annotations when the annotator has completed current batch">
+            <i class="el-icon-question" slot="reference"/>
+          </el-popover>
         </el-col>
         <el-col :span="16">
           <el-input-number v-model="annotationSettings.acquire"/>
