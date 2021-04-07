@@ -23,11 +23,6 @@
           <el-option v-for="item in this.explanations" :key="item.id" :label="item.name" :value="item.id"/>
         </el-select>
       </el-form-item>
-      <el-form-item label="User" prop="users">
-        <el-select remote v-model="projectInfo.users" multiple placeholder="Select" style="width: 100%">
-          <el-option v-for="item in this.users" :key="item.id" :label="item.username" :value="item.id"/>
-        </el-select>
-      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
 		      <el-button @click="()=>$emit('update:dialogVisible', false)">Cancel</el-button>
@@ -53,14 +48,12 @@ export default {
         guideline: "test",
         task: "",
         explanation_type: "",
-        users: [],
       },
       formRules: {
         name: [{required: true, message: "Please input project name", trigger: 'blur'}],
         description: [{required: true, message: "Please input description", trigger: 'blur'}],
         task: [{required: true, message: "Please select task", trigger: 'blur'}],
         explanation_type: [{required: true, message: "Please select explanation type", trigger: 'blur'}],
-        users: [{required: true, message: "Please select users", trigger: 'blur'}],
       }
     }
   },
@@ -77,9 +70,11 @@ export default {
     },
     // submit info to backend to create project if required parts are filled
     createProject() {
+      console.log(this.$store.getters.getUserInfo)
       this.$refs['projectInfoForm'].validate(isValid => {
         if (isValid) {
           let httpRequest;
+          this.projectInfo.users = [this.getCurrentUser()];
           if (this.existingInfo) {
             //edit
             httpRequest = this.$http.put(`/projects/${this.projectInfo.id}/`, this.projectInfo)
@@ -94,6 +89,9 @@ export default {
           })
         }
       })
+    },
+    getCurrentUser() {
+      return this.users.find(user => user.username === this.$store.getters.getUserInfo.username).id;
     }
   },
   // on creation, fetch all possible task type, explanation type, and users.
