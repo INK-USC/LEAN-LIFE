@@ -13,6 +13,9 @@ const explanationStoreModule = {
 		},
 		getSelectedLabelInfo(state, getters, rootState, rootGetters) {
 			const curAnnotation = rootGetters["document/getCurDoc"].annotations.find(annotation => annotation.id === state.explanationInfo.annotationId);
+			if (!curAnnotation) {
+				return {}
+			}
 			const curLabel = rootState.label.labelInfo.labels.find(label => label.id === curAnnotation.label)
 			return curLabel;
 		},

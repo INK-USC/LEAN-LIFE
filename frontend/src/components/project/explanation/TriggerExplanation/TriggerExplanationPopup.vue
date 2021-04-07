@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" v-if="!!this.$store.getters['document/getCurDoc']"
+  <el-dialog :visible.sync="dialogVisible" v-if="!!this.$store.getters['document/getCurDoc'] "
              class="explanation-dialog" @open="dialogOpen" @close="dialogClose">
     <h1 slot="title">Trigger Explanation</h1>
 

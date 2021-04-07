@@ -70,7 +70,6 @@ export default {
     },
     // submit info to backend to create project if required parts are filled
     createProject() {
-      console.log(this.$store.getters.getUserInfo)
       this.$refs['projectInfoForm'].validate(isValid => {
         if (isValid) {
           let httpRequest;
