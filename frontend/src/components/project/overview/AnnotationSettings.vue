@@ -68,14 +68,14 @@ export default {
           .then(res => {
             console.log("setting ", res)
             this.annotationSettings = res;
+            return res;
           })
     },
     saveSettings(goToNextStep) {
       return this.$http
           .put(`/projects/${this.$store.getters.getProjectInfo.id}/settings/`, this.annotationSettings)
           .then(res => {
-            console.log("setting saved", res)
-            this.annotationSettings = res;
+            this.fetchAnnotationSettings();
             if (goToNextStep) {
               this.goNextStep();
             }
@@ -97,13 +97,11 @@ export default {
     if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
       this.$store.commit("showSimplePopup", DIALOG_TYPE.ConfiguringOptionalAnnotationSettings);
     }
-    this.fetchAnnotationSettings()
-        .catch(err => {
-          return this.saveSettings()
-        })
-        .finally(() => {
-          this.fetchAnnotationSettings()
-        })
+    this.fetchAnnotationSettings().then(res => {
+      if (!res || !!res && Object.keys(res).length === 0) {
+        this.saveSettings()
+      }
+    })
   }
 }
 </script>

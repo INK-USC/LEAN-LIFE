@@ -340,7 +340,9 @@ class SettingList(generics.GenericAPIView, mixins.CreateModelMixin, mixins.Updat
 	def get_object(self):
 		objects = self.filter_queryset(self.get_queryset()).select_related("user").all()
 		obj = None
-		if len(objects) > 1:
+		if len(objects) == 0:
+			return {}
+		elif len(objects) > 1:
 			for settings in objects:
 				if settings.user == self.request.user:
 					obj = settings
@@ -579,7 +581,7 @@ class RecommendationList(APIView):
 		opt_h = setting_data['history']
 		recommendations = {}
 		cur_recommendation_keys = []
-		
+
 		# note there is a hierarchy in place here, the earlier recommendation stragies are overwitten by later ones
 		if opt_n:
 			noun_phrases = SPACY_WRAPPER.get_noun_phrases(document.text)
@@ -758,7 +760,7 @@ class TrainModelAPIView(APIView):
 		model_settings = request.data['params']
 		model_settings["experiment_name"] = model_name
 		include_documents = request.data['include_documents']
-		
+
 		self.write_to_model_project_mapping_file(project_id, model_name)
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
@@ -823,14 +825,14 @@ class TrainModelAPIView(APIView):
 				if project.get_task_name() != RELATION_EXTRACTION_VALUE:
 					data_info['unlabeled'].append(annotated_row)
 					continue
-			
+
 			annotated_row['annotations'] = []
 			annotated_row["explanations"] = []
 
 			for ann in doc.annotations.all():
 				cur_ann = {
-					"label_text": ann.label.text, 
-					"id" : ann.id, 
+					"label_text": ann.label.text,
+					"id" : ann.id,
 					"user_provided" : ann.user_provided
 				}
 				ext_ann = ann.get_extended_annotation()
@@ -845,12 +847,12 @@ class TrainModelAPIView(APIView):
 				if ann.get_explanations() is not None:
 					for exp in ann.get_explanations():
 						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
-			
+
 			if not doc.annotated:
 				del annotated_row["explanations"]
 				data_info['unlabeled'].append(annotated_row)
 				continue
-			
+
 			data_info['annotated'].append(annotated_row)
 
 		result = {
