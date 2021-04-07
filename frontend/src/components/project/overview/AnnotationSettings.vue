@@ -66,7 +66,7 @@ export default {
       return this.$http
           .get(`/projects/${this.$store.getters.getProjectInfo.id}/settings/`)
           .then(res => {
-            console.log("setting ", res)
+            // console.log("setting ", res)
             this.annotationSettings = res;
             return res;
           })
