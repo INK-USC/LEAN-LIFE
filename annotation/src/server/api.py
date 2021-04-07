@@ -688,7 +688,6 @@ class ModelAPIView(APIView):
 		for model_name in model_dict:
 			cur_meta = models_metadata[model_name]
 
-
 			cur_model_json = {'model': model_name,
 			                  'project_id': model_dict[model_name]['project_id'],
 							  'project_name': model_dict[model_name]['project_name'],
@@ -702,10 +701,10 @@ class ModelAPIView(APIView):
 			# cur_model_json['time_spent'] = training_info['time_spent']
 			# cur_model_json['time_left'] = 0
 
-			if cur_meta['is_trained']:
-				cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
-				cur_model_json["file_path"] = cur_meta['save_path']
-				cur_model_json['file_size'] = cur_meta['file_size']
+			# if cur_meta['is_trained']:
+			cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
+			cur_model_json["file_path"] = cur_meta['save_path']
+			cur_model_json['file_size'] = cur_meta['file_size']
 			# else:
 			# 	cur_model_json['file_size']= cur_meta['file_size']
 
@@ -719,10 +718,10 @@ class ModelAPIView(APIView):
 		for f in training_update_files:
 			if f.split(".")[0].__eq__(model_name):
 				full_path = path.join(training_updates_path, f)
-				print(f, full_path)
+				# print(f, full_path)
 
 				training_update = json.load(open(full_path, 'r'))
-				print("train_up", training_update)
+				# print("train_up", training_update)
 				return training_update
 
 
@@ -769,7 +768,7 @@ class TrainModelAPIView(APIView):
 		#TODO test
 		model_training_api_response = json.loads(requests.post("http://localhost:8000/api/model_training_mock/", json=json_object).content)
 		self.write_to_model_metadata_file(project_id, model_name)
-
+		self.write_to_training_updates(model_name)
 		return Response(data=model_training_api_response)
 
 	def write_to_model_project_mapping_file(self, project_id, model_name):
@@ -793,11 +792,22 @@ class TrainModelAPIView(APIView):
 		file_path = "communication/models_metadata.json"
 		model_metadata = json.load(open(file_path, 'r'))
 		model_metadata[model_name] = {
-			"is_trained": False
+			"is_trained": False,
+			"save_path": "mock_api/"+model_name+".json",
+			"file_size": "N/A",
+			"best_train_loss": "N/A",
 		}
 		with open(file_path, 'w') as f:
 			json.dump(model_metadata, f, indent=4)
 
+	def write_to_training_updates(self, model_name):
+		file_path = "communication/training_updates/"+ model_name+".json"
+		training_info = {}
+		training_info["time_spent"] = 0
+		training_info["time_left"] = 3000
+		training_info["stage"] = "-1"
+		with open(file_path, 'w') as f:
+			json.dump(training_info, f, indent=4)
 
 	def generate_json_for_model_training_api(self, project_id, model_settings, include_documents):
 		data_info = {"label_space": [], "annotated": [], "unlabeled": []}
