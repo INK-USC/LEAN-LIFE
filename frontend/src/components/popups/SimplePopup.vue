@@ -35,7 +35,7 @@ export default {
       messages: ["Your Project has been created!",
         "You can always go back and edit your project setup on the Project Page.",
         "You must now upload a dataset for your project.",
-        "You can later upload more documents.",
+        "You can later upload more documents,",
         "They will be appended into existing documents "
       ]
     };
