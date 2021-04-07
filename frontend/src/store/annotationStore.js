@@ -15,6 +15,7 @@ const annotationStoreModule = {
 				sbjEnd: -1,
 				objText: "",
 				sbjText: "",
+				clickedChunks: []
 			}
 		}
 	}),
@@ -34,6 +35,9 @@ const annotationStoreModule = {
 				obj_text: state.annotationInfo.re.objText,
 				sbj_text: state.annotationInfo.re.sbjText,
 			}
+		},
+		getREClickedChunks(state) {
+			return state.annotationInfo.re.clickedChunks;
 		}
 	},
 	mutations: {},
@@ -51,6 +55,23 @@ const annotationStoreModule = {
 			state.annotationInfo.re.sbjEnd = payload.sbjEnd;
 			state.annotationInfo.re.objText = payload.objText;
 			state.annotationInfo.re.sbjText = payload.sbjText;
+		},
+		resetNERSelection({state}) {
+			state.annotationInfo.ner.selectionStart = -1;
+			state.annotationInfo.ner.selectionEnd = -1;
+		},
+		resetRESelection({state}) {
+			state.annotationInfo.re.objStart = -1;
+			state.annotationInfo.re.objEnd = -1;
+			state.annotationInfo.re.sbjStart = -1;
+			state.annotationInfo.re.sbjEnd = -1;
+			state.annotationInfo.re.objText = "";
+			state.annotationInfo.re.sbjText = "";
+			state.annotationInfo.re.clickedChunks = [];
+		},
+
+		addREClickedChunks({state}, payload) {
+			state.annotationInfo.re.clickedChunks = [...state.annotationInfo.re.clickedChunks, payload.chunk];
 		}
 	}
 }

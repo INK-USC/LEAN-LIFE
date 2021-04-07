@@ -5,7 +5,7 @@
       <el-form :model="modelForm" label-width="170px">
         <el-form-item required>
           <span slot="label">
-            Model Name
+            Experiment Name
             <el-popover trigger="hover" :content="paramsExplanations.experiment_name">
               <i class="el-icon-question" slot="reference"/>
             </el-popover>
@@ -124,23 +124,25 @@ export default {
   methods: {
     // submit parameter to backend
     submitTrainingInfo() {
-      console.log("form", this.modelForm)
+      // console.log("form", this.modelForm)
       const embeddingsArr = this.modelForm.params.embeddings.split(".");
       this.modelForm.params['emb_dim'] = parseInt(embeddingsArr[embeddingsArr.length - 1].replace("d", ""));
 
-      this.$http.post('train_model/', this.modelForm).then(res => {
+      this.$http.post(`/projects/${this.$store.getters.getProjectInfo.id}/train_model/`, this.modelForm).then(res => {
         console.log("train model res", res)
         this.modelNamePopupIsLoading = false
         this.modelNamePopupVisible = false
         this.$notify.success({
-          message: `Model ${this.modelForm.experiment_name} training`,
-          description: "Your model is being trained now. You can check the status in the models page"
+          title: `Model ${this.modelForm.experiment_name} training`,
+          message: "Your model is being trained now. Click Models in the Navigation Bar to check out its progress"
         })
       }).catch(err => {
         this.$notify.error({
           title: "Model failed to start training",
           message: "Please try again later"
         })
+      }).finally(() => {
+        this.trainModelDialogVisible = false
       })
     },
     // reset the parameters

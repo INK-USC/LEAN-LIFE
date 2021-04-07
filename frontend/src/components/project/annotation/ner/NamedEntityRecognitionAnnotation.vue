@@ -64,11 +64,7 @@ export default {
         console.log("reset selection");
         selectionStart = null;
         selectionEnd = null;
-        this.$store.dispatch('annotation/setNERSelection', {
-          "selectionStart": -1,
-          "selectionEnd": -1
-        })
-
+        this.$store.dispatch('annotation/resetNERSelection')
       }
 
       // A selection has been made

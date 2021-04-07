@@ -36,7 +36,6 @@ export default {
   components: {RelationDisplay},
   data() {
     return {
-      clickedChunks: [],
       clickedChunkStyle: {
         position: 'absolute',
         top: '-45px',
@@ -104,9 +103,12 @@ export default {
     // add annotation to the chunk
     addClickedChunk(chunk) {
       if (this.clickedChunks.length == 2) {
+        console.log("full ")
         return;
       }
-      this.clickedChunks.push(chunk);
+      // this.clickedChunks.push(chunk);
+
+      this.$store.dispatch("annotation/addREClickedChunks", {chunk: chunk});
 
       if (this.clickedChunks.length == 2) {
         const subject = this.clickedChunks[0];
@@ -200,6 +202,9 @@ export default {
         end_offset: this.$store.getters['document/getCurDoc'].text.length
       })
       return res;
+    },
+    clickedChunks() {
+      return this.$store.getters["annotation/getREClickedChunks"];
     }
   },
   created() {

@@ -91,6 +91,8 @@ export default {
     // go to next document
     goToNextDoc(isNext) {
       let curDocIndex = this.$store.getters['document/getDocuments'].curDocIndex;
+      this.$store.dispatch("annotation/resetNERSelection");
+      this.$store.dispatch("annotation/resetRESelection")
       this.$store.dispatch('document/updateCurDocIndex',
           {curDocIndex: isNext ? curDocIndex + 1 : curDocIndex - 1},
           {root: true})

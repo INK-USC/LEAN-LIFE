@@ -4,8 +4,8 @@
               :style="{color: id2label[chunk.label] ? id2label[chunk.label].text_color: '',
               backgroundColor: id2label[chunk.label] ? id2label[chunk.label].background_color : '',
               padding: '10px 10px 10px 10px', fontSize: '18px',
-              borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0}"
-        >
+              borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0,
+              lineHeight: 2}">
           {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
         </span>
   </el-row>
