@@ -34,7 +34,10 @@ export default {
       title: "Upload Dataset",
       messages: ["Your Project has been created!",
         "You can always go back and edit your project setup on the Project Page.",
-        "You must now upload a dataset for your project."]
+        "You must now upload a dataset for your project.",
+        "You can later upload more documents.",
+        "They will be appended into existing documents "
+      ]
     };
     this.dialogContents[DIALOG_TYPE.CreatingLabels] = {
       title: "Creating Labels",
