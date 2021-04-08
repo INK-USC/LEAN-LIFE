@@ -19,9 +19,9 @@
             <el-button size="mini" @click="downloadModel(scope.row)" :disabled="scope.row.file_size==='N/A'">
               <i class="el-icon-download"/>Download
             </el-button>
-            <el-button size="mini" type="danger" @click="deleteModel(scope.row)">
-              <i class="el-icon-delete"/>Delete
-            </el-button>
+            <!--            <el-button size="mini" type="danger" @click="deleteModel(scope.row)">-->
+            <!--              <i class="el-icon-delete"/>Delete-->
+            <!--            </el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import fileDownload from 'js-file-download'
 // display a list of model user trained
 export default {
   name: "ModelDownload",
@@ -40,22 +41,52 @@ export default {
   },
   methods: {
     downloadModel(model) {
-
+      this.$http.get(`/models/download/`, {params: {file_path: model['file_path']}})
+          .then(res => {
+            fileDownload(res, `${model.model}.p`)
+          })
     },
     deleteModel(model) {
 
     },
     fetchModels() {
-      //TODO display result after fetching
-      this.$http.get(`/models/`).then(res => {
+      return this.$http.get(`/models/`).then(res => {
         console.log("models", res)
         this.models = res;
+      })
+    },
+    updateModelTrainingStatus() {
+      this.$http.post(`update/training_status/`, {
+        exp1: {
+          time_spent: 1000,
+          time_left: 0,
+          stage: 1
+        }
+      }).then(() => {
+        this.$http.post('update/models_metadata/', {
+          exp1: {
+            is_trained: true,
+            file_size: "10KB",
+            save_path: "mock_api/exp1.json",
+            best_train_loss: 0.2
+          }
+        })
       })
     }
   },
   created() {
-    this.fetchModels();
-    setInterval(() => this.fetchModels(), 5 * 60 * 1000)
+    this.fetchModels()
+    /* for testing*/
+    // .then(() => {
+    //   return this.updateModelTrainingStatus();
+    // }).then(() => {
+    //       setTimeout(() => this.fetchModels(), 1500);
+    //     }
+    // )
+    setInterval(() => this.fetchModels().then(() => this.$notify.info({
+      title: "Model Training Status have been updated",
+      message: ""
+    })), 5 * 60 * 1000)
 
   }
 }
