@@ -11,6 +11,7 @@
         <span v-if="this.$store.getters.getProjectInfo.task==3">(Relation Extraction)</span>
       </h1>
       <div>
+        <AnnotateHelp/>
         <TrainModelButton/>
       </div>
     </div>
@@ -49,7 +50,7 @@
         </el-button>
       </el-col>
     </el-row>
-    <AnnotationGuidePopup v-if="this.$store.getters.getActionType===getAllActionType().CREATE"/>
+    <AnnotationGuidePopup/>
     <NaturalLanguageExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===2"/>
     <TriggerExplanationPopup v-if="this.$store.getters.getProjectInfo.explanation_type===3"/>
   </el-row>
@@ -66,10 +67,12 @@ import TriggerExplanationPopup from "@/components/project/explanation/TriggerExp
 import TrainModelButton from "@/components/project/annotation/shared/TrainModelButton";
 import AnnotationGuidePopup from "@/components/popups/AnnotationGuidePopup";
 import {ACTION_TYPE} from "@/utilities/constant";
+import AnnotateHelp from "@/components/project/annotation/shared/AnnotateHelp";
 // base of annotation of all task. Shared by SA, NER, RE
 export default {
   name: "Annotate",
   components: {
+    AnnotateHelp,
     AnnotationGuidePopup,
     TrainModelButton,
     TriggerExplanationPopup,

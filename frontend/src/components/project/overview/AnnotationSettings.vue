@@ -12,10 +12,12 @@
         </el-col>
         <el-col :span="16">
           <el-tooltip content="Highlight Noun Phrases as possible Named Entity Spans"
-                      v-if="this.$store.getters.getProjectInfo.task==2">
-            <el-checkbox v-model="annotationSettings.noun_chunk" label="Noun Chunk" border/>
+                      v-if="this.$store.getters.getProjectInfo.task==2" effect="light">
+            <el-checkbox v-model="annotationSettings.noun_chunk" border>
+              Noun Chunk <i class="el-icon-question"/>
+            </el-checkbox>
           </el-tooltip>
-          <el-tooltip>
+          <el-tooltip effect="light">
             <span slot="content">
               Previous annotations will be cached and applied when appropriate as recommendations.
               <br/>
@@ -23,7 +25,9 @@
               <br/>
               (accessible by checking this box and clicking the button below)
             </span>
-            <el-checkbox v-model="annotationSettings.history" label="Historical" border/>
+            <el-checkbox v-model="annotationSettings.history" label="Historical" border>
+              Historical <i class="el-icon-question"/>
+            </el-checkbox>
           </el-tooltip>
         </el-col>
       </el-row>

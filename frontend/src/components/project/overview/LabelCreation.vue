@@ -5,9 +5,12 @@
       <div style="text-align: left">
         <el-row>
           <el-col :span="8">
-            <el-tooltip content="Available labels for annotators to pick from when annotating." placement="top">
-              <b>Current Label Space</b>
-            </el-tooltip>
+            <el-popover content="Available labels for annotators to pick from when annotating." trigger="hover">
+              <span slot="reference">
+                <b>Current Label Space</b>
+                <i class="el-icon-question" style="margin-left: 5px"/>
+              </span>
+            </el-popover>
           </el-col>
           <LabelListRow/>
         </el-row>

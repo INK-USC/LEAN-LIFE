@@ -113,7 +113,7 @@ export default {
         hidden_dim: "Size of hidden vector outputted by downstream BiLSTM classifier in one direction (so full vector size is 2 x hidden_dim)",
         random_state: "Seed to be used for Random functions",
         load_model: "Whether to load a previously saved model, the saved model will be loaded according to the passed in Experiment Name",
-        start_epoch: "some explanation", //TODO replace explanation
+        start_epoch: "the epoch to start training at. If you had already trained a model and want the system to load a previously saved model and continue training you can specify the epoch it should start on. ex: you trained model_a for 10 epochs, now you want to train your model_1 for 20, you could tell the system to load model_a and just start training at epoch 11 and you would train for 10 epochs",
         pre_train_hidden_dim: "Size of hidden vector outputted by FIND Module's BiLSTM encoder in one direction (so full vector size is 2 x Pretrain Hidden Dim)",
         pre_train_training_size: "Size of dataset that should be used for pre-training",
         "include_documents": "If data for a particular experiment has already been sent to model training and no new annotations occurred, then there is no need to send data again, as the model training API saves data to be used by subsequent trials tied to the same Experiment Name. If data is sent we clear the pre-saved data associated with an experiment name, re-prepare all data and save the newly sent data for subsequent trials. The first time a trial is run for an experiment data must be sent."
