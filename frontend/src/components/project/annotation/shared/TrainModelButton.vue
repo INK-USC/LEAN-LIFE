@@ -34,7 +34,7 @@
             <el-option v-for="op of defaultParams[param]" :key="op" :label="op" :value="op"/>
           </el-select>
 
-          <el-switch v-else-if="param==='load_model'" v-model="modelForm.params[param]"/>
+          <el-switch v-else-if="param==='load_model' || param==='soft_match'" v-model="modelForm.params[param]"/>
 
           <el-input v-else v-model="modelForm.params[param]"/>
         </el-form-item>
@@ -70,6 +70,7 @@ export default {
         experiment_name: "",
         dataset_name: "",
         params: {
+          soft_match: false,
           match_batch_size: 50,
           unlabeled_batch_size: 100,
           learning_rate: 0.1,
@@ -86,6 +87,7 @@ export default {
         "include_documents": true,
       },
       defaultParams: {
+        soft_match: false,
         match_batch_size: 50,
         unlabeled_batch_size: 100,
         learning_rate: 0.1,
