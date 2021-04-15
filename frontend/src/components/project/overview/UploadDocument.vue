@@ -57,7 +57,7 @@
               dictionary associated
               with the text
             </li>
-            <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 20px">
+            <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 40px">
               <b>CSV</b>--<u v-if="this.$store.getters.getProjectInfo.task !== 3">(Two formats are acceptable (but file
               must be using utf-8
               encoding):</u>
@@ -111,7 +111,7 @@
                     <td>foo</td>
                   </tr>
                 </table>
-                <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 10px">No header, single
+                <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 40px">No header, single
                   column file with just
                   text
                 </li>

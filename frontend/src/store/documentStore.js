@@ -65,6 +65,8 @@ const documentStoreModule = {
 			} else if (payload.curDocIndex < 0) {
 				dispatch('updateCurPage', {newPage: state.documentInfo.curPage - 1})
 			}
+			dispatch("annotation/resetNERSelection", null, {root: true});
+			dispatch("annotation/resetRESelection", null, {root: true})
 		}
 	}
 

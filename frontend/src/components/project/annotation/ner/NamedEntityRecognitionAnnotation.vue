@@ -54,9 +54,9 @@ export default {
 
         const spanText = range.commonAncestorContainer.data.trim();
         const offSet = this.$store.getters["document/getCurDoc"].text.search(spanText);
-        console.log("this.txt", this.$store.getters["document/getCurDoc"].text)
-        console.log("span text", spanText);
-        console.log("offset", offSet)
+        // console.log("this.txt", this.$store.getters["document/getCurDoc"].text)
+        // console.log("span text", spanText);
+        // console.log("offset", offSet)
 
         selectionStart += offSet;
         selectionEnd += offSet;
@@ -68,7 +68,7 @@ export default {
       }
 
       // A selection has been made
-      if (!!selectionStart && !!selectionEnd) {
+      if (Number.isInteger(selectionStart) && Number.isInteger(selectionEnd) && selectionStart < selectionEnd) {
         // Trimming if Needed
         while (true) {
           if (!/[a-zA-Z0-9]/.test(this.$store.getters["document/getCurDoc"].text.slice(selectionStart, selectionStart + 1))) {
@@ -87,7 +87,7 @@ export default {
         while (selectionEnd < this.$store.getters["document/getCurDoc"].text.length && /[a-zA-Z0-9-]/.test(this.$store.getters["document/getCurDoc"].text.slice(selectionEnd, selectionEnd + 1))) {
           selectionEnd += 1;
         }
-        console.log("selection start end", selectionStart, selectionEnd)
+
         this.$store.dispatch('annotation/setNERSelection', {
           "selectionStart": selectionStart,
           "selectionEnd": selectionEnd
@@ -137,6 +137,7 @@ export default {
     if (this.$store.getters.getActionType === ACTION_TYPE.CREATE) {
       this.$store.commit("showAnnotationGuidePopup", DIALOG_TYPE.Annotation.NER);
     }
+    this.$store.dispatch("annotation/resetNERSelection");
   },
   computed: {
     chunks() {

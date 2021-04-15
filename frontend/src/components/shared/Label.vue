@@ -106,6 +106,8 @@ export default {
             }
           })
           .then(() => {
+            this.$store.dispatch("annotation/resetNERSelection");
+            this.$store.dispatch("annotation/resetRESelection");
             this.$store.dispatch('document/fetchDocuments').then(() => {
               this.$store.dispatch("explanation/showExplanationPopup", {annotationId: annotationId})
             })
