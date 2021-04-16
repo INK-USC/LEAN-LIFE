@@ -80,4 +80,38 @@ configuration for [Jest](https://jestjs.io/docs/getting-started)
 
 required package for the frontend
 
+# Acceptable Behavior
 
+## Tasks
+
+### Sentiment Analysis
+
+- one document can have multiple different label.
+- no duplicated label allowed for same document.
+
+### Named Entity Recognition
+
+- one chunk (a word or sentence) can only be annotated by one label.
+- one label can be applied to multiple chunks.
+
+### Relation Extraction
+
+- In one relation, subject and object can not be the same chunk.
+- Different relation are not related. So one chunk can be the object in relation A, it can also be the object in
+  relation B. It can also be subject in relation C.
+- no duplication relation (subject, object and label are all the same) is allowed
+
+## Explanations
+
+### Natural Language Explanation
+
+- user should select a template from the dropdown and fill in the blank.
+- no duplicate explanation is allowed.
+
+### Trigger Explanation
+
+- one trigger explanation group is one row of explanation.
+- one trigger is one selection of chunk.
+- one trigger explanation group can have multiple trigger selection.
+- no duplicate trigger is allowed within one trigger explanation group.
+- Within two different trigger explanation group, the same chunk can be selected more than once.
