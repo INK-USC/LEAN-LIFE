@@ -150,7 +150,7 @@ text-unidecode==1.2
 thinc==7.4.1
 threadpoolctl==2.1.0
 tiny-tokenizer==3.1.0
-tokenizers==0.9.4
+tokenizers
 toml==0.10.1
 torch==1.7.0
 torchaudio==0.7.0
@@ -159,7 +159,7 @@ torchvision==0.8.1
 tornado==6.0.4
 tqdm==4.50.0
 traitlets==4.3.3
-transformers==3.5.1
+transformers
 typed-ast==1.4.1
 typing-extensions==3.7.4.3
 urllib3==1.25.10
