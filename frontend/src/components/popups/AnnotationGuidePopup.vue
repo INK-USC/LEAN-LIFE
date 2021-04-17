@@ -23,7 +23,9 @@ export default {
   },
   methods: {
     getImg() {
-      return require(`@/assets/annotation_gif/${this.$store.getters.getAnnotationGuidePopupInfo.targetDialogType}_Annotation.gif`);
+      if (this.$store.getters.getAnnotationGuidePopupInfo.targetDialogType !== ""){
+        return require(`@/assets/annotation_gif/${this.$store.getters.getAnnotationGuidePopupInfo.targetDialogType}_Annotation.gif`);
+      }
     }
   },
   computed: {

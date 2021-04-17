@@ -138,7 +138,14 @@ export default {
         if (nerSelection.selectionStart === -1 || nerSelection.selectionEnd === -1) {
           return false;
         } else {
-          return true;
+          const annotations = this.$store.getters["document/getCurDoc"].formattedAnnotations;
+          const canClick = !annotations.some(ann => (
+            // ann.label === this.labelInfo.id && 
+            ann.start_offset === nerSelection.selectionStart && 
+            ann.end_offset === nerSelection.selectionEnd
+            )
+          );
+          return canClick;
         }
       } else if (this.$store.getters.getProjectInfo.task === 3) {
         //RE
@@ -148,7 +155,17 @@ export default {
             return false;
           }
         }
-        return true;
+        const annotations = this.$store.getters["document/getCurDoc"].formattedAnnotations;
+        const canClick = !annotations.some(ann => (
+            ann.label === this.labelInfo.id && 
+            ann.type === 're' &&
+            ann.obj_end_offset === reSelection.obj_end_offset && 
+            ann.obj_start_offset === reSelection.obj_start_offset &&
+            ann.sbj_end_offset === reSelection.sbj_end_offset && 
+            ann.sbj_start_offset === reSelection.sbj_start_offset
+            )
+          );
+        return canClick;
       }
       return 1111;
     },

@@ -130,18 +130,7 @@ export default {
     },
     // remove annotation for the chunk
     removeClickedChunk(chunk) {
-      this.clickedChunks = this.clickedChunks.filter(
-          ({start_offset, end_offset}) => !(chunk.start_offset === start_offset && chunk.end_offset === end_offset)
-      );
-      if (this.clickedChunks.length < 2) {
-        //TODO disable labels
-        this.$store.dispatch('annotation/setRESelection', {
-          objStart: -1,
-          objEnd: -1,
-          sbjStart: -1,
-          sbjEnd: -1,
-        })
-      }
+      this.$store.dispatch("annotation/removeREClickedChunks", {chunk: chunk});
     },
     // check if the given chunk is a subject
     chunkIsSubject(chunk) {

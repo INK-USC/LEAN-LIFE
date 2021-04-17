@@ -72,7 +72,22 @@ const annotationStoreModule = {
 
 		addREClickedChunks({state}, payload) {
 			state.annotationInfo.re.clickedChunks = [...state.annotationInfo.re.clickedChunks, payload.chunk];
-		}
+		},
+
+		removeREClickedChunks({state, dispatch}, payload) {
+			state.annotationInfo.re.clickedChunks = state.annotationInfo.re.clickedChunks.filter(
+				({start_offset, end_offset}) => !(
+					payload.chunk.start_offset === start_offset && 
+					payload.chunk.end_offset === end_offset
+				)
+			);
+			dispatch('annotation/setRESelection', {
+				objStart: -1,
+				objEnd: -1,
+				sbjStart: -1,
+				sbjEnd: -1,
+			}, {root: true});
+		},
 	}
 }
 
