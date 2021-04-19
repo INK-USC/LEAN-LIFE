@@ -242,8 +242,18 @@ export default {
     },
     // delete reason
     removeReason(triggerIndex, chunkIndex, chunk) {
-      const reasonIndex = this.triggers[triggerIndex].findIndex(reason => reason.pk_id === chunk.pk_id);
+      const reasonIndex = this.triggers[triggerIndex].findIndex(reason => reason.start_offset === chunk.start_offset && reason.end_offset === chunk.end_offset);
+      // console.log("removeReason", this.triggers[triggerIndex], reasonIndex, chunk);
       this.triggers[triggerIndex].splice(reasonIndex, 1).filter(reason => reason.pk_id > 0).forEach(reason => this.reasonsToDelete.push(reason.pk_id));
+      if (this.triggers[triggerIndex].length === 0){
+        this.triggers[triggerIndex].push({
+          start_offset: -1,
+          end_offset: -1,
+          pk_id: NOT_YET_PUSHED_ID,
+          labelId: -1,
+          base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
+        });
+      }
     },
     // get the css style for the chunk
     getChunkStyle(chunk, labelId) {
