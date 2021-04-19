@@ -175,14 +175,18 @@ export default {
           curExplanation.end_offset = selectionEnd;
           curExplanation.labelId = triggerIndex;
         } else {
-          console.log("adding new offset")
-          curTrigger.push({
-            start_offset: selectionStart,
-            end_offset: selectionEnd,
-            pk_id: NOT_YET_PUSHED_ID,
-            labelId: triggerIndex,
-            base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
-          });
+          // check if it is a subselection
+          const canSelect = !curTrigger.some(trig => (trig.start_offset <= selectionStart && selectionEnd <= trig.end_offset))
+          if (canSelect){
+            console.log("adding new offset")
+            curTrigger.push({
+              start_offset: selectionStart,
+              end_offset: selectionEnd,
+              pk_id: NOT_YET_PUSHED_ID,
+              labelId: triggerIndex,
+              base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
+            });
+          }
         }
 
         console.log("triggers 11111", this.triggers)
@@ -305,6 +309,9 @@ export default {
       allTriggers.sort((a, b) => a.start_offset - b.start_offset);
 
       for (const l of allTriggers) {
+        if (l.start_offset === -1 || l.end_offset === -1){
+          continue;
+        }
         res.push({
           pk_id: UNLABELED_LABEL_ID,
           start_offset: left,
