@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../training/")
 import random
-import find_util_functions as func
+import find_training_util_functions as func
 
 random_state = 42
 random.seed(random_state)
@@ -21,11 +21,11 @@ def test_build_synthetic_pretraining_triples():
                    "Some not so interesting strings!", 
                    "Are you sure, I'd like to be coolio!?"]
 
-    act_tokenized_data = [[13, 5, 21, 16, 14, 12, 9],
-                          [15, 22, 23, 20, 3, 4],
-                          [0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9]]
+    act_tokenized_data = [[17, 6, 18, 22, 19, 16, 10],
+                          [3, 20, 21, 15, 4, 5],
+                          [11, 24, 0, 0, 0, 0, 0, 0, 0, 13, 5, 10]]
     
-    act_queries = [[13], [22, 23, 20], [0, 0]]
+    act_queries = [[17], [20, 21, 15], [0, 0]]
 
     act_labels = [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                   [0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
@@ -58,11 +58,11 @@ def test_build_real_pretraining_triples():
                       "to be coolio!?",
                       "this won't show up"]
 
-    act_tokenized_data = [[13, 5, 21, 16, 14, 12, 9],
-                          [15, 22, 23, 20, 3, 4],
-                          [0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9]]
+    act_tokenized_data = [[17, 6, 18, 22, 19, 16, 10],
+                          [3, 20, 21, 15, 4, 5],
+                          [11, 24, 0, 0, 0, 0, 0, 0, 0, 13, 5, 10]]
     
-    act_queries = [[16, 14], [23, 20, 3, 4], [0, 0, 0, 4, 9]]
+    act_queries = [[22, 19], [21, 15, 4, 5], [0, 0, 13, 5, 10]]
 
     act_labels = [[0, 0, 0, 1, 1, 0, 0],
                   [0, 0, 1, 1, 1, 1],

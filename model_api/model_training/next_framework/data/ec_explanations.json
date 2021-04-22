@@ -1,0 +1,751 @@
+[
+    {
+        "tweet": "@USER broadband is shocking regretting signing up now #angry #shouldofgonewithvirgin",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'angry'",
+        "word": "angry",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I assure you there is no laughter , but increasing anger at the costs , and arrogance of Westminster .",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'increasing anger'",
+        "word": "increasing anger",
+        "rec": false
+    },
+    {
+        "tweet": "Absolutely fuming I 've just scratched all my car :pouting_face: :pouting_face: :pouting_face:",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'fuming'",
+        "word": "fuming",
+        "rec": true
+    },
+    {
+        "tweet": "@USER where is the outrage when black children get killed in the crossfire between blacks shooting each other ?",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'outrage'",
+        "word": "outrage",
+        "rec": true
+    },
+    {
+        "tweet": "@USER he 's also mostly ( except for the synthetic testosterone bits ) male , you raging sexist !",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'raging sexist'",
+        "word": "raging sexist",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER yeah I received a fine today which I am furious about , currently appealing it after being a member for so long ...",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'furious'",
+        "word": "furious",
+        "rec": true
+    },
+    {
+        "tweet": "I hate that a black lady is painting herself white on the internet for laughs and likes ... #BadForm #DidntLaugh",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'i hate'",
+        "word": "i hate",
+        "rec": true
+    },
+    {
+        "tweet": "They gonna give this KKk police bitch the minimum sentence .. just wattch",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'bitch'",
+        "word": "bitch",
+        "rec": true
+    },
+    {
+        "tweet": "I blame the whole season on Natalie ! The season would have been so different had she not turned her back on her alliance ! #pissed #bitter",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'pissed'",
+        "word": "pissed",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I am irate at you check-in system . I have tried to checkin all day and it would n't let me do it because I had no seat assigned",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'irate'",
+        "word": "irate",
+        "rec": true
+    },
+    {
+        "tweet": "Ugh I want to punch a wall every time I have to use @USER 10 . Literally the worst product ever made #windows10 #killme",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'punch a wall'",
+        "word": "punch a wall",
+        "rec": false
+    },
+    {
+        "tweet": "@USER I try not to let my anger seep into reviews , but I resent having my time wasted on books like that . Time is precious .",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'i resent'",
+        "word": "i resent",
+        "rec": true
+    },
+    {
+        "tweet": "I can already tell this programme is going to infuriate me #ExtremeWorld",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'infuriate'",
+        "word": "infuriate",
+        "rec": true
+    },
+    {
+        "tweet": "@USER It was indeed , I was raging at the verdict . Ca n't imagine how the poor lassies family felt .",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'raging at'",
+        "word": "raging at",
+        "rec": true
+    },
+    {
+        "tweet": "Who the hell is drilling outside my house ? ! Literally got to sleep at half four after a busy shift and these twats have woken me up",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'who the hell'",
+        "word": "who the hell",
+        "rec": false
+    },
+    {
+        "tweet": "Listen ... this golden brown is giving me life ... but why the hell did my feet have to get so dark :downcast_face_with_sweat:",
+        "label": "anger",
+        "explanation": "The tweet contains the phrase 'why the hell'",
+        "word": "why the hell",
+        "rec": false
+    },
+    {
+        "tweet": "GAMEDAY VS BUFORD TODAY AT 5:30 AT HOME ! ! ! NEVER BEEN SO EXCITED #revenge",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'been so excited'",
+        "word": "been so excited",
+        "rec": true
+    },
+    {
+        "tweet": "@USER @USER @USER Want to start a biker gang together when the GTA Online Biker DLC comes out ?",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'when the GTA Online Biker DLC comes out'",
+        "word": "when the GTA Online Biker DLC comes out",
+        "rec": true
+    },
+    {
+        "tweet": "This maybe a new start but it will always be align with the end . #start #forward",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'a new start'",
+        "word": "a new start",
+        "rec": true
+    },
+    {
+        "tweet": "Getting so excited for @USER 2016 ! ! We play the main stage Sunday Oct . 16 at 3:30 ! ! #jazzholiday #riesbrothers #rock #blues #jam",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'getting so excited'",
+        "word": "getting so excited",
+        "rec": true
+    },
+    {
+        "tweet": "Just over a week until I start my new job in F1 ! Looking forward to it and cacking myself at the same time !",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'start my new'",
+        "word": "start my new",
+        "rec": true
+    },
+    {
+        "tweet": "I believe I'm gonna start singing in my snap stories on the tractor . Switch it up a little bit .",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase ''m gonna start'",
+        "word": "'m gonna start",
+        "rec": true
+    },
+    {
+        "tweet": "I can't wait for you to listen to my new single ' Mystery ' and my new album :face_savoring_food: . #newmusic #newsingle #newalbum #2016 #popmusic #dark",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'ca n't wait'",
+        "word": "can't wait",
+        "rec": false
+    },
+    {
+        "tweet": "Wazza blocks Carrick 's shot and then misses a sitter that Memphis , who was ready beside him , surely wouldve buried . Good start lol #MUFC",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'surely would ve'",
+        "word": "surely wouldve",
+        "rec": false
+    },
+    {
+        "tweet": "@USER now I 'm really excited for November ! Hope they 're not all horrid chavs though :grinning_face_with_sweat:",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'now I 'm really excited'",
+        "word": "now I 'm really excited",
+        "rec": false
+    },
+    {
+        "tweet": "Now ... what to do for the next hour while waiting for #OurGirl to start @USER ? !",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'while waiting'",
+        "word": "while waiting",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER they happen . I expect your thumbs were all over the place in glee , interpreting my double negative .",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'i expect your'",
+        "word": "i expect your",
+        "rec": true
+    },
+    {
+        "tweet": "I need to think of a new Avatar for Fire Emblem Revelation as I might start playing it soon , any ideas for names ? What gender do I choose",
+        "label": "anticipation",
+        "explanation": "The tweet contains the phrase 'i might start'",
+        "word": "i might start",
+        "rec": false
+    },
+    {
+        "tweet": "@USER horrible service . EWR . Not a cloud in the sky . Normal departure at 10am now leaving at 5pm . Crappy #UnitedAirlines",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'crap'",
+        "word": "crap",
+        "rec": true
+    },
+    {
+        "tweet": "@USER it 's very telling that racist bigots always resort to the insult ' fag ' like that 's worse than being a racist bigot .",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'bigot'",
+        "word": "bigot",
+        "rec": true
+    },
+    {
+        "tweet": "How shit and depressing is this weather wish I can travel the world for a living",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'how shit'",
+        "word": "how shit",
+        "rec": false
+    },
+    {
+        "tweet": "The pine colada starburst nasty . Do n't @USER me",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'nasty'",
+        "word": "nasty",
+        "rec": true
+    },
+    {
+        "tweet": "@USER just when I thought this disgusting man could n't sink any lower-like Hillary he his depravity of character has no bottom",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'disgusting'",
+        "word": "disgusting",
+        "rec": true
+    },
+    {
+        "tweet": "Everything I order online just comes looking like a piece of shit :face_with_steam_from_nose:",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'piece of shit'",
+        "word": "piece of shit",
+        "rec": false
+    },
+    {
+        "tweet": "I love when people say they are n't racist right before they say some racist shit ... Not how that works ... #fuming",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'racist shit'",
+        "word": "racist shit",
+        "rec": false
+    },
+    {
+        "tweet": "@USER Yell , ' Bye , garbage ! ' cheerfully after it .",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'bye , garbage'",
+        "word": "bye , garbage",
+        "rec": false
+    },
+    {
+        "tweet": "Was a huge fan of @USER but last few flights have been horrific . #rude #poorservice #nostock etc etc etc #dissapointed",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'have been horrific'",
+        "word": "have been horrific",
+        "rec": true
+    },
+    {
+        "tweet": "It 's not a panic situation let 's be honest . How shit are they . We just have Rooney up front :face_with_tears_of_joy: :face_with_tears_of_joy: :face_with_tears_of_joy:",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'how shit'",
+        "word": "how shit",
+        "rec": true
+    },
+    {
+        "tweet": "@USER holy shit ... what the hell happened to your lips ! ! Fix that shit ! #mtv #teenmom",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'holy shit'",
+        "word": "holy shit",
+        "rec": true
+    },
+    {
+        "tweet": "@USER No ! By Y'all I mean rioting , fire starting , business burning , looting ASSHOLES ! That create #BlackLivesmatter",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'assholes'",
+        "word": "assholes",
+        "rec": true
+    },
+    {
+        "tweet": "#DamilolaOurLovedBoy So upsetting :crying_face: :crying_face: . Why do people want to hurt others ! Such a cruel world we live in #heartbreaking",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'cruel world'",
+        "word": "cruel world",
+        "rec": false
+    },
+    {
+        "tweet": "So disappointed in E ! portrayal of Kylie Jenner ! Makes her look so fake & filthy rich @USER every turn #disappointment @USER #LifeofKylie :nauseated_face: :unamused_face:",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'so disappointed'",
+        "word": "so disappointed",
+        "rec": false
+    },
+    {
+        "tweet": "some of the casuals tweets that Vic has faved are making me gag",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'making me gag'",
+        "word": "making me gag",
+        "rec": true
+    },
+    {
+        "tweet": "@USER peanut butter ? ? ? You some kinda pervert ? ? #awful",
+        "label": "disgust",
+        "explanation": "The tweet contains the phrase 'some kinda pervert'",
+        "word": "some kinda pervert",
+        "rec": false
+    },
+    {
+        "tweet": "In wake of fresh #terror threat and sounding of alert in #Mumbai , praying for safety & security of everybody in the city #Maharashtra #news",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'terror threat'",
+        "word": "terror threat",
+        "rec": false
+    },
+    {
+        "tweet": "10 page script due Friday for class . Who said I could do this MFA thing ? #panic #GradSchoolProblems #someonetelltinafeytohireme",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'panic'",
+        "word": "panic",
+        "rec": true
+    },
+    {
+        "tweet": "I 'm scared that my coworkers are going to submit me to one of those ' wardrobe makeover ' shows . #fashion",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'I 'm scared'",
+        "word": "I 'm scared",
+        "rec": false
+    },
+    {
+        "tweet": "@USER Yeah we 're also experiencing terrorist attacks by Islam and #BlackLivesMatter at an alarming rate .",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'terrorist attacks'",
+        "word": "terrorist attacks",
+        "rec": false
+    },
+    {
+        "tweet": "How do you ever stop being #afraid of someone that you live with",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'afraid of'",
+        "word": "afraid of",
+        "rec": true
+    },
+    {
+        "tweet": "#panic Panic attack from fear of starting new medication",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'panic attack'",
+        "word": "panic attack",
+        "rec": true
+    },
+    {
+        "tweet": "That heart pounding , goosebumping nightmare experience ! :fearful_face: Woke up 3:00 in the morning with that scary , bad dream of mine . :anxious_face_with_sweat:",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'heart pounding , goosebumping nightmare'",
+        "word": "heart pounding , goosebumping nightmare",
+        "rec": false
+    },
+    {
+        "tweet": ":tired_face: ughh I just want all this to be over .. it 's like a nightmare ! can we all just get along ?",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'like a nightmare'",
+        "word": "like a nightmare",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER I 'm afraid to look !",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'afraid to look'",
+        "word": "afraid to look",
+        "rec": false
+    },
+    {
+        "tweet": "I have serious problems with the expectation that private philanthropy should replace functional government services ... this is dangerous",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'this is dangerous'",
+        "word": "this is dangerous",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER @USER every horror movie that frightened me as a child i . e . ' IT ' , Halloween movies all of them , nightmare on ..",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'frightened me'",
+        "word": "frightened me",
+        "rec": false
+    },
+    {
+        "tweet": "Nothing more entertaining and frightening than a #bitter #alcoholic trying desperately to get your attention ...",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'frightening than a'",
+        "word": "frightening than a",
+        "rec": false
+    },
+    {
+        "tweet": "@USER Issue with that is , will the effort involved get back the amount I put into it ? That 's what I 'm fearful of .",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'I 'm fearful'",
+        "word": "I 'm fearful",
+        "rec": false
+    },
+    {
+        "tweet": "@USER ... its bad . I am fearing for my life :folded_hands:",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'fearing for my'",
+        "word": "fearing for my",
+        "rec": false
+    },
+    {
+        "tweet": "@USER I 'm surrounded by those Trump voters . You 're right , it is fucking terrifying . #redstate #despair",
+        "label": "fear",
+        "explanation": "The tweet contains the phrase 'terrifying'",
+        "word": "terrifying",
+        "rec": true
+    },
+    {
+        "tweet": "It 's the #FirstDayofFall and I 'm so happy . Sipping my #PumpkinSpice flavored coffee and #smiling ! Happy Fall everyone ! #amwriting",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'smiling'",
+        "word": "smiling",
+        "rec": true
+    },
+    {
+        "tweet": "@USER ' Elizabeth Smith ! ' She said with a cheery smile ' Pleasure to meet you , sir ! Where have you travelled from ? '",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'cheery smile'",
+        "word": "cheery smile",
+        "rec": false
+    },
+    {
+        "tweet": "Oh dear an evening of absolute hilarity I do n't think I have laughed so much in a long time ! :face_with_tears_of_joy:",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'laughed so much'",
+        "word": "laughed so much",
+        "rec": false
+    },
+    {
+        "tweet": "@USER He looks down at his brother , a smile forming on his face . ' What ? People fearing me ? '",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'smile forming'",
+        "word": "smile forming",
+        "rec": false
+    },
+    {
+        "tweet": "Howling with laughter at \u201c WELL DONE BEZZA ! \u201d #bakeoff #GBBO",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'howling with laughter'",
+        "word": "howling with laughter",
+        "rec": false
+    },
+    {
+        "tweet": "Morning all ! Of course it is sunny on this Monday morning to cheerfully welcome us back to work . :)",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'cheerfully'",
+        "word": "cheerfully",
+        "rec": false
+    },
+    {
+        "tweet": "This is a beautiful day that the Lord has made . I will rejoice and be glad ! ! !",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'beautiful day'",
+        "word": "beautiful day",
+        "rec": false
+    },
+    {
+        "tweet": "2 days until #GoPackGo and 23 days until #GoGipeGo ... I 'm so excited !",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'I 'm so excited'",
+        "word": "I 'm so excited",
+        "rec": false
+    },
+    {
+        "tweet": "Wishing a very Happy Birthday to our awesome dancer , Ruthann ! ! ! We hope your day is magical ! #bday #happy #eatcake",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'happy birthday'",
+        "word": "happy birthday",
+        "rec": true
+    },
+    {
+        "tweet": "#ContentwiththeLordsPortion : O satisfy us early with thy #mercy ; that we may #rejoice & be glad all our days . #Ps 90:14 #gladness #joy #delight",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'rejoice'",
+        "word": "rejoice",
+        "rec": true
+    },
+    {
+        "tweet": "@USER as always it was indeed a wonderful experience flying with you guys today #bestinbusiness #delight #happyme",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'wonderful experience'",
+        "word": "wonderful experience",
+        "rec": false
+    },
+    {
+        "tweet": "Good morning joyful people . Choose happiness to have a great day today #morning #happiness #grandmercurejktkemayoran",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'joyful'",
+        "word": "joyful",
+        "rec": true
+    },
+    {
+        "tweet": "I just want to let everyone out there know you are wonderful people ! #beyourself #happy #cheerful #late-night #compliment #behappy",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'wonderful people'",
+        "word": "wonderful people",
+        "rec": false
+    },
+    {
+        "tweet": "I 'm such a fan of endless #laughter with #friends and enjoying #happiness together . #FridayFeeling #weekend",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'happiness together'",
+        "word": "happiness together",
+        "rec": false
+    },
+    {
+        "tweet": "@USER THANK YOU FOR MY OBAMA CUT OUT ! ! ! I am elated that he 's back home :smiling_face_with_heart-eyes:",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'I am elated'",
+        "word": "I am elated",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER @USER We 're the least known band in the World , but so glad you asked #muchlove",
+        "label": "joy",
+        "explanation": "The tweet contains the phrase 'so glad'",
+        "word": "so glad",
+        "rec": false
+    },
+    {
+        "tweet": "Wow ... One of my dads top favorite throwback rappers just died in a fiery car crash today in Atlanta , so sad so sad :face_with_medical_mask: :face_with_medical_mask:",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'so sad'",
+        "word": "so sad",
+        "rec": false
+    },
+    {
+        "tweet": "will brawndo cure my depression ? @USER #Idiocracytoday",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'my depression'",
+        "word": "my depression",
+        "rec": false
+    },
+    {
+        "tweet": "#PeopleLikeMeBecause they see the happy exterior , not the hopelessness I sometimes feel inside . #depression #anxietyprobz",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'the hopelessness'",
+        "word": "the hopelessness",
+        "rec": false
+    },
+    {
+        "tweet": "Overwhelming sadness . This too shall pass . #lonley #startingover",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'overwhelming sadness'",
+        "word": "overwhelming sadness",
+        "rec": false
+    },
+    {
+        "tweet": "Very depressing seeing my whole fam packing to go on holiday tomorrow and I 'm just staying here :upside-down_face:",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'depressing'",
+        "word": "depressing",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I 'm wearing all black tomorrow to mourn . :loudly_crying_face: :broken_heart:",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'mourn'",
+        "word": "mourn",
+        "rec": true
+    },
+    {
+        "tweet": "@USER @USER oh every people can make tipo . It is terrible bullying them about that . It 's trvial and very sad . :pensive_face:",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'it is terrible'",
+        "word": "it is terrible",
+        "rec": false
+    },
+    {
+        "tweet": "@USER sadly his best days are behind him",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'sadly his best days are behind him'",
+        "word": "sadly his best days are behind him",
+        "rec": false
+    },
+    {
+        "tweet": "@USER @USER it 's sad but now we are making our own children vulnerable to the same terror .",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'it 's sad'",
+        "word": "it 's sad",
+        "rec": false
+    },
+    {
+        "tweet": "I feel like an appendix . I do n't have a purpose . #depressed #alone #lonely #broken #cry #hurt #crying #life",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'I do n't have a purpose'",
+        "word": "I do n't have a purpose",
+        "rec": false
+    },
+    {
+        "tweet": "I might even be on the verge of depression .",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'verge of depression'",
+        "word": "verge of depression",
+        "rec": false
+    },
+    {
+        "tweet": "Fucking gutted , disheartened & so pissed off.Gone from 1 off the toughest most resolute defences to the worst & most shambolic #SCFC #STOHUL",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'disheartened'",
+        "word": "disheartened",
+        "rec": true
+    },
+    {
+        "tweet": "@USER @USER SAME ! I always say it was the best time of my life . I closed my store down and it was so depressing",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'so depressing'",
+        "word": "so depressing",
+        "rec": false
+    },
+    {
+        "tweet": "@USER I 'm so sorry . This is heartbreaking and so scary . If it can happen there it can happen anywhere . Please be safe :folded_hands: :light_skin_tone: #terror",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'heartbreaking'",
+        "word": "heartbreaking",
+        "rec": true
+    },
+    {
+        "tweet": "@USER @USER I am beyond the sadness point . Have done it inside out . I live with CPTSD and BPD I can't always do the pity party",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'the sadness'",
+        "word": "the sadness",
+        "rec": false
+    },
+    {
+        "tweet": "it 's sad when you talk to someone about ya past n how it fucked you up and then they do the same thing like people really do n't have hearts",
+        "label": "sadness",
+        "explanation": "The tweet contains the phrase 'it 's sad when'",
+        "word": "it 's sad when",
+        "rec": false
+    },
+    {
+        "tweet": "@USER Really sad & surprising . 1 side #Russia fighting against #IS & on the other supporting #Pak which is epic centre 4",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'surprising'",
+        "word": "surprising",
+        "rec": false
+    },
+    {
+        "tweet": "At school , my classmate is with me at music class and he sang Hallelujah like , god , with my friend we were breathless .",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'were breathless'",
+        "word": "were breathless",
+        "rec": false
+    },
+    {
+        "tweet": "@USER lol . DK has actually dropped from top of the table , surprisingly Arms Warrior is top of the DPS at the moment #shocking",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'surprisingly'",
+        "word": "surprisingly",
+        "rec": false
+    },
+    {
+        "tweet": "@USER oh I see . I 've seen so many people mourn the loss that I was surprised to see your tweet . I suppose same old here in SA",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'was surprised'",
+        "word": "was surprised",
+        "rec": true
+    },
+    {
+        "tweet": "I 'm not used to pretty girls that use curse words to express their anger . I just feel like I 'm a little bit surprised and turned off as well",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'bit surprised'",
+        "word": "bit surprised",
+        "rec": true
+    },
+    {
+        "tweet": "@USER No . Was so sudden . Has n't sunk in yet . With Leo I knew it was coming .",
+        "label": "surprise",
+        "explanation": "The tweet contains the phrase 'so sudden'",
+        "word": "so sudden",
+        "rec": true
+    },
+    {
+        "tweet": "@USER If you do n't love yourself ... Honesty is the best policy",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'honesty'",
+        "word": "honesty",
+        "rec": false
+    },
+    {
+        "tweet": "Love is when all your happiness and all your sadness and all your feelings are dependent on another person .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'dependent on another person'",
+        "word": "dependent on another person",
+        "rec": false
+    },
+    {
+        "tweet": "@USER Since it 's a friend of Pereg 's I do n't want to offend :) #Peace",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'friend of'",
+        "word": "friend of",
+        "rec": false
+    },
+    {
+        "tweet": "the rappers who stayed true to the game is rich .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'stayed true'",
+        "word": "stayed true",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I just have serious respect for any man that can pull off a bun better than I can , like maybe they can teach me their ways .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'serious respect'",
+        "word": "serious respect",
+        "rec": true
+    },
+    {
+        "tweet": "Isaiah 40:31 \\ nthose who trust in the Lord will find new strength . \\ nThey will soar high on wings like eagles . \\ nThey will run and not grow weary .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'who trust in'",
+        "word": "who trust in",
+        "rec": false
+    },
+    {
+        "tweet": "@USER #Strongwomen terrify #weakmen - do n't let the #bully wear you down . Loving your consistency and truth in rough times Hang in there :red_heart:",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'consistency and truth'",
+        "word": "consistency and truth",
+        "rec": true
+    },
+    {
+        "tweet": "@USER I still respect you . I suppose there is so little to be gleeful about these days so take what you can . Good for you .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'I still respect you'",
+        "word": "I still respect you",
+        "rec": false
+    },
+    {
+        "tweet": "@USER I trust you know that I appreciate your willingness to explain the details , and my attempt at levity is just that . @USER",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'i trust'",
+        "word": "i trust",
+        "rec": true
+    },
+    {
+        "tweet": "When we are weak & in despair , our Mighty God is near ; He will give us strength & joy & hope , & calm our inner fear , just have faith & trust .",
+        "label": "trust",
+        "explanation": "The tweet contains the phrase 'faith & trust'",
+        "word": "faith & trust",
+        "rec": false
+    }
+]

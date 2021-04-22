@@ -23,7 +23,7 @@ import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, evaluate_next
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
-# os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 app = FastAPI()
 
 @app.post("/training/next/lean-life/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)

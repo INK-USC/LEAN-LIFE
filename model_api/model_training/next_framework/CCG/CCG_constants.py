@@ -18,8 +18,6 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         Det :: NP/N
         Adj :: N/N
         arg => NP {None}
-        #$True => (S\\VP)/PP {None}
-        #$False => (S\\VP)/PP {None}
         $And => var\\.,var/.,var {\\x y.'@And'(x,y)}
         $Or => var\\.,var/.,var {\\x y.'@Or'(x,y)}
         $Not => (S\\NP)\\(S\\NP) {None}
@@ -29,8 +27,6 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $All => NP/NP {None}
         $Any => NP/N {None}
         $None => N {None}
-        #$Is => (S\\NP)/NP {\\y x.'@Is'(x,y)}
-        #$Is => (S\\NP)/(S\\NP) {\\y x.'@Is'(x,y)}
         $Is => (S\\NP)/PP {\\y x.'@Is'(x,y)}   # word 'a' occurs between <S> and <O>
         $Is => (S\\NP)\\PP {\\y x.'@Is'(x,y)}  # between <S> and <O> occurs word 'a'
         $Is => (S\\PP)\\NP {\\x y.'@Is'(x,y)}  # between <S> and <O> word 'a' occurs
@@ -38,9 +34,6 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         #$Exists => S\\NP {None}
         $Int => Adj {None} #There are no words between <S> and <O>
         $AtLeastOne => NP/N {None}
-        #$Equals => (S\\NP)/NP {None}
-        #$NotEquals => (S\\NP)/NP {None}
-        
         
         $LessThan => PP/PP/N {\\x y.'@LessThan'(y,x)} #There are less than 3 words between <S> and <O>   
         $AtMost => PP/PP/N {\\x y.'@AtMost'(y,x)} #There are at most 3 words between <S> and <O>
@@ -52,14 +45,8 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $AtLeast => PP/N {\\x.'@AtLeast1'(y,x)}   #same as above
         $MoreThan => PP/N {\\x.'@MoreThan1'(y,x)} #same as above
 
-        #$In => S\\NP/NP {None} 
-        $In => PP/NP {\\x.'@In0'(x)} 
-        $Contains => S\\NP/NP {None} #The sentence contains two words
+        $In => PP/NP {\\x.'@In0'(x)} #never called?
         $Separator => var\\.,var/.,var {\\x y.'@And'(x,y)} #connection between two words
-        #$Processive => NP/N\\N {None}
-        #$Count => N {None}
-        #$Tuple => N {None}
-        #$ArgXListAnd => NP {None}
         $EachOther => N {None}
         $Token => N {\\x.'@Word'(x)}
         $Word => NP/N {\\x.'@Word'(x)}
@@ -69,19 +56,16 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $Word => NP {'tokens'} #There are no more than 3 words between <S> and <O>
         
         $Char => N {None} #same as above
-        #$Lower => Adj {None}
-        #$Capital => Adj {None}
         $StartsWith => S\\NP/NP {\\y x.'@StartsWith'(x,y)}
         $EndsWith => S\\NP/NP {\\y x.'@EndsWith'(x,y)}
         $Left => PP/NP {\\x.'@Left0'(x)} # the word 'a' is before <S>
         $Left => (S\\NP)/NP {\\y x.'@Left'(y,x)}  #Precedes
         $Right => PP/NP {\\x.'@Right0'(x)}# the word 'a' ia after <S>
         $Right => (S\\NP)/NP {\\y x.'@Right'(y,x)} 
-        #$Within => ((S\\NP)\\(S\\NP))/NP {None} # the word 'a' is within 2 words after <S>
-        #$Within => (NP\\NP)/NP {None}
         $Within => PP/PP/N {\\x y.'@AtMost'(y,x)} #Does Within has other meaning.
         $Sentence => NP {'Sentence'}
-        
+        $Contains => S\\NP/NP {\\x y. '@In1'(y, x)} #y contains x
+        $In => S\\NP/NP {\\x y. '@In1'(x, y)} # y is in x
         $Between => (S/S)/NP {\\x y.'@between'(x,y)}
         $Between => S/NP {\\x.'@between'(x)}
         $Between => PP/NP {\\x.'@between'(x)}
@@ -95,11 +79,7 @@ RAW_GRAMMAR =''':- S,NP,N,PP
         $NorpNER => NP {'@Norp'}
         $ArgX => NP {'ArgX'}
         $ArgY => NP {'ArgY'}
-        #$will => S\\NP/VP {None}
-        #$Which => (NP\\NP)/(S/NP) {None}
-        #$might => S\\NP/VP {None}
         $that => NP/N {None}
-        #$that => (N\\N)/(S/NP) {None} #same as which
         $Apart => (S/PP)\\NP {None}
         $Direct => PP/PP {\\x.'@Direct'(x)} # the word 'a' is right before <S>   
         $Direct => (S\\NP)/PP {\\y x.'@Is'(x,'@Direct'(y))}
@@ -427,36 +407,36 @@ STRICT_MATCHING_OPS = {
 }
 
 SOFT_MATCHING_OPS = {
-    ".root"      : lambda xs: lambda label_mat,keyword_dict,mask_mat: lambda c: torch.clamp(sum([x(label_mat,keyword_dict,mask_mat)(c) for x in xs])-len(xs)+1, min=0.0) if type(xs) == tuple else xs(label_mat,keyword_dict,mask_mat)(c),
-    "@Word"      : lambda x: x,
-    "@Is"        : lambda ws, p: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.IsFunc_soft(ws, p,label_mat,keyword_dict,mask_mat, c),
-    "@between"   : lambda a: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_between_soft(w, label_mat,keyword_dict,mask_mat,c, option),
-    "@And"       : lambda x, y: soft_gram_f.merge_soft(x, y),
-    "@Num"       : lambda x, y: {'attr': y, "num": int(x)},
-    "@LessThan"  : lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_lessthan_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
-    "@AtMost"    : lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_atmost_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
-    "@AtLeast"   : lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_atleast_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
-    "@MoreThan"  : lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_morethan_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
-    "@WordCount" : lambda nounNum, nouny, F:lambda useless: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_WordCount_soft(nounNum,nouny,F,label_mat,keyword_dict,mask_mat,c),
+    ".root": lambda xs: lambda label_mat,keyword_dict,mask_mat:lambda c: torch.max(torch.tensor(sum([x(label_mat,keyword_dict,mask_mat)(c) for x in xs])-len(xs)+1).to(device),torch.tensor(0.0).to(device)) if type(xs) == tuple else xs(label_mat,keyword_dict,mask_mat)(c),
+    "@Word": lambda x: x,
+    "@Is": lambda ws, p: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.IsFunc_soft(ws, p,label_mat,keyword_dict,mask_mat, c),
+    "@between": lambda a: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_between_soft(w, label_mat,keyword_dict,mask_mat,c, option),
+    "@And": lambda x, y: soft_gram_f.merge_soft(x, y),
+    "@Num": lambda x, y: {'attr': y, "num": int(x)},
+    "@LessThan": lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_lessthan_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
+    "@AtMost": lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_atmost_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
+    "@AtLeast": lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_atleast_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
+    "@MoreThan": lambda funcx, nouny: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_morethan_soft(funcx, nouny, w, label_mat,keyword_dict,mask_mat,c),
+    "@WordCount": lambda nounNum, nouny, F:lambda useless: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_WordCount_soft(nounNum,nouny,F,label_mat,keyword_dict,mask_mat,c),
 
-    "@NumberOf"  : lambda x,f: [x, f],
-    "@LessThan1" : lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_lessthan_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
-    "@AtMost1"   : lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_atmost_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There', label_mat,keyword_dict,mask_mat,c),
-    "@AtLeast1"  : lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_atleast_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
-    "@MoreThan1" : lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_morethan_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
+    "@NumberOf": lambda x, f: [x, f],
+    "@LessThan1": lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_lessthan_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
+    "@AtMost1": lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_atmost_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There', label_mat,keyword_dict,mask_mat,c),
+    "@AtLeast1": lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_atleast_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
+    "@MoreThan1": lambda nounynum: lambda x: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_morethan_soft(x[1], {'attr': x[0], "num": int(nounynum)}, 'There',label_mat,keyword_dict,mask_mat,c),
 
-    "@In0"       : lambda arg: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_In0_soft(arg, w, label_mat,keyword_dict,mask_mat,c),
-    "@In1"       : lambda arg,w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_In0_soft(arg, w, label_mat,keyword_dict,mask_mat,c),
-    "@By"        : lambda x,f,z: lambda label_mat,keyword_dict,mask_mat: lambda c: f(x, {'attr': z['attr'], 'range': z['num'], 'numAppear': 1, 'cmp': 'nlt','onlyCount': False})(label_mat,keyword_dict,mask_mat)(c),
+    "@In0": lambda arg: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_In0_soft(arg, w, label_mat,keyword_dict,mask_mat,c),
+    "@In1": lambda arg,w: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_In0_soft(arg, w, label_mat,keyword_dict,mask_mat,c),
+    "@By": lambda x, f, z: lambda label_mat,keyword_dict,mask_mat:lambda c: f(x, {'attr': z['attr'], 'range': z['num'], 'numAppear': 1, 'cmp': 'nlt','onlyCount': False})(label_mat,keyword_dict,mask_mat)(c),
 
-    "@Left0"     : lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_POSI_0_soft('Left', arg, w, label_mat,keyword_dict,mask_mat,c, option),
+    "@Left0": lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_POSI_0_soft('Left', arg, w, label_mat,keyword_dict,mask_mat,c, option),
 
-    "@Right0"    : lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_POSI_0_soft('Right', arg, w, label_mat,keyword_dict,mask_mat,c, option),
+    "@Right0": lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_POSI_0_soft('Right', arg, w, label_mat,keyword_dict,mask_mat,c, option),
 
-    "@Range0"    : lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_POSI_0_soft('Range', arg, w, label_mat,keyword_dict,mask_mat,c, option),
+    "@Range0": lambda arg: lambda w, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_POSI_0_soft('Range', arg, w, label_mat,keyword_dict,mask_mat,c, option),
 
-    "@Left"      : lambda arg,ws,option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_POSI_soft('Left', ws, arg, label_mat,keyword_dict,mask_mat,c, option),
-    "@Right"     : lambda arg,ws,option=None: lambda label_mat,keyword_dict,mask_mat: lambda c: soft_gram_f.at_POSI_soft('Right', ws, arg, label_mat,keyword_dict,mask_mat,c, option),
+    "@Left": lambda arg, ws, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_POSI_soft('Left', ws, arg, label_mat,keyword_dict,mask_mat,c, option),
+    "@Right": lambda arg, ws, option=None: lambda label_mat,keyword_dict,mask_mat:lambda c: soft_gram_f.at_POSI_soft('Right', ws, arg, label_mat,keyword_dict,mask_mat,c, option),
 
-    "@Direct"    : lambda func: lambda w: lambda label_mat,keyword_dict,mask_mat: lambda c: func(w, 'Direct')(label_mat,keyword_dict,mask_mat)(c)
+    "@Direct": lambda func: lambda w: lambda label_mat,keyword_dict,mask_mat:lambda c: func(w, 'Direct')(label_mat,keyword_dict,mask_mat)(c)
 }

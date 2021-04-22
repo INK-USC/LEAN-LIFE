@@ -38,9 +38,6 @@ class TrainedCCGParser():
     """
         A wrapper around an NLTK CCG Chart Parser
         Prepares the data for the parser and builds the grammar for the parser as well
-
-        Attributes:
-            
     """
     def __init__(self, low_end_filter_count=3, high_end_filter_pct=0.2):
         self.loaded_data = None
@@ -327,10 +324,6 @@ class TrainedCCGParser():
 class CCGParserTrainer():
     """
         Wrapper object to train a TrainedCCGParser object
-
-        Attributes:
-            params             (dict) : dictionary holding hyperparameters for training
-            parser (TrainedCCGParser) : a TrainedCCGParser instance
     """
     def __init__(self, task, explanation_file="", unlabeled_data_file="", unlabeled_data=None, explanation_data=None):
         self.params = {}
@@ -363,7 +356,7 @@ class CCGParserTrainer():
         
         self.parser.load_data(processed_data)
     
-    def prepare_unlabeled_data(self, path=""):
+    def prepare_unlabeled_data(self, path="", cache=True):
         if len(self.unlabeled_data) == 0 :
             with open(path) as f:
                 data = json.load(f)
@@ -374,8 +367,9 @@ class CCGParserTrainer():
             phrase_for_text = utils.generate_phrase(entry, nlp)
             self.unlabeled_data.append(phrase_for_text)
         
-        with open("training_phrases.p", "wb") as f:
-            pickle.dump(self.unlabeled_data, f)
+        if cache:
+            with open("training_phrases.p", "wb") as f:
+                pickle.dump(self.unlabeled_data, f)
         
         # Useful to read in processed unlabeled data when debugging
         # with open("training_phrases.p", "rb") as f:
