@@ -265,7 +265,7 @@ def build_vocab(train, embedding_name, save_string="", save=True):
     logging.info("Finished building vocab of size {}".format(str(len(vocab))))
 
     if save:
-        file_name = PATH_TO_PARENT + "data/vocabs/vocab_{}.p".format(save_string)
+        file_name = PATH_TO_PARENT + "../data/vocabs/vocab_{}.p".format(save_string)
 
         with open(file_name, "wb") as f:
             pickle.dump(vocab, f)

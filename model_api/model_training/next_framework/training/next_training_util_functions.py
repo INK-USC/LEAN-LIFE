@@ -160,13 +160,13 @@ def _prepare_unlabeled_data(unlabeled_data_phrases, vocab, spacy_to_custom_ner={
         tokens = phrase.tokens
         ners = phrase.ners
 
-        if phrase.subj_posi != None:
+        if phrase.subj_posi < len(phrase.tokens):
             tokens[phrase.subj_posi] = "SUBJ-{}".format(ners[phrase.subj_posi])
-        if phrase.obj_posi != None:
+        if phrase.obj_posi < len(phrase.tokens):
             tokens[phrase.obj_posi] = "OBJ-{}".format(ners[phrase.obj_posi])
 
         ners = [spacy_to_custom_ner[ner] if ner in spacy_to_custom_ner else ner for ner in ners]
-        
+
         tokens = [custom_vocab[token] if token in custom_vocab else vocab[token] for token in tokens]
         ners = [NER_LABEL_SPACE[ner] for ner in ners]
         
@@ -413,9 +413,9 @@ def build_datasets_from_text(text_data, vocab_, explanation_data, custom_vocab, 
         with open(vocab_, "rb") as f:
             vocab = pickle.load(f)
     else:
-        vocab = build_vocab(train, vocab_["embedding_name"], vocab_["save_string"])
+        vocab = build_vocab(text_data, vocab_["embedding_name"], vocab_["save_string"])
     
-    parser_training_data = random.sample(text_data, min(PARSER_TRAIN_SAMPLE, len(train)))
+    parser_training_data = random.sample(text_data, min(PARSER_TRAIN_SAMPLE, len(text_data)))
     
     parser = create_parser(parser_training_data, "", task, explanation_data)
 

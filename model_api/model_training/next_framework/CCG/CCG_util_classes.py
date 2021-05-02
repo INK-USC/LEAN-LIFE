@@ -60,7 +60,7 @@ class Phrase():
             self.obj = ""
     
     def get_mid(self):
-        if self.subj_posi != None and self.obj_posi != None:
+        if self.subj_posi < len(self.tokens) and self.obj_posi < len(self.tokens):
             st = min(self.subj_posi,self.obj_posi)+1
             ed = max(self.subj_posi,self.obj_posi)
             midphrase = tokens_to_string(self.tokens[st:ed])
@@ -74,7 +74,7 @@ class Phrase():
         assert LoR == 'Left' or LoR == 'Right' or LoR=='Range'
         assert XoY == 'X' or XoY == 'Y'
 
-        if self.subj_posi != None and self.obj_posi != None:
+        if self.subj_posi < len(self.tokens) and self.obj_posi < len(self.tokens):
             if XoY == 'X':
                 split_posi = self.subj_posi
             else:
@@ -104,7 +104,7 @@ class Phrase():
         assert XoY == 'X' or XoY == 'Y'
         assert SoE == 'starts' or SoE == 'ends'
 
-        if self.subj_posi != None and self.obj_posi != None:
+        if self.subj_posi < len(self.tokens) and self.obj_posi < len(self.tokens):
             if XoY=='X':
                 word = self.subj
             else:
@@ -119,8 +119,8 @@ class Phrase():
     def update_tokens_and_ners(self, tokens, ners):
         self.tokens = tokens
         self.ners = ners
-        if self.subj_posi != None:
+        if self.subj_posi < len(self.tokens):
             self.subj = self.tokens[self.subj_posi]
-        if self.obj_posi != None:
+        if self.obj_posi < len(self.tokens):
             self.obj = self.tokens[self.obj_posi]
     

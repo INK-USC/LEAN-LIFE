@@ -184,7 +184,7 @@ def build_real_query_eval_dataset(explanation_data, vocab, label_filter, dataset
     sentences = []
     queries = []
     for entry in explanation_data:
-        sentence = entry["sent"]
+        sentence = entry["text"]
         explanation = entry["explanation"]
         label = entry["label"]
         if label_filter is None or label in label_filter:

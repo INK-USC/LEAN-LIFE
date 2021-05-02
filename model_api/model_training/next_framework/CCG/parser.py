@@ -53,7 +53,7 @@ class TrainedCCGParser():
 
     def load_data(self, data):
         self.loaded_data = data
-    
+
     def create_and_set_grammar(self, init_grammar=constants.RAW_GRAMMAR):
         """
             Function that takes initial fixed grammar and adds some loaded_data specific rules to the grammar
@@ -74,7 +74,7 @@ class TrainedCCGParser():
                     if terminals:
                         if terminals[0].startswith("\"") and terminals[0].endswith("\""):
                             quote_words[terminals[0]] = 1
-        
+
         self.grammar = utils.add_rules_to_grammar(quote_words, init_grammar)
 
     def tokenize_explanations(self):
@@ -112,7 +112,7 @@ class TrainedCCGParser():
 
                 self.loaded_data[i].tokenized_explanations = tokenizations
 
-        
+
     def build_labeling_rules(self, verbose=True):
         """
             Assuming explanations have already been tokenized, and beam=False, we convert token sequences
@@ -144,7 +144,7 @@ class TrainedCCGParser():
                                 semantic_counts[semantic_repr] += 1
                             else:
                                 semantic_counts[semantic_repr] = 1
-                    
+
                     if len(semantic_counts) > 1:
                         semantic_counts = utils.check_clauses_in_parse_filter(semantic_counts)
 
@@ -159,21 +159,21 @@ class TrainedCCGParser():
                                 if labeling_function(datapoint.sentence): # filtering out labeling functions that don't even apply on their own datapoint
                                     labeling_functions[key] = labeling_function
                             except:
-                                continue                                    
+                                continue
 
                 self.loaded_data[i].labeling_functions = labeling_functions
 
             if verbose:
-                if i > 0 and i % cut_off == 0:
+                if i > 0 and cut_off > 0 and i % cut_off == 0:
                     logging.info("Parser: 20% more explanations parsed")
-        
+
         with open("loaded_data.p", "wb") as f:
             dill.dump(self.loaded_data, f)
-        
+
         # Useful to read in cached loaded_data when debugging
         # with open("../training/loaded_data.p", "rb") as f:
         #     self.loaded_data = dill.load(f)
-        
+
     def matrix_filter(self, unlabeled_data, task="re"):
         """
             Version of BabbleLabbel's filter bank concept. Label Functions that don't apply to the original
@@ -210,7 +210,7 @@ class TrainedCCGParser():
                     obj_type = original_phrase.ners[original_phrase.obj_posi].lower()
                     ner_types.append((subj_type, obj_type))
 
-        
+
         matrix = [[] for i in range(len(labeling_functions))]
 
         for i, function in enumerate(labeling_functions):
@@ -230,7 +230,7 @@ class TrainedCCGParser():
                         matrix[i].append(0)
                 except:
                     matrix[i].append(0)
-        
+
         matrix = np.array(matrix, dtype=np.int32)
 
         row_sums = np.sum(matrix, axis=1)
@@ -241,9 +241,9 @@ class TrainedCCGParser():
         for i, r_sum in enumerate(row_sums):
             if r_sum/total_data_points > self.high_end_filter_pct or r_sum < self.low_end_filter_count:
                 functions_to_delete.append(i)
-        
+
         # logging.info("Total Hits {}".format(sum(row_sums)))
-        
+
         # logging.info("Count Filter {}".format(functions_to_delete))
 
         matrix = np.delete(matrix, functions_to_delete, 0)
@@ -254,7 +254,7 @@ class TrainedCCGParser():
             del raw_explanations[index]
             if task == "re":
                 del ner_types[index]
-        
+
         hashes = {}
         functions_to_delete = []
         for i, row in enumerate(matrix):
@@ -283,10 +283,10 @@ class TrainedCCGParser():
             self.labeling_functions[function] = function_label_map[function]
             self.semantic_reps[semantic_reps[i]] = function
             self.filtered_raw_explanations[semantic_reps[i]] = raw_explanations[i]
-            
+
             if task == "re":
                 self.ner_types[function] = ner_types[i]
-        
+
     def set_final_datastructures(self, task="re"):
         self.labeling_functions = {}
         self.semantic_reps = {}
@@ -318,7 +318,7 @@ class TrainedCCGParser():
                 self.soft_labeling_functions.append((soft_labeling_function, self.labeling_functions[self.semantic_reps[key]]))
                 self.soft_label_function_to_semantic_map[soft_labeling_function] = key
                 soft_filtered_raw_explanations[key] = self.filtered_raw_explanations[key]
-        
+
         self.filtered_raw_explanations = soft_filtered_raw_explanations
 
 class CCGParserTrainer():
@@ -337,14 +337,14 @@ class CCGParserTrainer():
         self.parser = TrainedCCGParser()
         self.unlabeled_data = unlabeled_data if unlabeled_data != None else []
         self.explanation_data = explanation_data
-    
+
     def load_data(self, path):
         if len(path):
             with open(path) as f:
                 data = json.load(f)
         else:
             data = self.explanation_data
-        
+
         processed_data = []
         for dic in data:
             text = dic[self.text_key]
@@ -353,9 +353,9 @@ class CCGParserTrainer():
             label = dic[self.label_key]
             data_point = classes.DataPoint(phrase_for_text, label, explanation)
             processed_data.append(data_point)
-        
+
         self.parser.load_data(processed_data)
-    
+
     def prepare_unlabeled_data(self, path="", cache=True):
         if len(self.unlabeled_data) == 0 :
             with open(path) as f:
@@ -366,11 +366,11 @@ class CCGParserTrainer():
         for entry in data:
             phrase_for_text = utils.generate_phrase(entry, nlp)
             self.unlabeled_data.append(phrase_for_text)
-        
+
         if cache:
             with open("training_phrases.p", "wb") as f:
                 pickle.dump(self.unlabeled_data, f)
-        
+
         # Useful to read in processed unlabeled data when debugging
         # with open("training_phrases.p", "rb") as f:
         #     self.unlabeled_data = pickle.load(f)
@@ -404,6 +404,6 @@ class CCGParserTrainer():
             if verbose:
                 logging.info("Parser: Built soft labeling functions")
         logging.info("Parser: Done")
-    
+
     def get_parser(self):
         return self.parser

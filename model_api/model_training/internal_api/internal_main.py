@@ -52,6 +52,8 @@ def train_next_framework_lean_life(params, label_space, unlabeled_docs=None, exp
             raise HTTPException(status_code=500, detail=error_msg)
     else:
         params["stage"] = "clf"
+        params["pre_train_build_data"] = False
+        params["build_data"] = False
     
     if params["project_type"] == "Sentiment Analysis":
         params["task"] = "sa"

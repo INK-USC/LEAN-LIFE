@@ -5,7 +5,7 @@ import re
 
 class LeanLifeSpacyWrapper():
     bad_noun_phrases = set(["don't"])
-    def __init__(self, spacy_model="en"):
+    def __init__(self, spacy_model="en_core_web_sm"):
         self.nlp = spacy.load(spacy_model)
         rules = {}
         apostrophes = ["'", "'", "'", "’", "'"]

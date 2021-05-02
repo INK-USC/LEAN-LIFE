@@ -758,6 +758,7 @@ class TrainModelAPIView(APIView):
 		# model_name -> experiment_name
 		model_settings = request.data['params']
 		model_settings["experiment_name"] = model_name
+		model_settings["dataset_name"] = request.data['dataset_name']
 		include_documents = request.data['include_documents']
 
 		self.write_to_model_project_mapping_file(project_id, model_name)

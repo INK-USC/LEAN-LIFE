@@ -28,9 +28,9 @@ from next_framework.training.find_training_util_functions import build_pre_train
 from next_framework.training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
                                                                  build_datasets_from_text, evaluate_next_clf, apply_strict_matching
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
-                                                        set_re_dataset_ner_label_space
+                                                        set_re_dataset_ner_label_space, set_ner_label_space
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
-from next_framework.training.next_constants import TACRED_ENTITY_TYPES
+from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.models import Find_Module, BiLSTM_Att_Clf
 
 
@@ -72,7 +72,7 @@ def pre_train_find_module_pipeline(payload):
     epochs = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_epochs")
     embeddings = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "embeddings")
     gamma = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_gamma")
-    emb_dim = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_emb_dim")
+    emb_dim = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "emb_dim")
     hidden_dim = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_hidden_dim")
     training_size = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_training_size")
     random_state = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_random_state")
@@ -333,7 +333,7 @@ def pre_train_find_module_pipeline(payload):
     save_path = "../model_training/next_framework/data/saved_models/Find-Module-pt_{}".format(experiment_name)
 
     # Currently not possible
-    if payload["leanlife"] and payload["find"]:
+    if payload["leanlife"] and payload["stage"] == "find":
         best_train_loss = min([row[0] for row in epoch_losses])
         file_size = os.path.getsize(save_path)
         send_model_metadata(experiment_name, save_path, best_train_loss, file_size)
@@ -368,7 +368,7 @@ def train_next_bilstm_pipeline(payload):
     label_map = payload["label_map"]
     task = payload["task"]
     
-    clip_gradient_size = BILSTM_DEFAULTS["clip_gradients"]
+    clip_gradient_size = BILSTM_DEFAULTS["clip_gradient_size"]
     lower_bound = FIND_MODULE_DEFAULTS["lower_bound"]
     n_layer_x_n_directions = BILSTM_DEFAULTS["layer_x_directions"]
 
@@ -384,7 +384,7 @@ def train_next_bilstm_pipeline(payload):
     random_state = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "random_state")
     none_label_key = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "none_label_key")
 
-    full_batch_size = match_batch_size + unlabeled_batch_size
+    full_batch_size = int(match_batch_size) + int(unlabeled_batch_size)
 
     load_model = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "load_model")
     start_epoch = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "start_epoch")
@@ -397,7 +397,7 @@ def train_next_bilstm_pipeline(payload):
     if find_module_sample_rate > 1:
         find_module_sample_rate = -1.0 # no sampling
     
-    save_string = generate_save_string(dataset_name, embeddings, find_module_sample_rate)
+    save_string = generate_save_string(dataset_name, embeddings, sample=find_module_sample_rate)
     vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
 
     number_of_classes = len(label_map)
@@ -410,7 +410,7 @@ def train_next_bilstm_pipeline(payload):
 
     if task == "re":
         ner_labels = payload["ner_labels"]
-        set_re_dataset_ner_label_space(dataset, ner_labels)
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
 
         if "relation_ner_types" in payload:
             relation_ner_types = payload["relation_ner_types"]
@@ -420,6 +420,10 @@ def train_next_bilstm_pipeline(payload):
             # however this is not necessary to send
             if dataset_name == "tacred":
                 relation_ner_types = TACRED_ENTITY_TYPES
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
 
     torch.manual_seed(random_state)
     random.seed(random_state)
@@ -439,7 +443,7 @@ def train_next_bilstm_pipeline(payload):
     # we do this due to parsing. Look at tokenize() in:
     # model_api/model_training/next_framework/training/util_functions.py
     else:
-        if len(ner_labels) > 0 and task == "re":
+        if task == "re" and len(ner_labels) > 0:
             custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
         else:
             # finally, if the task is not "re", and you just want to set a custom vocab
@@ -473,6 +477,9 @@ def train_next_bilstm_pipeline(payload):
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/matched_data_{}.p".format(save_string), "rb") as f:
         strict_match_data = pickle.load(f)
+    # check if there is
+    if len(strict_match_data.tokens) == 0:
+        pass
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
         soft_labeling_functions_dict = dill.load(f)
@@ -534,18 +541,18 @@ def train_next_bilstm_pipeline(payload):
     # Preping Soft Labeling Function Data
     soft_labeling_functions = soft_labeling_functions_dict["function_pairs"]
     soft_labeling_function_labels = soft_labeling_functions_dict["labels"]
-    
+
     h0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
     c0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
     nn.init.xavier_normal_(h0)
     nn.init.xavier_normal_(c0)
     
     # Step 4.
-    if args.build_data:
+    if build_data:
         find_module = Find_Module.Find_Module(vocab.vectors, pad_idx, emb_dim, find_module_hidden_dim,
                                               torch.cuda.is_available(), custom_token_count=custom_vocab_length)
         
-        find_module.load_state_dict(torch.load(args.find_module_path))
+        find_module.load_state_dict(torch.load(find_module_path))
         find_module = find_module.to(device)
         find_module.eval()
         function_scores = {}
@@ -562,8 +569,11 @@ def train_next_bilstm_pipeline(payload):
                     func, rel = pair
                     batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach() # 1 x B
 
-                    type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach() # 1 x B
-                    final_scores = batch_scores * type_restrict_multiplier # 1 x B
+                    if task == "re":
+                        type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach() # 1 x B
+                        final_scores = batch_scores * type_restrict_multiplier  # 1 x B
+                    else:
+                        final_scores = batch_scores
                     final_scores = final_scores.cpu()
                     if j in function_scores:
                         function_scores[j] = torch.cat([function_scores[j], final_scores], dim=1)
@@ -572,11 +582,11 @@ def train_next_bilstm_pipeline(payload):
         
         soft_scores = torch.cat([function_scores[key] for key in function_scores]).permute(1, 0) # len(data) x number_of_explanations
 
-        with open("../data/training_data/soft_scores_{}.p".format(experiment_name), "wb") as f:
+        with open(PATH_TO_PARENT + "../next_framework/data/training_data/soft_scores_{}.p".format(experiment_name), "wb") as f:
             pickle.dump(soft_scores, f)
     
     else:
-        with open("../data/training_data/soft_scores_{}.p".format(experiment_name), "rb") as f:
+        with open(PATH_TO_PARENT + "../next_framework/data/training_data/soft_scores_{}.p".format(experiment_name), "rb") as f:
             soft_scores = pickle.load(f)
     
     clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
@@ -606,7 +616,7 @@ def train_next_bilstm_pipeline(payload):
         clf.train()
 
         for step, batch_pair in enumerate(tqdm(zip(strict_match_data.as_batches(batch_size=full_batch_size, seed=epoch),\
-                                                   unlabeled_data.as_batches(batch_size=full_batch_size, seed=epoch*seed)))):
+                                                   unlabeled_data.as_batches(batch_size=full_batch_size, seed=epoch*random_state)))):
             
             # prepping batch data
             strict_match_data_batch, unlabeled_data_batch = batch_pair
@@ -632,7 +642,7 @@ def train_next_bilstm_pipeline(payload):
             soft_match_predictions = clf.forward(unlabeled_tokens, unlabeled_token_lengths, h0, c0)
 
             strict_match_loss = strict_match_loss_function(strict_match_predictions, strict_match_labels)
-            soft_match_loss = torch.sum(soft_match_loss_function(soft_match_predictions, pseudo_labels) * weight)
+            soft_match_loss = torch.sum(soft_match_loss_function(soft_match_predictions, pseudo_labels) * unlabeled_label_weights)
             combined_loss = strict_match_loss + gamma * soft_match_loss
 
             strict_total_loss = strict_total_loss + strict_match_loss.item()
@@ -687,9 +697,6 @@ def train_next_bilstm_pipeline(payload):
             logging.info("Saving Model")
             dir_name = PATH_TO_PARENT + "../next_framework/data/saved_models/"
             torch.save(clf.state_dict(), "{}Next-Clf_{}.p".format(dir_name, experiment_name))
-            if none_label_id > 0:
-                with open(PATH_TO_PARENT + "../next_framework/data/result_data/thresholds.p", "wb") as f:
-                    pickle.dump({"thresholds" : no_relation_thresholds}, f)
         
         if payload["leanlife"]:
             time_spent = time.time() - start_time
@@ -709,7 +716,7 @@ def train_next_bilstm_pipeline(payload):
             for row in dev_epoch_f1_scores:
                 writer.writerow(row)
     
-    save_path = "../model_training/next_framework/data/saved_models/Next-Clf_{}".format(experiment_name)
+    save_path = PATH_TO_PARENT + "../model_training/next_framework/data/saved_models/Next-Clf_{}".format(experiment_name)
 
     if payload["leanlife"]:
         best_train_loss = min([row[0] for row in loss_per_epoch])
