@@ -88,10 +88,12 @@ export default {
           selectionEnd += 1;
         }
 
-        this.$store.dispatch('annotation/setNERSelection', {
-          "selectionStart": selectionStart,
-          "selectionEnd": selectionEnd
-        })
+        if (selectionStart < selectionEnd) {
+          this.$store.dispatch('annotation/setNERSelection', {
+            "selectionStart": selectionStart,
+            "selectionEnd": selectionEnd
+          })
+        }
       }
     },
     makeLabel(startOffset, endOffset) {

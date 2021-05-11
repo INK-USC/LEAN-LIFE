@@ -165,27 +165,29 @@ export default {
         console.log("selection start end", selectionStart, selectionEnd)
         console.log("selection text", this.$store.getters["document/getCurDoc"].text.slice(selectionStart, selectionEnd))
         // console.log("reasons", this.triggers)
-        const curTrigger = this.triggers[triggerIndex]
-        console.log("curtrigger", curTrigger)
-        let curExplanation = curTrigger[curTrigger.length - 1]
-        console.log("cur exp", curExplanation)
-        if (curExplanation.start_offset === -1 || curExplanation.end_offset === -1) {
-          // console.log("already exist empty offset")
-          curExplanation.start_offset = selectionStart;
-          curExplanation.end_offset = selectionEnd;
-          curExplanation.labelId = triggerIndex;
-        } else {
-          // check if it is a subselection
-          const canSelect = !curTrigger.some(trig => (trig.start_offset <= selectionStart && selectionEnd <= trig.end_offset))
-          if (canSelect){
-            console.log("adding new offset")
-            curTrigger.push({
-              start_offset: selectionStart,
-              end_offset: selectionEnd,
-              pk_id: NOT_YET_PUSHED_ID,
-              labelId: triggerIndex,
-              base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
-            });
+        if (selectionStart < selectionEnd){
+          const curTrigger = this.triggers[triggerIndex]
+          console.log("curtrigger", curTrigger)
+          let curExplanation = curTrigger[curTrigger.length - 1]
+          console.log("cur exp", curExplanation)
+          if (curExplanation.start_offset === -1 || curExplanation.end_offset === -1) {
+            // console.log("already exist empty offset")
+            curExplanation.start_offset = selectionStart;
+            curExplanation.end_offset = selectionEnd;
+            curExplanation.labelId = triggerIndex;
+          } else {
+            // check if it is a subselection
+            const canSelect = !curTrigger.some(trig => (trig.start_offset <= selectionStart && selectionEnd <= trig.end_offset))
+            if (canSelect){
+              console.log("adding new offset")
+              curTrigger.push({
+                start_offset: selectionStart,
+                end_offset: selectionEnd,
+                pk_id: NOT_YET_PUSHED_ID,
+                labelId: triggerIndex,
+                base_ann_id: this.$store.getters["explanation/getAnnotationInfo"].extended_annotation.annotation_id,
+              });
+            }
           }
         }
 
