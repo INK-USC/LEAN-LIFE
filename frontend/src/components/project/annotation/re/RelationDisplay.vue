@@ -17,7 +17,7 @@
       <span class="word">{{ objText }}</span>
     </div>
 
-    <i class="el-icon-delete" style="cursor: pointer" @click="removeSelectedRelation"/>
+    <i v-if="!this.hideDelete" class="el-icon-delete" style="cursor: pointer" @click="removeSelectedRelation"/>
   </div>
 </template>
 
@@ -26,7 +26,8 @@
 export default {
   name: "RelationDisplay",
   props: {
-    relation: Object
+    relation: Object,
+    hideDelete: Boolean,
   },
   methods: {
     // delete selected relation when user clicked

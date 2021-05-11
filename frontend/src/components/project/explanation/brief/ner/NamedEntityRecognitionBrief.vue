@@ -31,7 +31,16 @@ export default {
       if (!this.$store.getters["document/getCurDoc"]) {
         return [];
       }
-      let sortedEntityPositions = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
+      const doc = this.$store.getters["annotation/getNERSelection"];
+      if(doc.selectionStart === -1 || doc.selectionEnd === -1) {
+        return [];
+      }
+      const formattedAnnotations = this.$store.getters["document/getCurDoc"] ? this.$store.getters["document/getCurDoc"].formattedAnnotations : [];
+      let sortedEntityPositions = [
+        formattedAnnotations.find(ann => (
+          ann.start_offset === doc.selectionStart && ann.end_offset === doc.selectionEnd
+        ))
+      ];
 
       const res = [];
       let left = 0;

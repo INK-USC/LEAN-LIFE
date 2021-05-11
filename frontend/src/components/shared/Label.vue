@@ -157,7 +157,7 @@ export default {
         }
         const annotations = this.$store.getters["document/getCurDoc"].formattedAnnotations;
         const canClick = !annotations.some(ann => (
-            ann.label === this.labelInfo.id && 
+            // ann.label === this.labelInfo.id && 
             ann.type === 're' &&
             ann.obj_end_offset === reSelection.obj_end_offset && 
             ann.obj_start_offset === reSelection.obj_start_offset &&
