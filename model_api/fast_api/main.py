@@ -41,7 +41,7 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(train_next_framework_lean_life(params.__dict__, label_space,
+    return schema.SavePathOutput(save_path = train_next_framework_lean_life(params.__dict__, label_space,
                                                                 unlabeled_docs,
                                                                 explanation_triples,
                                                                 ner_label_space))

@@ -416,7 +416,7 @@ def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_s
             }
         }
     
-    print(update_repr)
+    print(metadata_repr)
 
     # end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
     # response = requests.post(end_point, json=metadata_repr)

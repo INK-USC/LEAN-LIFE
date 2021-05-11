@@ -631,7 +631,7 @@ def train_next_bilstm_pipeline(payload):
             batch_soft_scores = torch.index_select(soft_scores, 0, tensor_indices).to(device)
             unlabeled_tokens = unlabeled_tokens.to(device)
 
-            pseudo_labels = torch.index_select(soft_labeling_function_labels, 0, torch.argmax(batch_soft_scores, dim=1))
+            pseudo_labels = torch.index_select(torch.tensor(soft_labeling_function_labels), 0, torch.argmax(batch_soft_scores, dim=1))
             bound = torch.max(batch_soft_scores, dim=1).values
             unlabeled_label_weights = nn.functional.softmax(10 * bound, dim=0)
 
@@ -716,7 +716,10 @@ def train_next_bilstm_pipeline(payload):
             for row in dev_epoch_f1_scores:
                 writer.writerow(row)
     
-    save_path = PATH_TO_PARENT + "../model_training/next_framework/data/saved_models/Next-Clf_{}".format(experiment_name)
+    print(experiment_name)
+    save_path = PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)
+    print(PATH_TO_PARENT)
+    print(save_path)
 
     if payload["leanlife"]:
         best_train_loss = min([row[0] for row in loss_per_epoch])
