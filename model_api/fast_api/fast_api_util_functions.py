@@ -378,10 +378,10 @@ def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, 
 
     print(update_repr)
 
-    # end_point = const.LEAN_LIFE_URL + "update/training_status/"
-    # response = requests.post(end_point, json=update_repr)
+    end_point = const.LEAN_LIFE_URL + "update/training_status/"
+    response = requests.post(end_point, json=update_repr)
 
-    # return response.status_code
+    return response.status_code
 
 def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None):
     """

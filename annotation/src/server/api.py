@@ -762,6 +762,7 @@ class TrainModelAPIView(APIView):
 		include_documents = request.data['include_documents']
 
 		self.write_to_model_project_mapping_file(project_id, model_name)
+		self.write_to_model_metadata_file(project_id, model_name)
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
 		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/next/lean-life/", json=json_object).content)
@@ -887,12 +888,7 @@ class DownloadModelFile(APIView):
 
 	def get(self, request):
 		file_path = request.GET.get("file_path")
-		# model_file_json = json.loads(requests.get("http://localhost:9000/download/", params={'file_path': file_path}).content)
-		#TODO test
-		model_file_json = json.loads(requests.get("http://localhost:8000/api/mock/fetch_model/", params={'file_path': file_path}).content)
-
-		# with open("communication/test_download.p", "wb") as f:
-		# 	pickle.dump(model_file_json, f)
+		model_file_json = json.loads(requests.get("http://localhost:9000/download/%s" % file_path).content)
 
 		response = HttpResponse(content_type='application/octet-stream')
 		response['Content-Disposition'] = 'attachment; filename=aaa.p'
