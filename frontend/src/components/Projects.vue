@@ -71,6 +71,7 @@ export default {
     handleProjectSelected(index, row) {
       this.$router.push({name: 'DocumentList'})
       this.$store.commit("setProject", {projectInfo: row, actionType: ACTION_TYPE.EDIT});
+      this.$store.dispatch("document/updateCurPage", {newPage: 1}, {root: true})
     },
     handleEdit(index, row) {
       this.selectedProject = row;
