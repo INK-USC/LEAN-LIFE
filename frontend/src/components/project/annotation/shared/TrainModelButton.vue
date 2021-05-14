@@ -139,10 +139,17 @@ export default {
           message: "Your model is being trained now. Click Models in the Navigation Bar to check out its progress"
         })
       }).catch(err => {
-        this.$notify.error({
-          title: "Model failed to start training",
-          message: "Please try again later"
-        })
+        if (err.response && err.response.data){
+          this.$notify.error({
+            title: "Model training failed",
+            message: err.response.data
+          })
+        } else {
+          this.$notify.error({
+            title: "Model failed to start training",
+            message: "Please try again later"
+          })
+        }
       }).finally(() => {
         this.trainModelDialogVisible = false
       })

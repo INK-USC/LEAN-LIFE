@@ -383,7 +383,7 @@ def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, 
 
     return response.status_code
 
-def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None):
+def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None, error_msg=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
@@ -412,9 +412,13 @@ def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_s
         metadata_repr = {
             experiment_name : {
                 "is_trained" : is_trained,
-                "save_path" : save_path
+                "save_path" : save_path,
+                "file_size": "N/A",
+                "best_train_loss": "N/A",
             }
         }
+    if error_msg:
+        metadata_repr[experiment_name]["error"] = error_msg
     
     print(metadata_repr)
 

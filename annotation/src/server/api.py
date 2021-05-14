@@ -687,12 +687,15 @@ class ModelAPIView(APIView):
 		# print("models meta", models_metadata)
 		for model_name in model_dict:
 			cur_meta = models_metadata[model_name]
-
+			if "error" in cur_meta:
+				training_status = "Failed"
+			else:
+				training_status = "Finished" if cur_meta['is_trained'] else "Training"
 			cur_model_json = {'model': model_name,
 			                  'project_id': model_dict[model_name]['project_id'],
 							  'project_name': model_dict[model_name]['project_name'],
 			                  'project_task': model_dict[model_name]['project_task'],
-			                  'training_status': "Finished" if cur_meta['is_trained'] else "Training",
+			                  'training_status': training_status,
 			                  "time_spent":  self.get_training_updates(model_name)["time_spent"],
 			                  "time_left":  self.get_training_updates(model_name)["time_left"],
 			                  "stage": self.get_training_updates(model_name)["stage"]
@@ -765,8 +768,15 @@ class TrainModelAPIView(APIView):
 		self.write_to_model_metadata_file(project_id, model_name)
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
-		model_training_api_response = json.loads(requests.post("http://localhost:9000/training/next/lean-life/", json=json_object).content)
-		return Response(data=model_training_api_response)
+		response = requests.post("http://localhost:9000/training/next/lean-life/", json=json_object)
+		if response.status_code == 200:
+			model_training_api_response = json.loads(response.content)
+			return Response(data=model_training_api_response)
+		else:
+			models_metadata = json.loads(open("communication/models_metadata.json").read())
+			cur_meta = models_metadata[model_name]
+			error = cur_meta.get("error", None)
+			return Response(data=error, status=500)
 
 	def write_to_model_project_mapping_file(self, project_id, model_name):
 		file_path = "communication/model_project_map.json"

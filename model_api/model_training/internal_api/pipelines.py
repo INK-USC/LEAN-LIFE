@@ -477,9 +477,10 @@ def train_next_bilstm_pipeline(payload):
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/matched_data_{}.p".format(save_string), "rb") as f:
         strict_match_data = pickle.load(f)
-    # check if there is
+    # check if there is no hard matched entries
     if len(strict_match_data.tokens) == 0:
-        pass
+        send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
+        raise ValueError("No hard matches found.")
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
         soft_labeling_functions_dict = dill.load(f)
