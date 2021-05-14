@@ -53,7 +53,7 @@ export default {
         selectionEnd -= leadingWhiteSpace;
 
         const spanText = range.commonAncestorContainer.data.trim();
-        const offSet = this.$store.getters["document/getCurDoc"].text.search(spanText);
+        const offSet = this.$store.getters["document/getCurDoc"].text.indexOf(spanText);
         // console.log("this.txt", this.$store.getters["document/getCurDoc"].text)
         // console.log("span text", spanText);
         // console.log("offset", offSet)

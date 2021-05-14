@@ -19,7 +19,7 @@
           </div>
           <el-row style="line-height: 2">
             <div @mouseup="setSelectedRange(triggerIndex)">
-              <span v-for="(chunk, chunkIndex) in chunks" :key="chunkIndex" :style=getChunkStyle(chunk,triggerIndex)>
+              <span v-for="(chunk, chunkIndex) in getChunks(triggerIndex)" :key="chunkIndex" :style=getChunkStyle(chunk,triggerIndex)>
                 <span>
                   {{ $store.getters["document/getCurDoc"].text.slice(chunk.start_offset, chunk.end_offset) }}
                 </span>
@@ -131,7 +131,7 @@ export default {
         selectionEnd -= leadingWhiteSpace;
 
         const spanText = range.commonAncestorContainer.data.trim();
-        const offSet = this.$store.getters["document/getCurDoc"].text.search(spanText);
+        const offSet = this.$store.getters["document/getCurDoc"].text.indexOf(spanText);
         // console.log("this.txt", this.$store.getters["document/getCurDoc"].text)
         // console.log("span text", spanText);
         // console.log("offset", offSet)
@@ -170,6 +170,14 @@ export default {
           console.log("curtrigger", curTrigger)
           let curExplanation = curTrigger[curTrigger.length - 1]
           console.log("cur exp", curExplanation)
+          // check if in annotation
+          const isBlocked = this.getAnnotationSelections().some(ann => (
+            // within check
+            (ann.start_offset <= selectionStart && selectionEnd <= ann.end_offset)
+          ));
+          if (isBlocked) {
+            return;
+          }
           if (curExplanation.start_offset === -1 || curExplanation.end_offset === -1) {
             // console.log("already exist empty offset")
             curExplanation.start_offset = selectionStart;
@@ -270,9 +278,8 @@ export default {
           borderRadius: "8px"
         };
       }
-      // If the chunk is a label but doesn't match our current label ID, we want
-      // to mark it as grey to discourage users from selecting again.
-      if (chunk.labelId !== UNLABELED_LABEL_ID) {
+      // If the chunk is in annonation selection disable it by marking it as grey.
+      if (chunk.labelId === SELECTION_LABEL_ID) {
         return {
           color: "#bfbfbf",
         };
@@ -294,19 +301,37 @@ export default {
         })
       })
 
-    }
-  },
-  computed: {
-    dialogVisible: {
-      get() {
-        return this.$store.getters["explanation/getExplanationPopupInfo"].dialogVisible;
-      },
-      set() {
-        this.$store.dispatch("explanation/hideExplanationPopup")
-      }
     },
-    // generate chunks to assemble the full text
-    chunks() {
+    getAnnotationSelections() {
+      if (this.$store.getters.getProjectInfo.task===2) {
+        // NER
+        const doc = this.$store.getters["annotation/getNERSelection"];
+        if(doc.selectionStart !== -1 && doc.selectionEnd !== -1) {
+          return [{
+            pk_id: UNLABELED_LABEL_ID,
+            start_offset: doc.selectionStart,
+            end_offset: doc.selectionEnd,
+            labelId: SELECTION_LABEL_ID,
+          }];
+        }
+      } else if (this.$store.getters.getProjectInfo.task===3) {
+        // RE
+        const selection = this.$store.getters['annotation/getRESelection'];
+          return [{
+            pk_id: UNLABELED_LABEL_ID,
+            start_offset: selection.sbj_start_offset,
+            end_offset: selection.sbj_end_offset,
+            labelId: SELECTION_LABEL_ID,
+          }, {
+            pk_id: UNLABELED_LABEL_ID,
+            start_offset: selection.obj_start_offset,
+            end_offset: selection.obj_end_offset,
+            labelId: SELECTION_LABEL_ID,
+          }];
+      }
+      return [];
+    },
+    getChunks(triggerIndex) {
       const res = [];
       let left = 0;
       if (!this.$store.getters["explanation/getAnnotationInfo"]) {
@@ -315,7 +340,8 @@ export default {
       // const triggers = this.$store.getters["explanation/getAnnotationInfo"].formattedTriggerExplanation;
       console.log("triggers", this.triggers);
 
-      const allTriggers = this.triggers.flat();
+      const allTriggers = [...this.triggers[triggerIndex]];
+      allTriggers.push(...this.getAnnotationSelections());
       // console.log("all triggers", allTriggers);
 
       allTriggers.sort((a, b) => a.start_offset - b.start_offset);
@@ -349,6 +375,16 @@ export default {
       });
       console.log("chunks", res);
       return res;
+    }
+  },
+  computed: {
+    dialogVisible: {
+      get() {
+        return this.$store.getters["explanation/getExplanationPopupInfo"].dialogVisible;
+      },
+      set() {
+        this.$store.dispatch("explanation/hideExplanationPopup")
+      }
     },
     id2label() {
       const id2label = {};
