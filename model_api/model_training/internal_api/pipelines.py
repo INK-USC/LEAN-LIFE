@@ -513,6 +513,9 @@ def train_next_bilstm_pipeline(payload):
     best_loss = 1e30
 
     if load_model:
+        clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                            torch.cuda.is_available(), number_of_classes,
+                                            custom_token_count=custom_vocab_length)
         clf.load_state_dict(torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)))
         logging.info("loaded model")
         
@@ -520,7 +523,7 @@ def train_next_bilstm_pipeline(payload):
             reader=csv.reader(f)
             next(reader)
             for row in reader:
-                loss_per_epoch.append(row)
+                loss_per_epoch.append(tuple(map(float, row)))
                 if float(row[0]) < best_loss:
                     best_loss = float(row[0])
         
@@ -708,7 +711,7 @@ def train_next_bilstm_pipeline(payload):
         writer=csv.writer(f)
         writer.writerow(['train_avg_loss', 'train_avg_strict_loss', 'train_avg_soft_loss'])
         for row in loss_per_epoch:
-            writer.writerow([row])
+            writer.writerow(row)
     
     if len(eval_path):
         with open(PATH_TO_PARENT + "../next_framework/data/result_data/eval_f1_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
