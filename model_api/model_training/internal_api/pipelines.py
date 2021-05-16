@@ -26,7 +26,7 @@ from internal_api.defaults import FIND_MODULE_DEFAULTS, TRAINING_DEFAULTS, BILST
 from next_framework.training.find_training_util_functions import build_pre_train_find_datasets, \
                                                                  evaluate_find_module
 from next_framework.training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
-                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching
+                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                                         set_re_dataset_ner_label_space, set_ner_label_space
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
@@ -745,6 +745,22 @@ def strict_match_pipeline(payload):
     matched_tuples, matched_indices = apply_strict_matching(text_data, explanation_data, task)
     
     return matched_tuples, matched_indices
+
+def soft_match_pipeline(payload):    
+    """
+        Takes in explanation data, and a source of unlabeled data and will annotate the unlabeled data
+        with the explanations provided. Converts explanations into binary labeling functions and if an
+        explanation applies to a datapoint the label associated with the explanation is now associated
+        with the datapoint.
+
+        Returns:
+            arr, arr : first array is of tuples (text, label),
+                       second array is of tuples (index_of_text in unlabeled data, index_of_explanation in explanatation data)
+    """
+    text_data = payload["unlabeled_text"]
+    explanation_data = payload["explanation_triples"]
+    task = payload["task"]
+    matched_tuples, matched_indices = apply_soft_matching(text_data, explanation_data, task)  
 
 def evaluate_next_clf_pipeline(payload):
     """

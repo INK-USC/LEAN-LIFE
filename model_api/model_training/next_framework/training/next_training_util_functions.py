@@ -391,6 +391,33 @@ def apply_strict_matching(text_data, explanation_data, task):
 
     return matched_data_tuples, matched_indices
 
+def apply_soft_matching(text_data, explanation_data, task):
+    """
+        Takes in explanation data and text_data and returns (sentence, label) tuples for whatever
+        instances match an explanation.
+
+        Arguments:
+            text_data        (arr) : array of strings to be matched to
+            explanation_data (arr) : array of dictionaries, each dictionary has the following three keys:
+                                        * text, * explanation, * label
+            task             (str) : task
+        
+        Returns:
+            arr, arr : first array is of tuples (text, label),
+                       second array is of tuples (index_of_text in text_data, index_of_explanation in explanatation data)
+    """
+    parser_training_data = random.sample(text_data, min(PARSER_TRAIN_SAMPLE, len(text_data)))
+    
+    parser = create_parser(parser_training_data, "", task, explanation_data)
+
+    soft_matching_functions = parser.soft_labeling_functions
+
+    function_ner_types = parser.ner_types
+    
+    matched_data_tuples, _, matched_indices = match_training_data(soft_matching_functions, text_data, task, function_ner_types)
+
+    return matched_data_tuples, matched_indices
+
 def build_datasets_from_text(text_data, vocab_, explanation_data, custom_vocab, save_string, label_map,
                              sample_rate=-1.0, task="re", dataset="tacred"):
     """
