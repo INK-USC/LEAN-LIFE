@@ -1,3 +1,4 @@
+
 # LEAN-LIFE
 **L**abel **E**fficient **A**nnotatio**N** framework that allows for **L**earn**I**ng **F**rom **E**xplanations
 
@@ -45,9 +46,9 @@ We strongly encourage community engagement, please refer to our [contribution se
 
 * API for training of a downstream model (RE, SA):
   * with natural language explanations, a fixed NExT parser to generate weak labels (RE, SA)
-* UI to allow for training and downloading of mentioned models after annotations are complete (or whenever the project owner would like)
+* UI, to allow for training and downloading of mentioned models after annotations, is complete.
 
-**Release 0.1-alpha** (Date: 9/28/20)
+**Release 0.1-alpha** 
 
 This release focuses on providing a Web-UI to annotate sets of documents. As mentioned the user can create annotations for three tasks (NER, SA, RE), as well as provide explanations for those annotations in two different ways. We support various import/export formats, and take advantage of two recommendation strategies for NER (Noun phrase chunking--powered by spaCy, Historical Annotation Application) and one for RE (Historical Annotation Application). To further enable Historical Annotation Application, a project owner can upload a set of (x,y) pairs as "Historical" annotations, and we will apply these pairs as recommendations for un-annotated documents (sort of like distant learning).
  
@@ -112,6 +113,32 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 7. `python manage.py runserver 0.0.0.0:8000`
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
 
+# URLs reference
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+
+https://docs.djangoproject.com/en/2.0/topics/http/urls/
+
+Examples:
+
+Function views
+
+1. Add an import: from my_app import views
+
+2. Add a URL to urlpatterns: path('', views.home, name='home')
+
+Class-based views
+
+1. Add an import: from other_app.views import Home
+
+2. Add a URL to urlpatterns: path('', Home.as_view(), name='home')
+
+Including another URLconf
+
+1. Import the include() function: from django.urls import include, path
+
+2. Add a URL to urlpatterns: path('blog/', include('blog.urls'))
+
 # Contributing
 
 We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
@@ -128,7 +155,7 @@ To get notifications of major updates to this project, you can join our mailing 
 For updates on this project and other nlp projects being done at USC, please follow [@nlp_usc](https://twitter.com/nlp_usc)
 
 ### Contributors
-Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong
+Rahul Khanna, Dongho Lee, Jamin Chen, Seyeon Lee, JiaMin (Jim) Gong, Raghavendra Vedula
 
 
 # Citation
