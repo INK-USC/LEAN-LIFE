@@ -112,6 +112,15 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 7. `python manage.py runserver 0.0.0.0:8000`
 8. Open up an browser window and navigate to http://0.0.0.0:8000/
 
+# Running the Fast API
+
+Steps: 
+
+1. `cd` to `/model_api/fast_api`
+2. Check [this](https://github.com/INK-USC/LEAN-LIFE/tree/soft_match/model_api/fast_api) readme for running the server.
+
+You can run the front-end server to collect data and use it as request body of fast_api.
+
 # Contributing
 
 We love contributions, so thank you for taking the time! Pushing changes to master is blocked, so please create a branch and make your edits on the branch. Once done, please create a Pull Request and ask a contributer from the INK-LAB to pull your changes in. You can refer to our PR guidelines and general contribution guidelines [here](./CONTRIBUTING.md).
