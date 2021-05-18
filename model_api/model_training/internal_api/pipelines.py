@@ -479,7 +479,8 @@ def train_next_bilstm_pipeline(payload):
         strict_match_data = pickle.load(f)
     # check if there is no hard matched entries
     if len(strict_match_data.tokens) == 0:
-        send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
+        if payload["leanlife"]:
+            send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
         raise ValueError("No hard matches found.")
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
