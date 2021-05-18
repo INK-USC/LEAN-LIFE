@@ -15,7 +15,7 @@ import warnings
 from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
-from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, evaluate_next_clf_pipeline
+from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, soft_match_pipeline, evaluate_next_clf_pipeline
 
 
 def _remove_trailing_period(string):
@@ -136,6 +136,10 @@ def train_next_framework(params, label_space, unlabeled_data=None, explanation_d
 def apply_strict_matching(payload):
     """Just passes along the payload"""
     return strict_match_pipeline(payload)
+
+def apply_soft_matching(payload):
+    """Just passes along the payload"""
+    return soft_match_pipeline(payload)
 
 def evaluate_next(payload):
     """Just passes along the payload"""

@@ -20,7 +20,7 @@ sys.path.append(".")
 sys.path.append("../model_training/")
 import fast_api_util_functions as util_f
 import json_schema as schema
-from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, evaluate_next
+from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, apply_soft_matching, evaluate_next
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -100,3 +100,17 @@ async def strict_match_data(api_payload: schema.StrictMatchPayload):
     api_payload = api_payload.dict()
     result = apply_strict_matching(api_payload)
     return schema.MatchedDataOutput.parse_obj({"matched_tuples" : result[0], "matched_indices" : result[1]})
+
+@app.post("/other/next/softmatch", status_code=status.HTTP_200_OK, response_model=schema.MatchedDataOutput)
+async def strict_match_data(api_payload: schema.StrictMatchPayload):
+    """
+        Endpoint that converts explanations into strict labeling functions and labels
+        a pool of unlabeled sentences. Please refer to the docs or `json_schema.py` to
+        understand the required paramaters.
+    """
+    api_payload = api_payload.dict()
+    result = apply_soft_matching(api_payload)
+    if result:
+        return schema.MatchedDataOutput.parse_obj({"matched_tuples" : result[0], "matched_indices" : result[1]})
+    else:
+        return schema.MatchedDataOutput.parse_obj({"matched_tuples" : [], "matched_indices" : []})
