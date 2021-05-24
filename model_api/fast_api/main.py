@@ -101,16 +101,23 @@ async def strict_match_data(api_payload: schema.StrictMatchPayload):
     result = apply_strict_matching(api_payload)
     return schema.MatchedDataOutput.parse_obj({"matched_tuples" : result[0], "matched_indices" : result[1]})
 
-@app.post("/other/next/softmatch", status_code=status.HTTP_200_OK, response_model=schema.MatchedDataOutput)
-async def strict_match_data(api_payload: schema.StrictMatchPayload):
+@app.post("/other/next/softmatch", status_code=status.HTTP_200_OK, response_model=schema.SoftMatchData)
+async def soft_match_data(api_payload: schema.LeanLifePayload):
     """
         Endpoint that converts explanations into strict labeling functions and labels
         a pool of unlabeled sentences. Please refer to the docs or `json_schema.py` to
         understand the required paramaters.
     """
-    api_payload = api_payload.dict()
-    result = apply_soft_matching(api_payload)
-    if result:
-        return schema.MatchedDataOutput.parse_obj({"matched_tuples" : result[0], "matched_indices" : result[1]})
-    else:
-        return schema.MatchedDataOutput.parse_obj({"matched_tuples" : [], "matched_indices" : []})
+    params = api_payload.params
+    lean_life_data = api_payload.lean_life_data
+    prepped_data = util_f.prepare_next_data(lean_life_data, project_type=params.project_type)
+    label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
+    if len(ner_label_space) == 0:
+        ner_label_space = None
+    if len(unlabeled_docs) == 0:
+        unlabeled_docs = None
+    if len(explanation_triples) == 0:
+        explanation_triples = None
+    data = apply_soft_matching(params.__dict__, label_space, unlabeled_docs, explanation_triples,
+                                          ner_label_space)
+    return schema.SoftMatchData(scores=data)

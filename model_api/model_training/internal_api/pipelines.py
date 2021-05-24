@@ -26,7 +26,7 @@ from internal_api.defaults import FIND_MODULE_DEFAULTS, TRAINING_DEFAULTS, BILST
 from next_framework.training.find_training_util_functions import build_pre_train_find_datasets, \
                                                                  evaluate_find_module
 from next_framework.training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
-                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching
+                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching, build_labeled_dataset
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                                         set_re_dataset_ner_label_space, set_ner_label_space
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
@@ -126,7 +126,7 @@ def pre_train_find_module_pipeline(payload):
     
     # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
     # you can either send us tokens
-    if "custom_vocab_tokens" in payload:
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
         tokens = payload["custom_vocab_tokens"]
         custom_vocab = build_custom_vocab("", len(vocab), tokens)
     # or if this is an "re" task and you have sent ner_labels, we will create a custom
@@ -435,7 +435,7 @@ def train_next_bilstm_pipeline(payload):
     # you can either send us tokens
     # load_spacy_to_custom_dataset_ner_mapping <- remember to say how to update this
     custom_vocab= {}
-    if "custom_vocab_tokens" in payload:
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
         tokens = payload["custom_vocab_tokens"]
         custom_vocab = build_custom_vocab("", len(vocab), tokens)
     # or if this is an "re" task and you have sent ner_labels, we will create a custom
@@ -461,7 +461,7 @@ def train_next_bilstm_pipeline(payload):
         explanation_data = payload["explanation_data"]
         build_datasets_from_text(text_data, vocab_path, explanation_data, custom_vocab, save_string, label_map, task=task, dataset=dataset_name)
 
-        if "eval_data" in payload:
+        if "eval_data" in payload and payload["eval_data"] is not None:
             eval_data = payload["eval_data"]
             build_labeled_dataset([tup[0] for tup in eval_data], 
                                   [tup[1] for tup in eval_data],
@@ -480,6 +480,7 @@ def train_next_bilstm_pipeline(payload):
     # check if there is no hard matched entries
     if len(strict_match_data.tokens) == 0:
         if payload["leanlife"]:
+            # TODO: route to standard pipeline, revisit once in place
             send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
         raise ValueError("No hard matches found.")
     
@@ -492,7 +493,7 @@ def train_next_bilstm_pipeline(payload):
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/word2idx_{}.p".format(save_string), "rb") as f:
         quoted_words_to_index = pickle.load(f)
     
-    if "eval_data" in payload:
+    if "eval_data" in payload and payload["eval_data"] is not None:
         eval_path = PATH_TO_PARENT + "../next_framework/data/training_data/dev_data_{}.p".format(save_string)
     else:
         eval_path = ""
@@ -513,10 +514,11 @@ def train_next_bilstm_pipeline(payload):
         best_dev_f1_score = -1
     best_loss = 1e30
 
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
+
     if load_model:
-        clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
-                                            torch.cuda.is_available(), number_of_classes,
-                                            custom_token_count=custom_vocab_length)
         clf.load_state_dict(torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)))
         logging.info("loaded model")
         
@@ -538,6 +540,9 @@ def train_next_bilstm_pipeline(payload):
                         best_dev_f1_score = float(row[-1])
         
         logging.info("loaded past results")
+
+    clf = clf.to(device)
+    optimizer = SGD(clf.parameters(), lr=learning_rate)
 
     # Get queries ready for Find Module
     lfind_query_tokens, _ = BaseVariableLengthDataset.variable_length_batch_as_tensors(tokenized_queries, pad_idx)
@@ -593,12 +598,6 @@ def train_next_bilstm_pipeline(payload):
     else:
         with open(PATH_TO_PARENT + "../next_framework/data/training_data/soft_scores_{}.p".format(experiment_name), "rb") as f:
             soft_scores = pickle.load(f)
-    
-    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
-                                        torch.cuda.is_available(), number_of_classes,
-                                        custom_token_count=custom_vocab_length)    
-    clf = clf.to(device)
-    optimizer = SGD(clf.parameters(), lr=learning_rate)
 
     del vocab
 
@@ -751,21 +750,158 @@ def strict_match_pipeline(payload):
     
     return matched_tuples, matched_indices
 
-def soft_match_pipeline(payload):    
-    """
-        Takes in explanation data, and a source of unlabeled data and will annotate the unlabeled data
-        with the explanations provided. Converts explanations into binary labeling functions and if an
-        explanation applies to a datapoint the label associated with the explanation is now associated
-        with the datapoint.
+def soft_match_data(payload):
+    # Step 0.
+    _ = pre_train_find_module_pipeline(payload)
 
-        Returns:
-            arr, arr : first array is of tuples (text, label),
-                       second array is of tuples (index_of_text in unlabeled data, index_of_explanation in explanatation data)
-    """
-    text_data = payload["unlabeled_text"]
-    explanation_data = payload["explanation_triples"]
+    # Step 1
+    build_data = payload["build_data"]
+    experiment_name = payload["experiment_name"]
+    dataset_name = payload["dataset_name"]
+    dataset_size = payload["dataset_size"]
+    label_map = payload["label_map"]
     task = payload["task"]
-    matched_tuples, matched_indices = apply_soft_matching(text_data, explanation_data, task)  
+
+    match_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "match_batch_size")
+    unlabeled_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "unlabeled_batch_size")
+    lower_bound = FIND_MODULE_DEFAULTS["lower_bound"]
+    embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
+    emb_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "emb_dim")
+
+    full_batch_size = int(match_batch_size) + int(unlabeled_batch_size)
+
+    pre_training_size = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_training_size")
+    find_module_hidden_dim = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_hidden_dim")
+
+    find_module_path = PATH_TO_PARENT + "../next_framework/data/saved_models/Find-Module-pt_{}.p".format(
+        experiment_name)
+    find_module_sample_rate = pre_training_size / dataset_size
+
+    if find_module_sample_rate > 1:
+        find_module_sample_rate = -1.0  # no sampling
+
+    save_string = generate_save_string(dataset_name, embeddings, sample=find_module_sample_rate)
+    vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    relation_ner_types = None
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+
+        if "relation_ner_types" in payload:
+            relation_ner_types = payload["relation_ner_types"]
+        else:
+            # FILL IN MORE DATASETS HERE
+            # if using the api, you can just provide the mapping between relation to ner types (above)
+            # however this is not necessary to send
+            if dataset_name == "tacred":
+                relation_ner_types = TACRED_ENTITY_TYPES
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
+
+    with open(vocab_path, "rb") as f:
+        vocab = pickle.load(f)
+
+    # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
+    # you can either send us tokens
+    # load_spacy_to_custom_dataset_ner_mapping <- remember to say how to update this
+    custom_vocab = {}
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
+        tokens = payload["custom_vocab_tokens"]
+        custom_vocab = build_custom_vocab("", len(vocab), tokens)
+    # or if this is an "re" task and you have sent ner_labels, we will create a custom
+    # vocab for you of [SUBJ-ner_label, OBJ-ner_label] for each label in ner_labels
+    # we do this due to parsing. Look at tokenize() in:
+    # model_api/model_training/next_framework/training/util_functions.py
+    else:
+        if task == "re" and len(ner_labels) > 0:
+            custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
+        else:
+            # finally, if the task is not "re", and you just want to set a custom vocab
+            # we allow you to do so
+            custom_vocab = build_custom_vocab(dataset_name, len(vocab))
+
+    custom_vocab_length = len(custom_vocab)
+
+    pad_idx = vocab["<pad>"]
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    # Step 2.
+    if build_data:
+        text_data = payload["training_data"]
+        explanation_data = payload["explanation_data"]
+        build_datasets_from_text(text_data, vocab_path, explanation_data, custom_vocab, save_string, label_map, task=task, dataset=dataset_name)
+
+        if "eval_data" in payload and payload["eval_data"] is not None:
+            eval_data = payload["eval_data"]
+            build_labeled_dataset([tup[0] for tup in eval_data], 
+                                  [tup[1] for tup in eval_data],
+                                  vocab, save_string, "dev", label_map, custom_vocab)
+
+    # Step 3.
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/unlabeled_data_{}.p".format(save_string), "rb") as f:
+        unlabeled_data = pickle.load(f)
+
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
+        soft_labeling_functions_dict = dill.load(f)
+
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/query_tokens_{}.p".format(save_string), "rb") as f:
+        tokenized_queries = pickle.load(f)
+
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/word2idx_{}.p".format(save_string), "rb") as f:
+        quoted_words_to_index = pickle.load(f)
+
+    # Get queries ready for Find Module
+    lfind_query_tokens, _ = BaseVariableLengthDataset.variable_length_batch_as_tensors(tokenized_queries, pad_idx)
+    lfind_query_tokens = lfind_query_tokens.to(device).detach()
+
+    # Preping Soft Labeling Function Data
+    soft_labeling_functions = soft_labeling_functions_dict["function_pairs"]
+
+    # Step 4. find soft matches
+    find_module = Find_Module.Find_Module(vocab.vectors, pad_idx, emb_dim, find_module_hidden_dim,
+                                          torch.cuda.is_available(), custom_token_count=custom_vocab_length)
+
+    find_module.load_state_dict(torch.load(find_module_path))
+    find_module = find_module.to(device)
+    find_module.eval()
+    function_scores = {}
+    for i, batch in enumerate(tqdm(unlabeled_data.as_batches(batch_size=full_batch_size, shuffle=False))):
+        unlabeled_tokens, unlabeled_token_lengths, phrases, _ = batch
+        unlabeled_tokens = unlabeled_tokens.to(device)
+        phrase_input = build_phrase_input(phrases, pad_idx, task).to(device).detach()
+        b_size, seq_length = unlabeled_tokens.shape
+        mask_mat = build_mask_mat_for_batch(seq_length).to(device).detach()
+        with torch.no_grad():
+            lfind_output = find_module.soft_matching_forward(unlabeled_tokens.detach(), lfind_query_tokens, lower_bound).detach()  # B x seq_len x Q
+
+            for j, pair in enumerate(soft_labeling_functions):
+                func, rel = pair
+                batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach()  # 1 x B
+
+                if task == "re":
+                    type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach()  # 1 x B
+                    final_scores = batch_scores * type_restrict_multiplier  # 1 x B
+                else:
+                    final_scores = batch_scores
+                final_scores = final_scores.cpu()
+                if j in function_scores:
+                    function_scores[j] = torch.cat([function_scores[j], final_scores], dim=1)
+                else:
+                    function_scores[j] = final_scores
+
+    soft_scores = torch.cat([function_scores[key] for key in function_scores]).permute(1,0) # len(data) x number_of_explanations
+
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/soft_scores_debug.p", "wb") as f:
+        pickle.dump(soft_scores, f)
+
+    return soft_scores.tolist()
 
 def evaluate_next_clf_pipeline(payload):
     """
@@ -805,7 +941,7 @@ def evaluate_next_clf_pipeline(payload):
     
     # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
     # you can either send us tokens
-    if "custom_vocab_tokens" in payload:
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
         tokens = payload["custom_vocab_tokens"]
         custom_vocab = build_custom_vocab("", len(vocab), tokens)
     # or if this is an "re" task and you have sent ner_labels, we will create a custom

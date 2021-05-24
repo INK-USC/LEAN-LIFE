@@ -15,7 +15,7 @@ import warnings
 from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
-from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, soft_match_pipeline, evaluate_next_clf_pipeline
+from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, soft_match_data, evaluate_next_clf_pipeline
 
 
 def _remove_trailing_period(string):
@@ -137,9 +137,97 @@ def apply_strict_matching(payload):
     """Just passes along the payload"""
     return strict_match_pipeline(payload)
 
-def apply_soft_matching(payload):
+def apply_soft_matching(params, label_space, unlabeled_docs=None, explanation_triples=None, ner_label_space=None):
     """Just passes along the payload"""
-    return soft_match_pipeline(payload)
+    explanation_data = None
+
+    # If data is sent, train full pipeline
+    # If data is not sent, just tune downstream classifier
+    if explanation_triples != None:
+        explanation_data = []
+        # for now we are just "AND"ing all explanations for an annotation
+        for entry in explanation_triples:
+            explanations = [_remove_trailing_period(explanation) for explanation in entry["explanation"]]
+            explanation = " and ".join(explanations)
+            explanation_data.append({"text" : entry["text"], "label" : entry["label"], "explanation" : explanation})
+
+        if unlabeled_docs != None:
+            params["stage"] = "both"
+            params["pre_train_build_data"] = True
+            params["build_data"] = True
+        else:
+            error_msg = "No Training Data Sent"
+            raise HTTPException(status_code=500, detail=error_msg)
+    else:
+        params["stage"] = "clf"
+        params["pre_train_build_data"] = False
+        params["build_data"] = False
+    
+    if params["project_type"] == "Sentiment Analysis":
+        params["task"] = "sa"
+    elif params["project_type"] == "Relation Extraction":
+        params["task"] = "re"
+        
+    
+    # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
+    # so more of a double check
+    required_keys = ["stage", "experiment_name", "build_data", "pre_train_build_data", "dataset_name", "dataset_size", "task"]
+    for key in required_keys:
+        if key not in params:
+            error_msg = "{} not found in params".format(key)
+            raise HTTPException(status_code=500, detail=error_msg)
+    
+    # this key is only set in `train_next_framework_lean_life()`, so if its not there its not LEAN-LIFE data
+    if "leanlife" not in params:
+        params["leanlife"] = False
+
+    stage = params["stage"] # inferred for lean_life
+    experiment_name = params["experiment_name"] 
+    build_data = params["build_data"]
+    build_pretrain_data = params["pre_train_build_data"]
+    task = params["task"]
+
+    # should already be checked by validators on receiving request (double check)
+    if stage not in ["both", "clf", "find"]:
+        error_msg = "stage must be one of `both`, `clf` or `find`"
+        raise HTTPException(status_code=500, detail=error_msg)
+    
+    # should already be checked by validators on receiving request (double check)
+    if task not in ["re", "sa"]:
+        error_msg = "Task must be one of re or sa, sa is really just text classification"
+        raise HTTPException(status_code=500, detail=error_msg)
+    
+    # Can't train downstream classifier without FIND module being present
+    if stage == "clf":
+        find_module_path =  PATH_TO_PARENT + "../next_framework/data/saved_models/Find-Module-pt_{}.p".format(experiment_name)
+        if not path.isfile(find_module_path):
+            error_msg = "FIND Module must be created first, please send appropraite training data and/or set `stage` to `both`"
+            raise HTTPException(status_code=500, detail=error_msg)
+    
+    # makes sure if training is to be done that data is provided
+    if stage == "both" or build_data or build_pretrain_data:
+        if unlabeled_docs == None or explanation_data == None:
+            error_msg = "In order to build datasets data must be provided"
+            raise HTTPException(status_code=500, detail=error_msg)
+        
+        params["training_data"] = unlabeled_docs
+        params["explanation_data"] = explanation_data
+    
+    # provides a warning of the lack of ner_labels if the task is re
+    if task == "re": 
+        if ner_label_space == None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            params["ner_labels"] = ner_label_space 
+
+    params["label_map"] = label_space
+
+    return soft_match_data(params)
 
 def evaluate_next(payload):
     """Just passes along the payload"""

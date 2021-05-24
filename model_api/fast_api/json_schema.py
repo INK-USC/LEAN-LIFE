@@ -466,3 +466,6 @@ class EvalNextClfPayload(BaseModel):
                 ]
             }
         }
+        
+class SoftMatchData(BaseModel):
+    scores: List[List[str]]
