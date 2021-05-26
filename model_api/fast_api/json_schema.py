@@ -469,3 +469,189 @@ class EvalNextClfPayload(BaseModel):
         
 class SoftMatchData(BaseModel):
     scores: List[List[str]]
+
+
+class LabeledDoc(BaseModel):
+    text: str
+    label: str
+
+
+class StandardTrainingApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: Literal['sa', 're', 'ner']
+    build_data: bool
+
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    custom_vocab_tokens: Optional[List[str]]
+    relation_ner_types: Optional[Dict[str, Tuple[str, str]]]
+
+    match_batch_size: Optional[int]
+    eval_batch_size: Optional[int]
+    learning_rate: Optional[float]
+    epochs: Optional[int]
+    random_state: Optional[int]
+    emb_dim: Optional[int]
+    hidden_dim: Optional[int]
+    none_label_key: Optional[str]
+    load_model: Optional[bool]
+    start_epoch: Optional[int]
+    eval_data: Optional[List[Tuple[str, str]]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "test_experiment_1",
+                "dataset_name": "test_dataset",
+                "task": "re",
+                "build_data": True
+            }
+        }
+
+
+class StandardPipelinePayload(BaseModel):
+    params: StandardTrainingApiParams
+    label_space: Dict[str, int]
+    labeled_data: List[LabeledDoc]
+    dev_data: Optional[List[LabeledDoc]]
+    ner_label_space: Optional[List[str]]
+
+
+class LeanLifeStandardParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    project_type: str
+
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+
+    match_batch_size: Optional[int]
+    learning_rate: Optional[float]
+    epochs: Optional[int]
+    random_state: Optional[int]
+    emb_dim: Optional[int]
+    hidden_dim: Optional[int]
+    load_model: Optional[bool]
+    start_epoch: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "test_experiment_1",
+                "dataset_name": "test_dataset",
+                "project_type": "Relation Extraction"
+            }
+        }
+
+
+class StandardAnnotatedDoc(BaseModel):
+    text: str
+    annotations: List[Dict[str, Union[str, bool, int]]]
+
+
+class LeanLifeStandardData(BaseModel):
+    label_space: List[Label]
+    labeled: Optional[List[StandardAnnotatedDoc]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "label_space" : [
+                    {
+                        "id" : 1, "text" : "NER_TYPE_1", "user_provided" : True
+                    },
+                    {
+                        "id" : 2, "text" : "NER_TYPE_2", "user_provided" : True
+                    },
+                    {
+                        "id" : 3, "text" : "NER_TYPE_3", "user_provided" : True
+                    },
+                    {
+                        "id" : 4, "text" : "relation-1", "user_provided" : False
+                    },
+                    {
+                        "id" : 5, "text" : "relation-2", "user_provided" : False
+                    }
+                ],
+                "annotated" : [
+                    {
+                        "text" : "This is some random text for our relation extraction example, that we're going to insert SUBJ and OBJ into.",
+                        "annotations" : [
+                            {
+                                "id" : 1,
+                                "label_text" : "NER_TYPE_1",
+                                "start_offset" : 13, 
+                                "end_offset" : 19,
+                                "user_provided" : True
+                            },
+                            {
+                                "id" : 2,
+                                "label_text" : "NER_TYPE_2",
+                                "start_offset" : 53, 
+                                "end_offset" : 57,
+                                "user_provided" : True
+                            },
+                            {
+                                "id" : 3,
+                                "label_text" : "NER_TYPE_3",
+                                "start_offset" : 62, 
+                                "end_offset" : 69,
+                                "user_provided" : True
+                            },
+                            {
+                                "id" : 4,
+                                "sbj_start_offset" : 13,
+                                "sbj_end_offset" : 19,
+                                "obj_start_offset" : 53,
+                                "obj_end_offset" : 57,
+                                "label_text" : "relation-1",
+                                "user_provided" : False
+                            },
+                            {
+                                "id" : 5,
+                                "sbj_start_offset" : 62,
+                                "sbj_end_offset" : 69,
+                                "obj_start_offset" : 53,
+                                "obj_end_offset" : 57,
+                                "label_text" : "relation-2",
+                                "user_provided" : False
+                            }
+                        ]
+                    },
+                    {
+                        "text" : "This document has no relations, but we can still use it for training!",
+                        "annotations" : [
+                            {
+                                "id" : 1,
+                                "label_text" : "NER_TYPE_1",
+                                "start_offset" : 5, 
+                                "end_offset" : 13,
+                                "user_provided" : True
+                            },
+                            {
+                                "id" : 2,
+                                "label_text" : "NER_TYPE_1",
+                                "start_offset" : 21, 
+                                "end_offset" : 30,
+                                "user_provided" : True
+                            },
+                            {
+                                "id" : 3,
+                                "label_text" : "NER_TYPE_3",
+                                "start_offset" : 60, 
+                                "end_offset" : 68,
+                                "user_provided" : True
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+
+
+class LeanLifeStandardPayload(BaseModel):
+    lean_life_data: LeanLifeStandardData
+    params: LeanLifeStandardParams

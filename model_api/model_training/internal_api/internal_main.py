@@ -16,6 +16,7 @@ from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
 from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, soft_match_data, evaluate_next_clf_pipeline
+from internal_api.standard_pipeline import standard_pipeline
 
 
 def _remove_trailing_period(string):
@@ -232,3 +233,69 @@ def apply_soft_matching(params, label_space, unlabeled_docs=None, explanation_tr
 def evaluate_next(payload):
     """Just passes along the payload"""
     return evaluate_next_clf_pipeline(payload)
+
+
+def train_standard_pipeline(params, label_space, labeled_data=None, dev_data=None, ner_label_space=None):
+    # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
+    # so more of a double check
+    required_keys = ["experiment_name", "build_data", "dataset_name", "task"]
+    for key in required_keys:
+        if key not in params:
+            error_msg = "{} not found in params".format(key)
+            raise HTTPException(status_code=500, detail=error_msg)
+
+    # this key is only set in `train_next_framework_lean_life()`, so if its not there its not LEAN-LIFE data
+    if "leanlife" not in params:
+        params["leanlife"] = False
+
+    build_data = params["build_data"]
+    task = params["task"]
+
+    if build_data:
+        if labeled_data is None or len(labeled_data) == 0:
+            error_msg = "labeled_data is required for training"
+            raise HTTPException(status_code=500, detail=error_msg)
+
+        params["labeled_data"] = labeled_data
+        params["dev_data"] = dev_data
+
+    # provides a warning of the lack of ner_labels if the task is re
+    if task == "re":
+        if ner_label_space is None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            params["ner_labels"] = ner_label_space
+
+    params["label_map"] = label_space
+
+    return standard_pipeline(params)
+
+
+def train_standard_lean_life(params, label_space, labeled_data=None, dev_data=None, ner_label_space=None):
+    """
+        Function that transforms converted LEAN-LIFE datastructures into a more standard form for training purposes
+
+        Is called by the `start_standard_training_lean_life` api function in "main.py"
+
+        This function really just calls the `train_standard_pipeline` after some custom LEAN-LIFE dataprep
+    """
+    # If data is sent, train full pipeline
+    # If data is not sent, just tune downstream classifier
+    if labeled_data is not None:
+        params["build_data"] = True
+    else:
+        params["build_data"] = False
+
+    if params["project_type"] == "Sentiment Analysis":
+        params["task"] = "sa"
+    elif params["project_type"] == "Relation Extraction":
+        params["task"] = "re"
+
+    params["leanlife"] = True
+
+    return train_standard_pipeline(params, label_space, labeled_data, dev_data, ner_label_space)

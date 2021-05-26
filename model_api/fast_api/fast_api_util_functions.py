@@ -158,7 +158,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     ner_mentions = {}
     re_data = []
     text = annotated_doc.text
-    explanations = annotated_doc.explanations
+    explanations = annotated_doc.explanations if hasattr(annotated_doc, 'explanations') else []
     annotations = annotated_doc.annotations
     for annotation in annotations:
         if eval(annotation["user_provided"]):
@@ -215,7 +215,7 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
     temp_explanation_triples = {}
     temp_fake_id = fake_id
     text = annotated_doc.text
-    explanations = annotated_doc.explanations
+    explanations = annotated_doc.explanations if hasattr(annotated_doc, 'explanations') else []
     annotations = annotated_doc.annotations
     if len(annotations):
         for annotation in annotations:
@@ -339,6 +339,105 @@ def prepare_next_data(json_data, project_type="", lean_life=True):
             ner_label_space = []
     
     return label_space, unlabeled_docs, explanation_triples, ner_label_space
+
+
+def _process_standard_annotations(annotated_docs, project_type):
+    """
+        Given a list of annotated documents and a project type, this function creates the needed datasets
+        for training.
+
+        Arguments:
+            annotated_docs (arr) : list of annotated docs
+            project_type   (int) : integer representing what type of annotations to expect
+
+        Returns:
+            labeled_docs : array of (dict("text" : str, "label" : str))
+    """
+    sentence_label_pairs = {}
+    explanation_triples = {}
+    fake_id = -1
+    processing_func = None
+
+    if project_type == const.LEAN_LIFE_SA_PROJECT:
+        processing_func = _process_sa_annotated_doc
+    elif project_type == const.LEAN_LIFE_RE_PROJECT:
+        processing_func = _process_re_annotated_doc
+
+    for doc in annotated_docs:
+        if processing_func:
+            processed_doc = processing_func(doc, fake_id)
+        else:
+            processed_doc = ({}, {}, fake_id)
+        temp_sentence_label_pairs, _, temp_fake_id = processed_doc
+        fake_id = temp_fake_id
+        for key in temp_sentence_label_pairs:
+            text, label = temp_sentence_label_pairs[key]
+            sentence_label_pairs[key] = {
+                'text': text,
+                'label': label,
+            }
+
+    return list(sentence_label_pairs.values())
+
+
+def _read_standard_lean_life_dataset(json_data, project_type=""):
+    """
+        Read in a LEAN_LIFE Dataset file and convert it into the needed datastructures for training
+
+        Arguments:
+            json_data (LeanLifeStandardData) : json_schema.LeanLifeStandardData
+            project_type       (str) : string indicating project type
+
+        Returns:
+            label_space, labeled_docs, dev_docs, ner_label_space,  : dict, arr, arr, arr
+    """
+    label_space = json_data.label_space
+    ner_label_space = [label.text for label in label_space if label.user_provided and len(label.text) > 0]
+    label_space = [label.text for label in label_space if not label.user_provided]
+    label_space = {label : i for i, label in enumerate(label_space)}
+
+    labeled = json_data.labeled
+    if len(labeled):
+        labeled_docs = _process_standard_annotations(labeled, project_type)
+    else:
+        labeled_docs = []
+
+    return label_space, labeled_docs, [], ner_label_space
+
+
+def prepare_standard_data(json_data, project_type="", lean_life=True):
+    """
+        Given a post request indicating a training job should be kicked off, organize data into the needed
+        datastructures for training.
+
+        Arguments:
+            json_data (LeanLifeStandardData|StandardPipelinePayload) : json_schema.LeanLifeStandardData or json_schema.StandardPipelinePayload
+            project_type                                  (str) : string indicating project type for lean_life data
+            lean_life                                    (bool) : boolean indicating whether file is a lean_life file or a user provided payload
+    """
+    if lean_life:
+        label_space, labeled_docs, dev_docs, ner_label_space = _read_standard_lean_life_dataset(json_data, project_type)
+    else:
+        label_space = json_data.label_space
+        if hasattr(json_data, "labeled_data"):
+            labeled_docs = json_data.labeled_data
+            for i, doc in enumerate(labeled_docs):
+                labeled_docs[i] = doc.dict()
+        else:
+            labeled_docs = []
+        if hasattr(json_data, "dev_data"):
+            dev_docs = json_data.dev_data
+            for i, doc in enumerate(dev_docs):
+                dev_docs[i] = doc.dict()
+        else:
+            dev_docs = []
+        if hasattr(json_data, "ner_label_space"):
+            ner_label_space = json_data.ner_label_space
+        else:
+            ner_label_space = []
+
+    return label_space, labeled_docs, dev_docs, ner_label_space
+
 
 def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, best_train_loss, stage):
     """
