@@ -15,7 +15,8 @@ import warnings
 from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
-from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, soft_match_data, evaluate_next_clf_pipeline
+from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, \
+        soft_match_data, evaluate_next_clf_pipeline, hard_match_pipeline
 from internal_api.standard_pipeline import standard_pipeline
 
 
@@ -128,11 +129,17 @@ def train_next_framework(params, label_space, unlabeled_data=None, explanation_d
 
     params["label_map"] = label_space
     
+    if "soft_match" not in params or params["soft_match"] is None:
+        params["soft_match"] = True
+
     # trains only find_module
     if stage == "find":
         return pre_train_find_module_pipeline(params)
     else: # clf and both both trigger this
-        return train_next_bilstm_pipeline(params)
+        if params["soft_match"] == True:
+            return train_next_bilstm_pipeline(params)
+        else:
+            return hard_match_pipeline(params)
 
 def apply_strict_matching(payload):
     """Just passes along the payload"""

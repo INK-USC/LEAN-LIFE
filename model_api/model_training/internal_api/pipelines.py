@@ -33,6 +33,8 @@ from next_framework.training.next_util_classes import BaseVariableLengthDataset
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.models import Find_Module, BiLSTM_Att_Clf
 
+from standard_pipeline import standard_pipeline
+
 
 
 def _check_or_load_defaults(payload, default, key):
@@ -750,6 +752,8 @@ def strict_match_pipeline(payload):
     
     return matched_tuples, matched_indices
 
+
+# TODO: cleanup
 def soft_match_data(payload):
     # Step 0.
     _ = pre_train_find_module_pipeline(payload)
@@ -902,6 +906,34 @@ def soft_match_data(payload):
         pickle.dump(soft_scores, f)
 
     return soft_scores.tolist()
+
+
+def hard_match_pipeline(payload):
+    """
+        Format strict match data and call standard pipeline
+    """
+    build_data = payload["build_data"]
+    if build_data:
+        text_data = payload["training_data"]
+        explanation_data = payload["explanation_data"]
+        task = payload["task"]
+
+        matched_tuples, _ = apply_strict_matching(text_data, explanation_data, task)
+        # check if there is no hard matched entries
+        if len(matched_tuples) == 0:
+            if payload["leanlife"]:
+                # TODO: route to standard pipeline, revisit once in place
+                experiment_name = payload["experiment_name"]
+                send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
+            raise ValueError("No hard matches found.")
+
+        del payload["training_data"]
+        del payload["explanation_data"]
+
+        payload['labeled_data'] = list(map(lambda x: {'text': x[0], 'label': x[1]}, matched_tuples))
+
+    return standard_pipeline(payload)
+
 
 def evaluate_next_clf_pipeline(payload):
     """

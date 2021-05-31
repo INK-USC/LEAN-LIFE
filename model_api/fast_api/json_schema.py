@@ -30,6 +30,7 @@ class LeanLifeParams(BaseModel):
     start_epoch : Optional[int]
     pre_train_hidden_dim : Optional[int]
     pre_train_training_size : Optional[int]
+    soft_match: Optional[bool]
 
     class Config:
         schema_extra = {

@@ -20,7 +20,6 @@ sys.path.append(PATH_TO_PARENT + "../../")
 
 from fast_api.fast_api_util_functions import update_model_training, send_model_metadata
 from defaults import TRAINING_DEFAULTS, BILSTM_DEFAULTS
-from pipelines import _check_or_load_defaults
 
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.training.next_util_functions import generate_save_string, build_custom_vocab, \
@@ -28,6 +27,13 @@ from next_framework.training.next_util_functions import generate_save_string, bu
 from next_framework.training.next_training_util_functions import build_labeled_dataset, evaluate_next_clf
 from next_framework.training.standard_training_util_functions import build_datasets_from_text
 from next_framework.models import BiLSTM_Att_Clf
+
+
+def _check_or_load_defaults(payload, default, key):
+    if key in payload and payload[key] != None:
+        return payload[key]
+    else:
+        return default[key]
 
 
 def standard_pipeline(payload):
