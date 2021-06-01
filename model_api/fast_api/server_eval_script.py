@@ -1,6 +1,5 @@
 import argparse
 import json
-import asyncio
 
 from json_schema import EvalStandardClfPayload
 from main import eval_standard_clf
@@ -91,7 +90,7 @@ def main():
     }
 
     payload = EvalStandardClfPayload(**data)
-    data = asyncio.get_event_loop().run_until_complete(eval_standard_clf(payload))
+    data = eval_standard_clf(payload)
     print(data)
 
 

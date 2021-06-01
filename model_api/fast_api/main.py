@@ -26,7 +26,7 @@ from internal_api.internal_main import train_next_framework_lean_life, train_nex
     train_standard_lean_life, evaluate_standard, predict_next, predict_standard
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 app = FastAPI()
 
 
@@ -157,7 +157,7 @@ async def soft_match_data(api_payload: schema.LeanLifePayload):
 
 
 @app.post("/training/standard/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
-async def start_standard_training_api(api_payload: schema.StandardPipelinePayload):
+def start_standard_training_api(api_payload: schema.StandardPipelinePayload):
     """
         Endpoint used to kick off training of a classifier.
         Please refer to the docs or `json_schema.py` to understand both the supported and required parameters.
@@ -197,7 +197,7 @@ async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeSt
 
 
 @app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardEvalDataOutput)
-async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
+def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
     """
         Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
         `json_schema.py` to understand both the supported and required parameters.

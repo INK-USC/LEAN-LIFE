@@ -1,6 +1,5 @@
 import argparse
 import json
-import asyncio
 
 from json_schema import StandardPipelinePayload
 from main import start_standard_training_api
@@ -16,10 +15,6 @@ def main():
                         type=str,
                         default="./data/tacred_dev.json",
                         help="Path to dev data.")
-    # parser.add_argument("--test_path",
-    #                     type=str,
-    #                     default="./data/tacred_test.json",
-    #                     help="Path to train data.")
     parser.add_argument("--epochs",
                         default=60,
                         type=int,
@@ -29,8 +24,6 @@ def main():
 
     train = json.load(open(args.train_path))
     dev = json.load(open(args.dev_path))
-    # test = json.load(open(args.test_path))
-    # test_formatted = list(map(lambda x: (x['text'], x['label']), test))
 
     train = train[:100]
     dev = dev[:200]
@@ -51,7 +44,6 @@ def main():
             "start_epoch": 0,
             "emb_dim": 300,
             "epochs": args.epochs,
-            # 'eval_data': test_small
         },
         'label_space': {
             'org:subsidiaries': 0,
@@ -110,7 +102,7 @@ def main():
     }
 
     payload = StandardPipelinePayload(**data)
-    data = asyncio.get_event_loop().run_until_complete(start_standard_training_api(payload))
+    data = start_standard_training_api(payload)
     print(data)
 
 
