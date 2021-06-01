@@ -371,3 +371,100 @@ def standard_pipeline(payload):
         send_model_metadata(experiment_name, save_path, best_train_loss, file_size)
 
     return save_path
+
+
+def evaluate_standard_clf_pipeline(payload):
+    # ready parameters
+    experiment_name = payload["experiment_name"]
+    dataset_name = payload["dataset_name"]
+    label_map = payload["label_map"]
+    task = payload["task"]
+
+    eval_batch_size = int(_check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size"))
+    embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
+    emb_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "emb_dim")
+    hidden_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "hidden_dim")
+    none_label_key = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "none_label_key")
+
+    save_string = generate_save_string(dataset_name, embeddings)
+    vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    number_of_classes = len(label_map)
+    if none_label_key != None:
+        none_label_id = label_map[none_label_key]
+    else:
+        none_label_id = -1
+
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
+
+    with open(vocab_path, "rb") as f:
+        vocab = pickle.load(f)
+
+    pad_idx = vocab["<pad>"]
+
+    # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
+    # you can either send us tokens
+    # load_spacy_to_custom_dataset_ner_mapping <- remember to say how to update this
+    custom_vocab = {}
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
+        tokens = payload["custom_vocab_tokens"]
+        custom_vocab = build_custom_vocab("", len(vocab), tokens)
+    # or if this is an "re" task and you have sent ner_labels, we will create a custom
+    # vocab for you of [SUBJ-ner_label, OBJ-ner_label] for each label in ner_labels
+    # we do this due to parsing. Look at tokenize() in:
+    # model_api/model_training/next_framework/training/util_functions.py
+    else:
+        if task == "re" and len(ner_labels) > 0:
+            custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
+        else:
+            # finally, if the task is not "re", and you just want to set a custom vocab
+            # we allow you to do so
+            custom_vocab = build_custom_vocab(dataset_name, len(vocab))
+
+    custom_vocab_length = len(custom_vocab)
+
+    # prepare eval data
+    eval_data = payload["eval_data"]
+    build_labeled_dataset([tup[0] for tup in eval_data],
+                          [tup[1] for tup in eval_data],
+                          vocab, save_string, "test", label_map, custom_vocab)
+    eval_data_path = PATH_TO_PARENT + "../next_framework/data/training_data/test_data_{}.p".format(save_string)
+
+    # load model
+    train_loss_function = nn.CrossEntropyLoss()
+
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
+    clf.load_state_dict(
+        torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Clf_{}.p".format(experiment_name))
+    )
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+    clf = clf.to(device)
+
+    logging.info("loaded model")
+
+    # evaluate
+    test_results = evaluate_next_clf(eval_data_path, clf, train_loss_function, number_of_classes,
+                                     batch_size=eval_batch_size, none_label_id=none_label_id)
+
+    avg_loss, avg_test_ent_f1_score, avg_test_val_f1_score, total_test_class_probs, no_relation_thresholds = test_results
+
+    logging.info("Test Results")
+    test_tuple = ("%.5f" % avg_loss, "%.5f" % avg_test_ent_f1_score, "%.5f" % avg_test_val_f1_score,
+                  str(no_relation_thresholds))
+    logging.info(
+        "Avg Test Loss: {}, Avg Test Entropy F1 Score: {}, Avg Test Max Value F1 Score: {}, Thresholds: {}".format(
+            *test_tuple)
+    )
+
+    return test_tuple[0], avg_test_ent_f1_score, avg_test_val_f1_score, no_relation_thresholds

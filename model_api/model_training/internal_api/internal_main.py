@@ -17,7 +17,7 @@ PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
 from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, \
         soft_match_data, evaluate_next_clf_pipeline, hard_match_pipeline
-from internal_api.standard_pipeline import standard_pipeline
+from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline
 
 
 def _remove_trailing_period(string):
@@ -306,3 +306,20 @@ def train_standard_lean_life(params, label_space, labeled_data=None, dev_data=No
     params["leanlife"] = True
 
     return train_standard_pipeline(params, label_space, labeled_data, dev_data, ner_label_space)
+
+
+def evaluate_standard(params, ner_label_space):
+    """Just passes along the payload"""
+    # provides a warning of the lack of ner_labels if the task is re
+    task = params["task"]
+    if task == "re":
+        if ner_label_space == None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            params["ner_labels"] = ner_label_space
+    return evaluate_standard_clf_pipeline(params)

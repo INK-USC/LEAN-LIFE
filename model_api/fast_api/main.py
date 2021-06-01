@@ -22,7 +22,7 @@ import fast_api_util_functions as util_f
 import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, \
                                         apply_soft_matching, evaluate_next, train_standard_pipeline, \
-                                        train_standard_lean_life
+                                        train_standard_lean_life, evaluate_standard
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -162,4 +162,24 @@ async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeSt
         dev_docs = None
     return schema.SavePathOutput(
         save_path=train_standard_lean_life(params.dict(), label_space, labeled_docs, dev_docs, ner_label_space)
+    )
+
+
+@app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
+async def eval_next_clf(api_payload: schema.EvalStandardClfPayload):
+    """
+        Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["label_map"] = api_payload.label_space
+    params["eval_data"] = api_payload.eval_data
+    ner_label_space = api_payload.ner_label_space
+    if len(ner_label_space) == 0:
+        ner_label_space = None
+    avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds = evaluate_standard(params, ner_label_space)
+    return schema.NextEvalDataOutput(
+        avg_loss=avg_loss, avg_eval_ent_f1_score=avg_eval_ent_f1_score,
+        avg_eval_val_f1_score=avg_eval_val_f1_score,
+        no_relation_thresholds=no_relation_thresholds
     )

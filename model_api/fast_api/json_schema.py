@@ -656,3 +656,26 @@ class LeanLifeStandardData(BaseModel):
 class LeanLifeStandardPayload(BaseModel):
     lean_life_data: LeanLifeStandardData
     params: LeanLifeStandardParams
+
+
+class EvalStandardApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: Literal['sa', 're', 'ner']
+
+    eval_batch_size: Optional[int]
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                  'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                  'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    hidden_dim: Optional[int]
+    none_label_key: Optional[str]
+
+    custom_vocab_tokens: Optional[List[str]]
+
+
+class EvalStandardClfPayload(BaseModel):
+    params: EvalStandardApiParams
+    ner_label_space: Optional[List[str]]
+    label_space: Dict[str, int]
+    eval_data: List[Tuple[str, str]]
