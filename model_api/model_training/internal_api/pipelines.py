@@ -28,7 +28,8 @@ from next_framework.training.find_training_util_functions import build_pre_train
 from next_framework.training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
                                                                  build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching, build_labeled_dataset
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
-                                                        set_re_dataset_ner_label_space, set_ner_label_space
+                                                        set_re_dataset_ner_label_space, set_ner_label_space, \
+                                                        get_standard_payload_from_next
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.models import Find_Module, BiLSTM_Att_Clf
@@ -481,10 +482,14 @@ def train_next_bilstm_pipeline(payload):
         strict_match_data = pickle.load(f)
     # check if there is no hard matched entries
     if len(strict_match_data.tokens) == 0:
+        logging.info("fallback to standard pipeline")
         if payload["leanlife"]:
-            # TODO: route to standard pipeline, revisit once in place
-            send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
-        raise ValueError("No hard matches found.")
+            # TODO: set status to fallback
+            # experiment_name = payload["experiment_name"]
+            # send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
+            pass
+        payload = get_standard_payload_from_next(payload)
+        return standard_pipeline(payload)
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
         soft_labeling_functions_dict = dill.load(f)
@@ -921,11 +926,14 @@ def hard_match_pipeline(payload):
         matched_tuples, _ = apply_strict_matching(text_data, explanation_data, task)
         # check if there is no hard matched entries
         if len(matched_tuples) == 0:
+            logging.info("fallback to standard pipeline")
             if payload["leanlife"]:
-                # TODO: route to standard pipeline, revisit once in place
-                experiment_name = payload["experiment_name"]
-                send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
-            raise ValueError("No hard matches found.")
+                # TODO: set status to fallback
+                # experiment_name = payload["experiment_name"]
+                # send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
+                pass
+            payload = get_standard_payload_from_next(payload)
+            return standard_pipeline(payload)
 
         del payload["training_data"]
         del payload["explanation_data"]

@@ -48,8 +48,8 @@ def standard_pipeline(payload):
     clip_gradient_size = BILSTM_DEFAULTS["clip_gradient_size"]
     n_layer_x_n_directions = BILSTM_DEFAULTS["layer_x_directions"]
 
-    match_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "match_batch_size")
-    eval_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size")
+    match_batch_size = int(_check_or_load_defaults(payload, BILSTM_DEFAULTS, "match_batch_size"))
+    eval_batch_size = int(_check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size"))
     learning_rate = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "learning_rate")
     epochs = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "epochs")
     embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
@@ -97,7 +97,7 @@ def standard_pipeline(payload):
     random.seed(random_state)
 
     if build_data:
-        if payload["dev_data"] is None:
+        if "dev_data" not in payload or payload["dev_data"] is None:
             labeled_data, dev_data = train_test_split(payload["labeled_data"], train_size=0.8,
                                                       random_state=random_state)
             payload["labeled_data"] = labeled_data

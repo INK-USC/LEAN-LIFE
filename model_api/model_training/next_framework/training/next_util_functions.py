@@ -332,3 +332,13 @@ def similarity_loss_function(pos_scores, neg_scores):
             torch.tensor : average of the sum of scores per query, dims: (1,)
     """
     return torch.mean(pos_scores + neg_scores)
+
+
+def get_standard_payload_from_next(payload):
+    if payload["build_data"]:
+        payload['labeled_data'] = list(map(lambda x: {'text': x['text'], 'label': x['label']}, payload["explanation_data"]))
+
+        del payload["training_data"]
+        del payload["explanation_data"]
+
+    return payload
