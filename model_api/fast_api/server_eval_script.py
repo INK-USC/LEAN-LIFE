@@ -29,8 +29,8 @@ def main():
             "embeddings": "glove.840B.300d",
             "hidden_dim": 100,
             "emb_dim": 300,
-            'eval_data': test_formatted
         },
+        'eval_data': test_formatted,
         'label_space': {
             'org:subsidiaries': 0,
             'org:stateorprovince_of_headquarters': 1,
