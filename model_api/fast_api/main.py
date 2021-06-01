@@ -166,7 +166,7 @@ async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeSt
 
 
 @app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
-async def eval_next_clf(api_payload: schema.EvalStandardClfPayload):
+async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
     """
         Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
         `json_schema.py` to understand both the supported and required parameters.
