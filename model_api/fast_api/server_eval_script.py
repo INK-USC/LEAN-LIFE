@@ -11,17 +11,13 @@ def main():
                         type=str,
                         default="./data/tacred_test.json",
                         help="Path to train data.")
-    parser.add_argument("--epochs",
-                        default=60,
-                        type=int,
-                        help="Number of Epochs for training")
 
     args = parser.parse_args()
 
     test = json.load(open(args.test_path))
     test_formatted = list(map(lambda x: (x['text'], x['label']), test))
 
-    test_small = test_formatted[:1000]
+    test_formatted = test_formatted[:1000]
 
     data = {
         'params': {
@@ -33,7 +29,7 @@ def main():
             "embeddings": "glove.840B.300d",
             "hidden_dim": 100,
             "emb_dim": 300,
-            'eval_data': test_small
+            'eval_data': test_formatted
         },
         'label_space': {
             'org:subsidiaries': 0,
