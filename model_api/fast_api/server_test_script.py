@@ -29,6 +29,7 @@ def main():
     train = json.load(open(args.train_path))
     dev = json.load(open(args.dev_path))
     test = json.load(open(args.test_path))
+    test = list(map(lambda x: (x['text'], x['label']), test))
 
     train = train[:100]
     dev = dev[:200]
