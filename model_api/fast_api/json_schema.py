@@ -679,3 +679,16 @@ class EvalStandardClfPayload(BaseModel):
     ner_label_space: Optional[List[str]]
     label_space: Dict[str, int]
     eval_data: List[Tuple[str, str]]
+
+
+class StandardEvalDataOutput(BaseModel):
+    avg_loss: float
+    avg_eval_f1_score: float
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "avg_loss": 0.03012,
+                "avg_eval_f1_score": 43.32233
+            }
+        }

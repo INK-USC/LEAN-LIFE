@@ -165,7 +165,7 @@ async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeSt
     )
 
 
-@app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
+@app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardEvalDataOutput)
 async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
     """
         Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
@@ -177,9 +177,5 @@ async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
     ner_label_space = api_payload.ner_label_space
     if len(ner_label_space) == 0:
         ner_label_space = None
-    avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds = evaluate_standard(params, ner_label_space)
-    return schema.NextEvalDataOutput(
-        avg_loss=avg_loss, avg_eval_ent_f1_score=avg_eval_ent_f1_score,
-        avg_eval_val_f1_score=avg_eval_val_f1_score,
-        no_relation_thresholds=no_relation_thresholds
-    )
+    avg_loss, avg_eval_f1_score = evaluate_standard(params, ner_label_space)
+    return schema.StandardEvalDataOutput(avg_loss=avg_loss, avg_eval_f1_score=avg_eval_f1_score)

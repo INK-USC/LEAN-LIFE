@@ -24,8 +24,8 @@ from defaults import TRAINING_DEFAULTS, BILSTM_DEFAULTS
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.training.next_util_functions import generate_save_string, build_custom_vocab, \
     set_re_dataset_ner_label_space, set_ner_label_space, build_vocab
-from next_framework.training.next_training_util_functions import build_labeled_dataset, evaluate_next_clf
-from next_framework.training.standard_training_util_functions import build_datasets_from_text
+from next_framework.training.next_training_util_functions import build_labeled_dataset
+from next_framework.training.standard_training_util_functions import build_datasets_from_text, evaluate_clf
 from next_framework.models import BiLSTM_Att_Clf
 
 
@@ -259,73 +259,54 @@ def standard_pipeline(payload):
 
         loss_per_epoch.append((train_avg_loss, train_avg_strict_loss, train_avg_soft_loss))
 
-        train_results = evaluate_next_clf(train_data_path, clf, train_loss_function, number_of_classes,
-                                          batch_size=eval_batch_size, none_label_id=none_label_id)
-        avg_loss, avg_train_ent_f1_score, avg_train_val_f1_score, total_train_class_probs, no_relation_thresholds = train_results
+        train_results = evaluate_clf(train_data_path, clf, train_loss_function, batch_size=eval_batch_size,
+                                     none_label_id=none_label_id)
+        avg_loss, avg_train_f1_score, total_train_class_probs = train_results
 
         logging.info("Train Results")
-        train_tuple = ("%.5f" % avg_loss, "%.5f" % avg_train_ent_f1_score, "%.5f" % avg_train_val_f1_score,
-                       str(no_relation_thresholds))
-        logging.info(
-            "Avg Train Loss: {}, Avg Train Entropy F1 Score: {}, Avg Train Max Value F1 Score: {}, Thresholds: {}".format(
-                *train_tuple)
-        )
+        train_tuple = ("%.5f" % avg_loss, "%.5f" % avg_train_f1_score)
+        logging.info("Avg Train Loss: {}, Avg Train F1 Score: {}".format(*train_tuple))
 
-        dev_results = evaluate_next_clf(dev_data_path, clf, train_loss_function, number_of_classes,
-                                        batch_size=eval_batch_size, none_label_id=none_label_id)
+        dev_results = evaluate_clf(dev_data_path, clf, train_loss_function, batch_size=eval_batch_size,
+                                   none_label_id=none_label_id)
 
-        avg_loss, avg_dev_ent_f1_score, avg_dev_val_f1_score, total_dev_class_probs, no_relation_thresholds = dev_results
+        avg_loss, avg_dev_f1_score, total_dev_class_probs = dev_results
 
         logging.info("Dev Results")
-        dev_tuple = (
-            "%.5f" % avg_loss, "%.5f" % avg_dev_ent_f1_score, "%.5f" % avg_dev_val_f1_score, str(no_relation_thresholds)
-        )
-        logging.info(
-            "Avg Dev Loss: {}, Avg Dev Entropy F1 Score: {}, Avg Dev Max Value F1 Score: {}, Thresholds: {}".format(
-                *dev_tuple)
-        )
+        dev_tuple = ("%.5f" % avg_loss, "%.5f" % avg_dev_f1_score)
+        logging.info("Avg Dev Loss: {}, Avg Dev F1 Score: {}".format(*dev_tuple))
 
-        dev_epoch_f1_scores.append(
-            (avg_loss, avg_dev_ent_f1_score, avg_dev_val_f1_score, max(avg_dev_ent_f1_score, avg_dev_val_f1_score))
-        )
+        dev_epoch_f1_scores.append((avg_loss, avg_dev_f1_score))
 
-        if max(avg_dev_ent_f1_score, avg_dev_val_f1_score) > best_dev_f1_score:
-            best_dev_f1_score = max(avg_dev_ent_f1_score, avg_dev_val_f1_score)
+        if avg_dev_f1_score > best_dev_f1_score:
+            best_dev_f1_score = avg_dev_f1_score
             logging.info("Updated Dev F1 Score")
 
         # Step 5 evaluate
         if len(eval_data_path):
-            test_results = evaluate_next_clf(eval_data_path, clf, train_loss_function, number_of_classes,
-                                             none_label_thresholds=no_relation_thresholds,
-                                             batch_size=eval_batch_size, none_label_id=none_label_id)
+            test_results = evaluate_clf(eval_data_path, clf, train_loss_function, batch_size=eval_batch_size,
+                                        none_label_id=none_label_id)
 
-            avg_loss, avg_test_ent_f1_score, avg_test_val_f1_score, total_test_class_probs, _ = test_results
+            avg_loss, avg_test_f1_score, total_test_class_probs = test_results
 
             logging.info("Test Results")
-            test_tuple = ("%.5f" % avg_loss, "%.5f" % avg_test_ent_f1_score, "%.5f" % avg_test_val_f1_score,
-                          str(no_relation_thresholds))
-            logging.info(
-                "Avg Test Loss: {}, Avg Test Entropy F1 Score: {}, Avg Test Max Value F1 Score: {}, Thresholds: {}".format(
-                    *test_tuple)
-            )
+            test_tuple = ("%.5f" % avg_loss, "%.5f" % avg_test_f1_score)
+            logging.info("Avg Test Loss: {}, Avg Test F1 Score: {}".format(*test_tuple))
 
-            test_epoch_f1_scores.append((avg_loss, avg_test_ent_f1_score, avg_test_val_f1_score,
-                                         max(avg_test_ent_f1_score, avg_test_val_f1_score)))
+            test_epoch_f1_scores.append((avg_loss, avg_test_f1_score))
 
-            if best_test_f1_score < max(avg_test_ent_f1_score, avg_test_val_f1_score):
+            if best_test_f1_score < avg_test_f1_score:
                 logging.info("Saving Model")
                 dir_name = PATH_TO_PARENT + "../next_framework/data/saved_models/"
                 torch.save(clf.state_dict(), "{}Clf_{}.p".format(dir_name, experiment_name))
-                with open(PATH_TO_PARENT + "../next_framework/data/result_data/test_predictions_Clf_{}.csv".format(
+                with open(PATH_TO_PARENT + "../next_framework/data/result_data/test_predictions_Clf_{}.p".format(
                         experiment_name), "wb") as f:
                     pickle.dump(total_test_class_probs, f)
-                with open(PATH_TO_PARENT + "../next_framework/data/result_data/dev_predictions_Clf_{}.csv".format(
+                with open(PATH_TO_PARENT + "../next_framework/data/result_data/dev_predictions_Clf_{}.p".format(
                         experiment_name), "wb") as f:
                     pickle.dump(total_dev_class_probs, f)
-                with open(PATH_TO_PARENT + "../next_framework/data/result_data/thresholds.p", "wb") as f:
-                    pickle.dump({"thresholds": no_relation_thresholds}, f)
 
-                best_test_f1_score = max(avg_test_ent_f1_score, avg_test_val_f1_score)
+                best_test_f1_score = avg_test_f1_score
 
             logging.info("Best Test F1: {}".format("%.5f" % best_test_f1_score))
             logging.info(test_epoch_f1_scores[-3:])
@@ -349,7 +330,7 @@ def standard_pipeline(payload):
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/dev_f1_per_epoch_Clf_{}.csv".format(
             experiment_name), "w") as f:
         writer = csv.writer(f)
-        writer.writerow(['avg_loss, entropy_f1_score', 'max_value_f1_score', 'max'])
+        writer.writerow(['avg_loss', 'f1_score'])
         for row in dev_epoch_f1_scores:
             writer.writerow(row)
 
@@ -357,7 +338,7 @@ def standard_pipeline(payload):
         with open(PATH_TO_PARENT + "../next_framework/data/result_data/test_f1_per_epoch_Clf_{}.csv".format(
                 experiment_name), "w") as f:
             writer = csv.writer(f)
-            writer.writerow(['avg_loss, entropy_f1_score', 'max_value_f1_score', 'max'])
+            writer.writerow(['avg_loss', 'f1_score'])
             for row in test_epoch_f1_scores:
                 writer.writerow(row)
 
@@ -454,17 +435,13 @@ def evaluate_standard_clf_pipeline(payload):
     logging.info("loaded model")
 
     # evaluate
-    test_results = evaluate_next_clf(eval_data_path, clf, train_loss_function, number_of_classes,
-                                     batch_size=eval_batch_size, none_label_id=none_label_id)
+    test_results = evaluate_clf(eval_data_path, clf, train_loss_function, batch_size=eval_batch_size,
+                                none_label_id=none_label_id)
 
-    avg_loss, avg_test_ent_f1_score, avg_test_val_f1_score, total_test_class_probs, no_relation_thresholds = test_results
+    avg_loss, avg_test_f1_score, total_test_class_probs = test_results
 
     logging.info("Test Results")
-    test_tuple = ("%.5f" % avg_loss, "%.5f" % avg_test_ent_f1_score, "%.5f" % avg_test_val_f1_score,
-                  str(no_relation_thresholds))
-    logging.info(
-        "Avg Test Loss: {}, Avg Test Entropy F1 Score: {}, Avg Test Max Value F1 Score: {}, Thresholds: {}".format(
-            *test_tuple)
-    )
+    test_tuple = ("%.5f" % avg_loss, "%.5f" % avg_test_f1_score)
+    logging.info("Avg Test Loss: {}, Avg Test F1 Score: {}".format(*test_tuple))
 
-    return test_tuple[0], avg_test_ent_f1_score, avg_test_val_f1_score, no_relation_thresholds
+    return test_tuple[0], avg_test_f1_score

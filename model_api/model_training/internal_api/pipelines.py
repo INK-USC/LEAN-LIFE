@@ -723,7 +723,7 @@ def train_next_bilstm_pipeline(payload):
     if len(eval_path):
         with open(PATH_TO_PARENT + "../next_framework/data/result_data/eval_f1_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
             writer=csv.writer(f)
-            writer.writerow(['avg_loss, entropy_f1_score','max_value_f1_score', 'max'])
+            writer.writerow(['avg_loss', 'entropy_f1_score', 'max_value_f1_score', 'max'])
             for row in dev_epoch_f1_scores:
                 writer.writerow(row)
     
