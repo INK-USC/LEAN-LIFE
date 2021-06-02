@@ -15,6 +15,10 @@ def main():
                         type=str,
                         default="./data/tacred_dev.json",
                         help="Path to dev data.")
+    parser.add_argument("--test_path",
+                        type=str,
+                        default="./data/tacred_test.json",
+                        help="Path to test data.")
     parser.add_argument("--epochs",
                         default=60,
                         type=int,
@@ -24,9 +28,11 @@ def main():
 
     train = json.load(open(args.train_path))
     dev = json.load(open(args.dev_path))
+    test = json.load(open(args.test_path))
 
     train = train[:100]
     dev = dev[:200]
+    test = test[:10]
 
     data = {
         'params': {
@@ -44,6 +50,7 @@ def main():
             "start_epoch": 0,
             "emb_dim": 300,
             "epochs": args.epochs,
+            "eval_data": test
         },
         'label_space': {
             'org:subsidiaries': 0,
