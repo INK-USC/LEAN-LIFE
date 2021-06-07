@@ -15,6 +15,7 @@ class LeanLifeParams(BaseModel):
     dataset_name : str
     dataset_size : int
     project_type : str
+    project_id: int
     match_batch_size : Optional[str]
     unlabeled_batch_size : Optional[str]
     learning_rate : Optional[float]
@@ -524,6 +525,7 @@ class LeanLifeStandardParams(BaseModel):
     experiment_name: str
     dataset_name: str
     project_type: str
+    project_id: int
 
     embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
                                  'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',

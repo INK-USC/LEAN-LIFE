@@ -55,34 +55,9 @@ export default {
         this.models = res;
       })
     },
-    updateModelTrainingStatus() {
-      this.$http.post(`update/training_status/`, {
-        exp1: {
-          time_spent: 1000,
-          time_left: 0,
-          stage: 1
-        }
-      }).then(() => {
-        this.$http.post('update/models_metadata/', {
-          exp1: {
-            is_trained: true,
-            file_size: "10KB",
-            save_path: "mock_api/exp1.json",
-            best_train_loss: 0.2
-          }
-        })
-      })
-    }
   },
   created() {
     this.fetchModels()
-    /* for testing*/
-    // .then(() => {
-    //   return this.updateModelTrainingStatus();
-    // }).then(() => {
-    //       setTimeout(() => this.fetchModels(), 1500);
-    //     }
-    // )
     setInterval(() => this.fetchModels().then(() => this.$notify.info({
       title: "Model Training Status have been updated",
       message: ""

@@ -14,7 +14,7 @@ import json
 import os
 import sys
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi import status
 sys.path.append(".")
 sys.path.append("../model_training/")
@@ -28,8 +28,8 @@ from internal_api.internal_main import train_next_framework_lean_life, train_nex
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 app = FastAPI()
 
-@app.post("/training/next/lean-life/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
-async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayload):
+@app.post("/training/next/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayload, background_tasks: BackgroundTasks):
     """
         Endpoint hit by annotation tool's django api
     """
@@ -43,11 +43,9 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(save_path = train_next_framework_lean_life(params.__dict__, label_space,
-                                                                unlabeled_docs,
-                                                                explanation_triples,
-                                                                ner_label_space))
-    
+    background_tasks.add_task(train_next_framework_lean_life, params.__dict__, label_space, unlabeled_docs, explanation_triples, ner_label_space)
+
+
 @app.post("/training/next/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
 async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload):
     """
@@ -145,8 +143,8 @@ async def start_standard_training_api(api_payload: schema.StandardPipelinePayloa
     )
 
 
-@app.post("/training/standard/lean-life/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
-async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeStandardPayload):
+@app.post("/training/standard/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeStandardPayload, background_tasks: BackgroundTasks):
     """
         Endpoint hit by annotation tool's django api
     """
@@ -160,9 +158,7 @@ async def start_standard_training_lean_life(lean_life_payload: schema.LeanLifeSt
         labeled_docs = None
     if len(dev_docs) == 0:
         dev_docs = None
-    return schema.SavePathOutput(
-        save_path=train_standard_lean_life(params.dict(), label_space, labeled_docs, dev_docs, ner_label_space)
-    )
+    background_tasks.add_task(train_standard_lean_life, params.dict(), label_space, labeled_docs, dev_docs, ner_label_space)
 
 
 @app.post("/training/standard/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardEvalDataOutput)

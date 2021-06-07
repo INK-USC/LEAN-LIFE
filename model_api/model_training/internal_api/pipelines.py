@@ -94,7 +94,7 @@ def pre_train_find_module_pipeline(payload):
     random.seed(random_state)
 
     if payload["leanlife"]:
-        update_model_training(experiment_name, -1, epochs, -1, -1, "starting pre_training pipeline")
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, -1, -1, "starting pre_training pipeline")
 
     # Step 2.
     if build_data:
@@ -103,7 +103,7 @@ def pre_train_find_module_pipeline(payload):
         build_pre_train_find_datasets(text_data, explanation_data, save_string, embeddings, random_state, dataset_name, sample_rate)
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(experiment_name, -1, epochs, time_spent, -1, "built pre_training data")
+            update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "built pre_training data")
     
     # Step 3.
     with open(PATH_TO_PARENT + "../next_framework/data/pre_train_data/train_data_{}.p".format(save_string), "rb") as f:
@@ -221,7 +221,7 @@ def pre_train_find_module_pipeline(payload):
     
     if payload["leanlife"]:
         time_spent = time.time() - start_time
-        update_model_training(experiment_name, -1, epochs, time_spent, -1, "starting pre-training")
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "starting pre-training")
 
     # Step 4.
     start_time = time.time()
@@ -314,7 +314,7 @@ def pre_train_find_module_pipeline(payload):
         
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "pre-training")
+            update_model_training(payload["project_id"], experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "pre-training")
 
         if best_f1_score > 0.9:
             break
@@ -339,7 +339,7 @@ def pre_train_find_module_pipeline(payload):
     if payload["leanlife"] and payload["stage"] == "find":
         best_train_loss = min([row[0] for row in epoch_losses])
         file_size = os.path.getsize(save_path)
-        send_model_metadata(experiment_name, save_path, best_train_loss, file_size)
+        send_model_metadata(payload["project_id"], experiment_name, save_path, best_train_loss, file_size)
     
     return save_path
     
@@ -456,7 +456,7 @@ def train_next_bilstm_pipeline(payload):
     custom_vocab_length = len(custom_vocab)
 
     if payload["leanlife"]:
-        update_model_training(experiment_name, -1, epochs, -1, -1, "starting training pipeline")
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, -1, -1, "starting training pipeline")
 
     # Step 2.
     if build_data:
@@ -472,7 +472,7 @@ def train_next_bilstm_pipeline(payload):
         
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(experiment_name, -1, epochs, time_spent, -1, "built training data")
+            update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "built training data")
     
     # Step 3.
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/unlabeled_data_{}.p".format(save_string), "rb") as f:
@@ -614,7 +614,7 @@ def train_next_bilstm_pipeline(payload):
 
     if payload["leanlife"]:
         time_spent = time.time() - start_time
-        update_model_training(experiment_name, -1, epochs, time_spent, -1, "starting training")
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "starting training")
     
     start_time = time.time()
     
@@ -711,7 +711,7 @@ def train_next_bilstm_pipeline(payload):
         
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "training")
+            update_model_training(payload["project_id"], experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "training")
     
     # Step 7.
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
@@ -735,7 +735,7 @@ def train_next_bilstm_pipeline(payload):
     if payload["leanlife"]:
         best_train_loss = min([row[0] for row in loss_per_epoch])
         file_size = os.path.getsize(save_path)
-        send_model_metadata(experiment_name, save_path, best_train_loss, file_size)
+        send_model_metadata(payload["project_id"], experiment_name, save_path, best_train_loss, file_size)
     
     return save_path
 

@@ -9,9 +9,9 @@ from .views import edit_form, DataDownload, DataDownloadFile, ModelView
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     BaseAnnotationCreateAndDestroyView, DocumentList, RecommendationList, DocumentDetail, \
     SettingList, AnnotationDecoratorCreateView, ExplanationDestroyView, ProjectRetrieveView, \
-    HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload,ModelAPIView, GenerateMockModelsAPIView, \
-    TrainModelAPIView,MockModelTrainingAPI,DownloadModelFile, MockModelFileFetchingView, ModelUpdateAPI,\
-    TrainingStatusUpdateAPI, UserRetrieveAPIView, TaskRetrieveAPIView, ExplanationAPIView,\
+    HistoryListView, HistoryDestroyView, AnnotationHistoryFileUpload,ModelAPIView, \
+    TrainModelAPIView, DownloadModelFile, ModelUpdateAPI,\
+    UserRetrieveAPIView, TaskRetrieveAPIView, ExplanationAPIView,\
     FileUploadAPIView, DownloadAnnotationAPI
 
 router = routers.DefaultRouter()
@@ -49,9 +49,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/recommendations/<int:task_id>/', RecommendationList.as_view(), name='recommendations'),
     path('api/projects/<int:project_id>/train_model/', TrainModelAPIView.as_view(), name="train_model"),
     path('api/models/download/', DownloadModelFile.as_view(), name="download_model_file"),
-    path('api/model_training_mock/', MockModelTrainingAPI.as_view(), name="mock_model_training_api"),
     path('api/models/', ModelAPIView.as_view(), name="get_model"),
-    path('api/models/generate_mock_files/', GenerateMockModelsAPIView.as_view(), name="generate_mock_models"),
     path('api/projects/<int:project_id>/download_annotations', DownloadAnnotationAPI.as_view(), name='downlooad_annotation'),
     path('api/users/', UserRetrieveAPIView.as_view(), name="get_users"),
     path('api/tasks/', TaskRetrieveAPIView.as_view(), name="get_tasks"),
@@ -69,8 +67,5 @@ urlpatterns = [
     path('projects/<int:project_id>/history/', AnnotationHistoryView.as_view(), name='annotation_history'),
     path('models/', ModelView.as_view(), name="models"),
 
-    path('api/mock/fetch_model/', MockModelFileFetchingView.as_view(), name='mock_model_file'),
-
     path('api/update/models_metadata/', ModelUpdateAPI.as_view(), name="model_update"),
-    path('api/update/training_status/', TrainingStatusUpdateAPI.as_view(), name="training_update"),
 ]

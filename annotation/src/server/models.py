@@ -84,6 +84,27 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+
+class ModelMetaData(models.Model):
+    name = models.CharField(max_length=64)
+    project = models.ForeignKey(Project, related_name='models', on_delete=models.CASCADE)
+    # metadata
+    is_standard_trained = models.BooleanField(default=False)
+    is_trained = models.BooleanField(default=False)
+    save_path = models.TextField(default=None, null=True)
+    file_size = models.CharField(max_length=256, default='N/A')
+    best_train_loss = models.CharField(max_length=256, default='N/A')
+    is_errored = models.BooleanField(default=False)
+    error_message = models.TextField(default=None, null=True)
+
+    # training updates
+    cur_epoch = models.IntegerField(default=-1)
+    total_epochs = models.IntegerField(default=-1)
+    time_spent = models.FloatField(default=0)
+    time_left = models.FloatField(default=3000)
+    stage = models.CharField(max_length=256, default='-1')
+
+
 class Label(models.Model):
     KEY_CHOICES = get_key_choices()
     COLOR_CHOICES = ()

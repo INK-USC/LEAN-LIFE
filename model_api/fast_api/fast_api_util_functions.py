@@ -439,7 +439,18 @@ def prepare_standard_data(json_data, project_type="", lean_life=True):
     return label_space, labeled_docs, dev_docs, ner_label_space
 
 
-def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, best_train_loss, stage):
+def _send_update(project_id, experiment_name, data):
+    end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
+    params = {
+        'project_id': project_id,
+        'name': experiment_name,
+        # 'data': data
+    }
+    response = requests.patch(end_point, json=data, params=params)
+    return response.status_code
+
+
+def update_model_training(project_id, experiment_name, cur_epoch, total_epochs, time_spent, best_train_loss, stage):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the latest model training
         status. Django API takes this information and writes to a local file, so that when the front-end
@@ -465,24 +476,19 @@ def update_model_training(experiment_name, cur_epoch, total_epochs, time_spent, 
        time_left = -1 
 
     update_repr = {
-        experiment_name : {
-            "cur_epoch" : cur_epoch,
-            "total_epochs" : total_epochs,
-            "time_spent" : time_spent,
-            "time_left" : time_left,
-            "best_train_loss" : best_train_loss,
-            "stage" : stage
-        }
+        "cur_epoch" : cur_epoch,
+        "total_epochs" : total_epochs,
+        "time_spent" : time_spent,
+        "time_left" : time_left,
+        "best_train_loss" : str(best_train_loss),
+        "stage" : stage
     }
 
     print(update_repr)
 
-    end_point = const.LEAN_LIFE_URL + "update/training_status/"
-    response = requests.post(end_point, json=update_repr)
+    return _send_update(project_id, experiment_name, update_repr)
 
-    return response.status_code
-
-def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_size=None, error_msg=None):
+def send_model_metadata(project_id, experiment_name, save_path, best_train_loss=None, file_size=None, error_msg=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
@@ -492,36 +498,25 @@ def send_model_metadata(experiment_name, save_path, best_train_loss=None, file_s
             save_path         (str) : where the model has been saved
             best_train_loss (float) : best training loss so far
             file_size         (int) : size of model params file in bytes
-        
+
         Returns:
             (int) : status code from Django API after receiving request
     """
+    metadata_repr = {
+        "is_trained": False,
+        "save_path": save_path,
+        "file_size": "N/A",
+        "best_train_loss": "N/A",
+    }
     if best_train_loss and file_size:
-        is_trained = True
-        metadata_repr = {
-            experiment_name : {
-                "is_trained" : is_trained,
-                "save_path" : save_path,
-                "best_train_loss" : best_train_loss,
-                "file_size" : file_size
-            }
-        }
-    else:
-        is_trained = False
-        metadata_repr = {
-            experiment_name : {
-                "is_trained" : is_trained,
-                "save_path" : save_path,
-                "file_size": "N/A",
-                "best_train_loss": "N/A",
-            }
-        }
+        metadata_repr["is_trained"] = True
+        metadata_repr["file_size"] = file_size
+        metadata_repr["best_train_loss"] = best_train_loss
+
     if error_msg:
-        metadata_repr[experiment_name]["error"] = error_msg
-    
+        metadata_repr["is_errored"] = True
+        metadata_repr["error_message"] = error_msg
+
     print(metadata_repr)
 
-    end_point = const.LEAN_LIFE_URL + "update/models_metadata/"
-    response = requests.post(end_point, json=metadata_repr)
-
-    return response.status_code
+    return _send_update(project_id, experiment_name, metadata_repr)

@@ -21,14 +21,16 @@ from rest_framework import parsers
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
-    TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation
+    TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation, \
+    ModelMetaData
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
 NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
 NamedEntityAnnotationSerializer, SingleUserAnnotatedDocumentSerializer, \
 RelationExtractionAnnotationSerializer, TriggerExplanationSerializer, \
 NaturalLanguageExplanationSerializer, SingleUserAnnotatedDocumentExplanationsSerializer, \
-SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer, UserSerializer, TaskSerializer
+SentimentAnalysisAnnotationSerializer, RelationExtractionAnnotationHistorySerializer, UserSerializer, TaskSerializer, \
+ModelMetaDataSerializer
 from .utils import SPACY_WRAPPER
 from .constants import TRAINING_UPDATE_FOLDER, TRAINING_KEY, METADATA_KEY, MODEL_META_FILE, EXPLANATION_CHOICES, RELATION_EXTRACTION_VALUE, NAMED_ENTITY_RECOGNITION_VALUE,SENTIMENT_ANALYSIS_VALUE
 import time
@@ -663,77 +665,29 @@ class RecommendationList(APIView):
 class ModelAPIView(APIView):
 	def get(self, request):
 		results = []
-		projects = Project.objects.all().filter(users=self.request.user)
+		qs = ModelMetaData.objects.all().filter(project__users=self.request.user).prefetch_related('project')
 
-		model_project_map = json.loads(open("communication/model_project_map.json").read())
-
-		model_dict = {}
-		for project in projects:
-			print("project", project.id)
-
-			models = model_project_map['project-models'][str(project.id)] if str(project.id) in model_project_map['project-models'] else []
-			print("modesls", models)
-			for model in models:
-				model_dict[model] = {
-					'project_id': project.id,
-					'project_name': project.name,
-					"project_task": project.get_task_name(),
-				}
-
-		print("model_names", model_dict)
-
-		models_metadata = json.loads(open("communication/models_metadata.json").read())
-
-		# print("models meta", models_metadata)
-		for model_name in model_dict:
-			cur_meta = models_metadata[model_name]
-			if "error" in cur_meta:
+		for model in qs:
+			if model.is_errored:
 				training_status = "Failed"
 			else:
-				training_status = "Finished" if cur_meta['is_trained'] else "Training"
-			cur_model_json = {'model': model_name,
-			                  'project_id': model_dict[model_name]['project_id'],
-							  'project_name': model_dict[model_name]['project_name'],
-			                  'project_task': model_dict[model_name]['project_task'],
-			                  'training_status': training_status,
-			                  "time_spent":  self.get_training_updates(model_name)["time_spent"],
-			                  "time_left":  self.get_training_updates(model_name)["time_left"],
-			                  "stage": self.get_training_updates(model_name)["stage"]
-			                  }
-
-			# cur_model_json['time_spent'] = training_info['time_spent']
-			# cur_model_json['time_left'] = 0
-
-			# if cur_meta['is_trained']:
-			cur_model_json['best_train_loss'] = cur_meta['best_train_loss']
-			cur_model_json["file_path"] = cur_meta['save_path']
-			cur_model_json['file_size'] = cur_meta['file_size']
-			# else:
-			# 	cur_model_json['file_size']= cur_meta['file_size']
-
+				training_status = "Finished" if model.is_trained else "Training"
+			cur_model_json = {
+				'project_id': model.project.id,
+				'project_name': model.project.name,
+				'project_task': model.project.get_task_name(),
+				'model': model.name,
+				'training_status': training_status,
+				"time_spent":  model.time_spent,
+				"time_left":  model.time_left,
+				"stage": model.stage,
+				'best_train_loss': model.best_train_loss,
+				"file_path": model.save_path,
+				'file_size': model.file_size
+			}
 			results.append(cur_model_json)
 
 		return Response(results)
-
-	def get_training_updates(self, model_name):
-		training_updates_path="communication/training_updates"
-		training_update_files = [f for f in listdir(training_updates_path) if isfile(join(training_updates_path, f))]
-		for f in training_update_files:
-			if f.split(".")[0].__eq__(model_name):
-				full_path = path.join(training_updates_path, f)
-				# print(f, full_path)
-
-				training_update = json.load(open(full_path, 'r'))
-				# print("train_up", training_update)
-				return training_update
-
-
-class GenerateMockModelsAPIView(APIView):
-	permission_classes = []
-
-	def post(self, request):
-		generate_random_models_dicts()
-		return Response(status=200)
 
 
 def assemble_file_name(my_dict):
@@ -764,64 +718,21 @@ class TrainModelAPIView(APIView):
 		model_settings["dataset_name"] = request.data['dataset_name']
 		include_documents = request.data['include_documents']
 
-		self.write_to_model_project_mapping_file(project_id, model_name)
-		self.write_to_model_metadata_file(project_id, model_name)
+		model_meta, created = ModelMetaData.objects.get_or_create(project_id=project_id, name=model_name)
 
 		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
 		response = requests.post("http://localhost:9000/training/next/lean-life/", json=json_object)
-		if response.status_code == 200:
-			model_training_api_response = json.loads(response.content)
-			return Response(data=model_training_api_response)
+		if response.status_code == 201:
+			return Response(status=201)
 		else:
-			models_metadata = json.loads(open("communication/models_metadata.json").read())
-			cur_meta = models_metadata[model_name]
-			error = cur_meta.get("error", None)
-			return Response(data=error, status=500)
-
-	def write_to_model_project_mapping_file(self, project_id, model_name):
-		file_path = "communication/model_project_map.json"
-
-		model_project_mapping = json.load(open(file_path, 'r'))
-		if "model-project" not in model_project_mapping or 'project-models' not in model_project_mapping:
-			model_project_mapping['model-project'] = {}
-			model_project_mapping['project-models'] = {}
-
-		model_project_mapping['model-project'][model_name] = project_id
-		if str(project_id) in model_project_mapping['project-models']:
-			if model_name not in model_project_mapping['project-models'][str(project_id)]:
-				model_project_mapping['project-models'][str(project_id)].append(model_name)
-		else:
-			model_project_mapping['project-models'][str(project_id)] = [model_name]
-		with open(file_path, 'w') as f:
-			json.dump(model_project_mapping, f, indent=4)
-
-	def write_to_model_metadata_file(self, project_id, model_name):
-		file_path = "communication/models_metadata.json"
-		model_metadata = json.load(open(file_path, 'r'))
-		model_metadata[model_name] = {
-			"is_trained": False,
-			"save_path": "mock_api/"+model_name+".json",
-			"file_size": "N/A",
-			"best_train_loss": "N/A",
-		}
-		with open(file_path, 'w') as f:
-			json.dump(model_metadata, f, indent=4)
-
-	def write_to_training_updates(self, model_name):
-		file_path = "communication/training_updates/"+ model_name+".json"
-		training_info = {}
-		training_info["time_spent"] = 0
-		training_info["time_left"] = 3000
-		training_info["stage"] = "-1"
-		with open(file_path, 'w') as f:
-			json.dump(training_info, f, indent=4)
+			return Response(data=response.text, status=500)
 
 	def generate_json_for_model_training_api(self, project_id, model_settings, include_documents):
 		data_info = {"label_space": [], "annotated": [], "unlabeled": []}
 		project = get_object_or_404(Project, pk=project_id)
 
 		model_settings["dataset_size"] = project.documents.filter(annotated=False).count()
-
+		model_settings["project_id"] = project_id
 		model_settings["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
@@ -885,14 +796,6 @@ class TrainModelAPIView(APIView):
 	# 			return doc.annotated
 
 
-class MockModelTrainingAPI(APIView):
-	permission_classes = ()
-
-	def post(self, request):
-		data_posted = request.data
-		print("data_posted", json.dumps(data_posted, indent=1))
-		return Response(status=200, data=data_posted)
-
 class DownloadModelFile(APIView):
 	permission_classes = ()
 
@@ -907,43 +810,22 @@ class DownloadModelFile(APIView):
 		return response
 
 
-class MockModelFileFetchingView(APIView):
+class ModelUpdateAPI(generics.UpdateAPIView):
 	permission_classes = ()
+	queryset = ModelMetaData
+	serializer_class = ModelMetaDataSerializer
+	multiple_lookup_fields = ('project_id', 'name')
 
-	def get(self, request):
-		file_path = request.GET.get("file_path")
-		return Response(status=200, data={"test_key": file_path})
+	def get_object(self):
+		queryset = self.get_queryset()
+		filter = {}
+		for field in self.multiple_lookup_fields:
+			filter[field] = self.request.query_params[field]
 
+		obj = get_object_or_404(queryset, **filter)
+		self.check_object_permissions(self.request, obj)
+		return obj
 
-class ModelUpdateAPI(APIView):
-	permission_classes = ()
-
-	def post(self, request):
-		new_data = request.data
-		file_path = "communication/models_metadata.json"
-		model_metas = json.load(open(file_path, 'r'))
-		for model_name in new_data:
-			model_metas[model_name] = new_data[model_name]
-
-		with open(file_path, 'w') as f:
-			json.dump(model_metas, f, indent=4)
-
-		return Response(status=200)
-
-
-class TrainingStatusUpdateAPI(APIView):
-	permission_classes = ()
-
-	def post(self, request):
-		new_data = request.data
-		training_updates_path = "communication/training_updates/"
-
-		for model_name in new_data:
-			full_path = training_updates_path+model_name+".json"
-			with open(full_path, 'w') as f:
-				json.dump(new_data[model_name], f, ensure_ascii=False, indent=1)
-
-		return Response(status=200)
 
 class UserRetrieveAPIView(generics.ListAPIView):
     queryset = User.objects.all()

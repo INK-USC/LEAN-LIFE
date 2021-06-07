@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from .models import NamedEntityAnnotation, RelationExtractionAnnotation, SentimentAnalysisAnnotation
 from .models import RelationExtractionAnnotationHistory, NamedEntityAnnotationHistory
-from .models import Task, Label, Project, Document, Setting, Annotation
+from .models import Task, Label, Project, Document, Setting, Annotation, ModelMetaData
 from .models import TriggerExplanation, NaturalLanguageExplanation
 from .constants import NAMED_ENTITY_RECOGNITION_VALUE, RELATION_EXTRACTION_VALUE, SENTIMENT_ANALYSIS_VALUE
 
@@ -206,6 +206,13 @@ class RelationExtractionAnnotationHistorySerializer(serializers.ModelSerializer)
 
     def create(self, validated_data):
         return RelationExtractionAnnotationHistory.objects.create(**validated_data)
+
+
+class ModelMetaDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelMetaData
+        fields = '__all__'
+
 
 from django.contrib.auth.models import User
 
