@@ -67,6 +67,8 @@ def train_next_framework_lean_life(params, label_space, unlabeled_docs=None, exp
         params["task"] = "sa"
     elif params["project_type"] == "Relation Extraction":
         params["task"] = "re"
+    elif params["project_type"] == "Named Entity Recognition":
+        params["task"] = "ner"
 
     params["leanlife"] = True
 
@@ -309,6 +311,8 @@ def train_standard_lean_life(params, label_space, labeled_data=None, dev_data=No
         params["task"] = "sa"
     elif params["project_type"] == "Relation Extraction":
         params["task"] = "re"
+    elif params["project_type"] == "Named Entity Recognition":
+        params["task"] = "ner"
 
     params["leanlife"] = True
 

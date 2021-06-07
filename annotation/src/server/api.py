@@ -721,21 +721,32 @@ class TrainModelAPIView(APIView):
 		model_settings["dataset_name"] = request.data['dataset_name']
 		include_documents = request.data['include_documents']
 
-		model_meta, created = ModelMetaData.objects.get_or_create(project_id=project_id, name=model_name)
+		project = get_object_or_404(Project, pk=project_id)
 
-		json_object = self.generate_json_for_model_training_api(project_id, model_settings, include_documents)
-		response = requests.post("http://localhost:9000/training/next/lean-life/", json=json_object)
+		model_meta, created = ModelMetaData.objects.get_or_create(project=project, name=model_name)
+
+		train_standard = False
+		if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:
+			train_standard = True
+		elif project.explanation_type != 2:
+			train_standard = True
+
+		if train_standard:
+			json_object = self.generate_json_for_standard_training_api(project, model_settings, include_documents)
+			response = requests.post("http://localhost:9000/training/standard/lean-life/", json=json_object)
+		else:
+			json_object = self.generate_json_for_model_training_api(project, model_settings, include_documents)
+			response = requests.post("http://localhost:9000/training/next/lean-life/", json=json_object)
 		if response.status_code == 201:
 			return Response(status=201)
 		else:
 			return Response(data=response.text, status=500)
 
-	def generate_json_for_model_training_api(self, project_id, model_settings, include_documents):
+	def generate_json_for_model_training_api(self, project: Project, model_settings, include_documents):
 		data_info = {"label_space": [], "annotated": [], "unlabeled": []}
-		project = get_object_or_404(Project, pk=project_id)
 
 		model_settings["dataset_size"] = project.documents.filter(annotated=False).count()
-		model_settings["project_id"] = project_id
+		model_settings["project_id"] = project.pk
 		model_settings["project_type"] = project.get_task_name()
 		labels = get_list_or_404(Label, project=project)
 
@@ -792,6 +803,53 @@ class TrainModelAPIView(APIView):
 		}
 		return result
 
+	def generate_json_for_standard_training_api(self, project: Project, model_settings, include_documents):
+		data_info = {"label_space": [], "labeled": []}
+
+		model_settings["project_id"] = project.pk
+		model_settings["project_type"] = project.get_task_name()
+		labels = get_list_or_404(Label, project=project)
+
+		for label in labels:
+			data_info["label_space"].append({"id": label.id, "text": label.text, "user_provided": label.user_provided})
+
+		if not include_documents:
+			result = {
+				"lean_life_data": data_info,
+				"params": model_settings
+			}
+			return result
+
+		for doc in project.documents.all():
+			if not doc.annotated:
+				continue
+			annotated_row = {
+				"text": doc.text,
+				'annotations': []
+			}
+
+			for ann in doc.annotations.all():
+				cur_ann = {
+					"label_text": ann.label.text,
+					"id": ann.id,
+					"user_provided": ann.user_provided
+				}
+				ext_ann = ann.get_extended_annotation()
+
+				for key_ext_ann in ext_ann.__dict__.keys():
+					if key_ext_ann in ["_state", "annotation_id", "id"]:
+						continue
+					else:
+						cur_ann[key_ext_ann] = ext_ann.__dict__[key_ext_ann]
+				annotated_row['annotations'].append(cur_ann)
+
+			data_info['labeled'].append(annotated_row)
+
+		result = {
+			"lean_life_data": data_info,
+			"params": model_settings
+		}
+		return result
 	# def get_is_annotated(self, doc_id):
 	# 	docs = Document.objects.all()
 	# 	for doc in docs:

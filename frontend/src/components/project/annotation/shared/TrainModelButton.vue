@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-button v-if="this.$store.getters.getProjectInfo.task!==2" @click="trainModelDialogVisible=true">Train Model</el-button>
+    <el-button @click="trainModelDialogVisible=true">Train Model</el-button>
     <el-dialog title="Train Model" :visible.sync="trainModelDialogVisible">
       <el-form :model="modelForm" label-width="170px">
         <el-form-item required>

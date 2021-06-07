@@ -507,7 +507,7 @@ def send_model_metadata(project_id, experiment_name, save_path=None, best_train_
         "is_trained": False,
     }
     if save_path:
-        metadata_repr["save_path"] = save_path,
+        metadata_repr["save_path"] = save_path
 
     if best_train_loss and file_size:
         metadata_repr["is_trained"] = True
@@ -533,4 +533,5 @@ def lean_life_error_catcher_decorator(func):
         except Exception as e:
             params = args[0]
             send_model_metadata(params["project_id"], params["experiment_name"], error_msg=str(e))
+            raise e
     return wrapper
