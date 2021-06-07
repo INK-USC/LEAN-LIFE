@@ -488,7 +488,8 @@ def update_model_training(project_id, experiment_name, cur_epoch, total_epochs, 
 
     return _send_update(project_id, experiment_name, update_repr)
 
-def send_model_metadata(project_id, experiment_name, save_path, best_train_loss=None, file_size=None, error_msg=None):
+def send_model_metadata(project_id, experiment_name, save_path=None, best_train_loss=None, file_size=None, error_msg=None,
+                        is_standard_trained=None):
     """
         Sends a POST request back to LEAN-LIFE Django API, updating the API with the fact that the model has
         been saved, and where the model can be found when the model needs to be downloaded.
@@ -504,10 +505,10 @@ def send_model_metadata(project_id, experiment_name, save_path, best_train_loss=
     """
     metadata_repr = {
         "is_trained": False,
-        "save_path": save_path,
-        "file_size": "N/A",
-        "best_train_loss": "N/A",
     }
+    if save_path:
+        metadata_repr["save_path"] = save_path,
+
     if best_train_loss and file_size:
         metadata_repr["is_trained"] = True
         metadata_repr["file_size"] = file_size
@@ -517,6 +518,19 @@ def send_model_metadata(project_id, experiment_name, save_path, best_train_loss=
         metadata_repr["is_errored"] = True
         metadata_repr["error_message"] = error_msg
 
+    if type(is_standard_trained) == bool:
+        metadata_repr["is_standard_trained"] = is_standard_trained
+
     print(metadata_repr)
 
     return _send_update(project_id, experiment_name, metadata_repr)
+
+
+def lean_life_error_catcher_decorator(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as e:
+            params = args[0]
+            send_model_metadata(params["project_id"], params["experiment_name"], error_msg=str(e))
+    return wrapper

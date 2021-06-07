@@ -15,9 +15,13 @@ import warnings
 from fastapi import HTTPException
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
+sys.path.append(PATH_TO_PARENT + "../")
+sys.path.append(PATH_TO_PARENT + "../../")
+
 from internal_api.pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, \
         soft_match_data, evaluate_next_clf_pipeline, hard_match_pipeline
 from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline
+from fast_api.fast_api_util_functions import lean_life_error_catcher_decorator
 
 
 def _remove_trailing_period(string):
@@ -25,6 +29,8 @@ def _remove_trailing_period(string):
         return string[:len(string)-1]
     return string
 
+
+@lean_life_error_catcher_decorator
 def train_next_framework_lean_life(params, label_space, unlabeled_docs=None, explanation_triples=None, ner_label_space=None):
     """
         Function that transforms converted LEAN-LIFE datastructures into a more standard form for training purposes
@@ -283,6 +289,7 @@ def train_standard_pipeline(params, label_space, labeled_data=None, dev_data=Non
     return standard_pipeline(params)
 
 
+@lean_life_error_catcher_decorator
 def train_standard_lean_life(params, label_space, labeled_data=None, dev_data=None, ner_label_space=None):
     """
         Function that transforms converted LEAN-LIFE datastructures into a more standard form for training purposes

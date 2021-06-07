@@ -683,7 +683,10 @@ class ModelAPIView(APIView):
 				"stage": model.stage,
 				'best_train_loss': model.best_train_loss,
 				"file_path": model.save_path,
-				'file_size': model.file_size
+				'file_size': model.file_size,
+				'is_errored': str(model.is_errored),
+				'error_message': model.error_message,
+				'is_standard_trained': str(model.is_standard_trained),
 			}
 			results.append(cur_model_json)
 

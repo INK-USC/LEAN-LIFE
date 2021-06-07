@@ -9,6 +9,9 @@
         <el-table-column label="Project Id" prop="project_id"/>
         <el-table-column label="Project Name" prop="project_name"/>
         <el-table-column label="Project Task" prop="project_task"/>
+        <el-table-column label="Standard Trained" prop="is_standard_trained"/>
+        <el-table-column label="Failed" prop="is_errored"/>
+        <!-- <el-table-column label="Error log" prop="error_message"/> -->
         <el-table-column label="Training Status" prop="training_status"/>
         <el-table-column label="Time Spent" prop="time_spent"/>
         <el-table-column label="Time Left" prop="time_left"/>

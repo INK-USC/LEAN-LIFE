@@ -75,6 +75,10 @@ def standard_pipeline(payload):
     else:
         device = torch.device("cpu")
 
+    if payload["leanlife"]:
+        # tell django model is being is_standard_trained
+        send_model_metadata(payload["project_id"], experiment_name, is_standard_trained=True)
+
     relation_ner_types = None
     if task == "re":
         ner_labels = payload["ner_labels"]

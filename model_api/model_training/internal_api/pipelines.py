@@ -483,11 +483,6 @@ def train_next_bilstm_pipeline(payload):
     # check if there is no hard matched entries
     if len(strict_match_data.tokens) == 0:
         logging.info("fallback to standard pipeline")
-        if payload["leanlife"]:
-            # TODO: set status to fallback
-            # experiment_name = payload["experiment_name"]
-            # send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
-            pass
         payload = get_standard_payload_from_next(payload)
         return standard_pipeline(payload)
     
@@ -927,11 +922,6 @@ def hard_match_pipeline(payload):
         # check if there is no hard matched entries
         if len(matched_tuples) == 0:
             logging.info("fallback to standard pipeline")
-            if payload["leanlife"]:
-                # TODO: set status to fallback
-                # experiment_name = payload["experiment_name"]
-                # send_model_metadata(experiment_name, "N/A", error_msg="No hard matches found.")
-                pass
             payload = get_standard_payload_from_next(payload)
             return standard_pipeline(payload)
 
