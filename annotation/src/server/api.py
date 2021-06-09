@@ -723,7 +723,13 @@ class TrainModelAPIView(APIView):
 
 		project = get_object_or_404(Project, pk=project_id)
 
-		model_meta, created = ModelMetaData.objects.get_or_create(project=project, name=model_name)
+		try:
+			model_meta: ModelMetaData = ModelMetaData.objects.get(project=project, name=model_name)
+			model_meta.delete()
+		except:
+			pass
+		model_meta = ModelMetaData(project=project, name=model_name)
+		model_meta.save()
 
 		train_standard = False
 		if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:

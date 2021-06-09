@@ -509,10 +509,10 @@ def send_model_metadata(project_id, experiment_name, save_path=None, best_train_
     if save_path:
         metadata_repr["save_path"] = save_path
 
-    if best_train_loss and file_size:
+    if best_train_loss is not None and file_size is not None:
         metadata_repr["is_trained"] = True
-        metadata_repr["file_size"] = file_size
-        metadata_repr["best_train_loss"] = best_train_loss
+        metadata_repr["file_size"] = str(file_size)
+        metadata_repr["best_train_loss"] = str(best_train_loss)
 
     if error_msg:
         metadata_repr["is_errored"] = True
