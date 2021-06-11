@@ -28,7 +28,11 @@ const store = new Vuex.Store({
 		annotationGuidePopupInfo: {
 			targetDialogType: "",
 			dialogVisible: false,
-		}
+		},
+		modelsMetadataPopupInfo: {
+			metadata: null,
+			dialogVisible: false,
+		},
 	},
 	mutations: {
 		login(state, loginCredential) {
@@ -76,7 +80,14 @@ const store = new Vuex.Store({
 		},
 		hideAnnotationGuidePopup(state) {
 			state.annotationGuidePopupInfo.dialogVisible = false;
-		}
+		},
+		showModelsMetadataPopup(state, metaData) {
+			state.modelsMetadataPopupInfo.dialogVisible = true;
+			state.modelsMetadataPopupInfo.metadata = metaData;
+		},
+		hideModelsMetadataPopup(state) {
+			state.modelsMetadataPopupInfo.dialogVisible = false;
+		},
 	},
 	getters: {
 		getUserInfo: state => {
@@ -105,6 +116,9 @@ const store = new Vuex.Store({
 		},
 		getActionType: state => {
 			return state.actionRelatedInfo.actionType;
+		},
+		getModelsMetadataPopupInfo: state => {
+			return state.modelsMetadataPopupInfo
 		},
 	},
 	actions: {

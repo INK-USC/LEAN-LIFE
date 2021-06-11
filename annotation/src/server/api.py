@@ -672,6 +672,11 @@ class ModelAPIView(APIView):
 				training_status = "Failed"
 			else:
 				training_status = "Finished" if model.is_trained else "Training"
+			matching = "N/A"  # Standard
+			if not model.is_standard_trained:
+				soft_match = model.training_meta_data.get('soft_match', None)
+				if soft_match is not None:
+					matching = "Soft" if soft_match else "Strict"
 			cur_model_json = {
 				'project_id': model.project.id,
 				'project_name': model.project.name,
@@ -684,9 +689,10 @@ class ModelAPIView(APIView):
 				'best_train_loss': model.best_train_loss,
 				"file_path": model.save_path,
 				'file_size': model.file_size,
-				'is_errored': str(model.is_errored),
+				'is_errored': model.is_errored,
 				'error_message': model.error_message,
-				'is_standard_trained': str(model.is_standard_trained),
+				'matching': matching,
+				'training_meta_data': model.training_meta_data,
 			}
 			results.append(cur_model_json)
 
@@ -728,7 +734,7 @@ class TrainModelAPIView(APIView):
 			model_meta.delete()
 		except:
 			pass
-		model_meta = ModelMetaData(project=project, name=model_name)
+		model_meta = ModelMetaData(project=project, name=model_name, training_meta_data=model_settings)
 		model_meta.save()
 
 		train_standard = False

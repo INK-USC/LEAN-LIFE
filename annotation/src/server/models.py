@@ -2,6 +2,7 @@ import json
 from django.core.exceptions import ValidationError, FieldError
 from django.core import validators
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -103,6 +104,8 @@ class ModelMetaData(models.Model):
     time_spent = models.FloatField(default=0)
     time_left = models.FloatField(default=3000)
     stage = models.CharField(max_length=256, default='-1')
+
+    training_meta_data = JSONField(default=dict)
 
 
 class Label(models.Model):
