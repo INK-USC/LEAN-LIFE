@@ -1,8 +1,14 @@
+# Table of contents
+
+1. [How to start frontend](#how-to-start-frontend)
+2. [Folder structure](#folder-structure)
+3. [Acceptable interaction behavior](#acceptable-interaction-behavior)
+
 # How to start frontend
 
 ## 1. Install Nodejs
 
-See [Installation Guide](https://nodejs.org/en/download/)
+- Please install NodeJS 14.16.0. See [Installation Guide](https://nodejs.org/en/download/)
 
 ## 2. Install required packages
 
@@ -16,7 +22,7 @@ npm install
 npm run serve
 ```
 
------
+---
 
 ### Compiles and minifies for production
 
@@ -58,7 +64,7 @@ unit testing code
 
 ### [.env](https://github.com/motdotla/dotenv#usage)
 
-environmental variable (https://github.com/motdotla/dotenv#usage)
+environmental variable
 
 ### .eslintrc.js
 
@@ -80,21 +86,21 @@ configuration for [Jest](https://jestjs.io/docs/getting-started)
 
 required package for the frontend
 
-# Acceptable Behavior
+# Acceptable interaction behavior
 
 ## Tasks
 
-### Sentiment Analysis
+### 1. Sentiment Analysis
 
 - one document can have multiple different label.
 - no duplicated label allowed for same document.
 
-### Named Entity Recognition
+### 2. Named Entity Recognition
 
 - one chunk (a word or sentence) can only be annotated by one label.
 - one label can be applied to multiple chunks.
 
-### Relation Extraction
+### 3. Relation Extraction
 
 - In one relation, subject and object can not be the same chunk.
 - Different relation are not related. So one chunk can be the object in relation A, it can also be the object in
@@ -103,12 +109,12 @@ required package for the frontend
 
 ## Explanations
 
-### Natural Language Explanation
+### 1. Natural Language Explanation
 
 - user should select a template from the dropdown and fill in the blank.
 - no duplicate explanation is allowed.
 
-### Trigger Explanation
+### 2. Trigger Explanation
 
 - one trigger explanation group is one row of explanation.
 - one trigger is one selection of chunk.
