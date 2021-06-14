@@ -333,7 +333,7 @@ def prepare_next_data(json_data, project_type="", lean_life=True):
                 explanation_triples[i] = triple.dict() 
         else:
             explanation_triples = []
-        if hasattr(json_data, "ner_label_space"):
+        if hasattr(json_data, "ner_label_space") and json_data.ner_label_space is not None:
             ner_label_space = json_data.ner_label_space
         else:
             ner_label_space = []
@@ -425,13 +425,13 @@ def prepare_standard_data(json_data, project_type="", lean_life=True):
                 labeled_docs[i] = doc.dict()
         else:
             labeled_docs = []
-        if hasattr(json_data, "dev_data"):
+        if hasattr(json_data, "dev_data") and json_data.dev_data is not None:
             dev_docs = json_data.dev_data
             for i, doc in enumerate(dev_docs):
                 dev_docs[i] = doc.dict()
         else:
             dev_docs = []
-        if hasattr(json_data, "ner_label_space"):
+        if hasattr(json_data, "ner_label_space") and json_data.ner_label_space is not None:
             ner_label_space = json_data.ner_label_space
         else:
             ner_label_space = []

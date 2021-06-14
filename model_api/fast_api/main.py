@@ -62,7 +62,7 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(train_next_framework(params.dict(), label_space, unlabeled_docs,
+    return schema.SavePathOutput(save_path=train_next_framework(params.dict(), label_space, unlabeled_docs,
                                                       explanation_triples, ner_label_space))
 
 @app.post("/training/next/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)

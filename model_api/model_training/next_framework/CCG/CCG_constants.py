@@ -13,6 +13,11 @@ SPACE = "SPACE"
 PUNCT = "PUNCT"
 PHRASE = "PHRASE"
 
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+
 RAW_GRAMMAR =''':- S,NP,N,PP
         VP :: S\\NP
         Det :: NP/N
