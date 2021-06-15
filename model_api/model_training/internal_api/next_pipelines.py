@@ -484,6 +484,9 @@ def train_next_bilstm_pipeline(payload):
     if len(strict_match_data.tokens) == 0:
         logging.info("fallback to standard pipeline")
         payload = get_standard_payload_from_next(payload)
+        if payload["leanlife"]:
+            # tell django model is being is_standard_trained
+            send_model_metadata(payload["project_id"], payload["experiment_name"], is_standard_trained=True)
         return standard_pipeline(payload)
     
     with open(PATH_TO_PARENT + "../next_framework/data/training_data/labeling_functions_{}.p".format(save_string), "rb") as f:
@@ -923,6 +926,9 @@ def hard_match_pipeline(payload):
         if len(matched_tuples) == 0:
             logging.info("fallback to standard pipeline")
             payload = get_standard_payload_from_next(payload)
+            if payload["leanlife"]:
+                # tell django model is being is_standard_trained
+                send_model_metadata(payload["project_id"], payload["experiment_name"], is_standard_trained=True)
             return standard_pipeline(payload)
 
         del payload["training_data"]
