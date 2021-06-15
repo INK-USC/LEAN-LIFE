@@ -4,11 +4,40 @@
 
 # Table of contents
 
-1. [URLs.py](#urlspy)
-2. [Managers](#managers)
-3. [Serializers](#serializers)
+1. [Setup](#setup)
+2. [URLs.py](#urls)
+3. [Managers](#managers)
+4. [Serializers](#serializers)
 
-# URLs.py
+# Setup
+
+1.  Please install [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
+    - If on linux, please make sure to start postgres `sudo service postgresql start`
+    - if you use the installation guide above for unix or windows you shouldn't have to do this
+2.  Ensure your `leanlife` environment is activated
+3.  Open a terminal in the root directory execute `pip install -r requirements.txt`
+4.  Execute `python -m spacy download en_core_web_sm` (or whatever version you'd like, just make sure to update this in [utils.py](server/utils.py#L8))
+5.  We will now setup the postgres connection. Navigate to the `src` folder inside `annotation_backend`, execute `cd LEAN-LIFE/annotation_backend/src`.
+    - Inside the `app` folder, navigate to [settings.py](app/settings.py#L100)
+      - Find the `DATABASES` dictionary, and replace the `PASSWORD` value with your own password
+6.  Navigate to the `src` folder inside `annotation_backend`, `cd LEAN-LIFE/annotation_backend/src` and run:
+    - `./setup.sh PASSWORD-YOU-JUST-SET` <- (passing your password in as an argument)
+    - you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
+7.  Start the backend from `cd LEAN-LIFE/annotation_backend/src` folder: `python manage.py runserver 0.0.0.0:8000`
+
+### Potential Errors:
+
+- Postgres is not installed:
+  - To check: Open up terminal and exectue `which psql`. This should return a path.
+  - To solve: Please follow the example [provided](http://postgresguide.com/setup/install.html)
+- Some other application is listening on port 5432
+  - To check: (Unix, Linux): `sudo lsof -i:5432`, (Windows): `netstat -tulpn | grep 5432`
+    - [Useful Link](https://www.cyberciti.biz/faq/unix-linux-check-if-port-is-in-use-command/)
+  - To solve: Get the Process ID of the application running on the port and kill the process.
+    - [Windows](https://www.revisitclass.com/networking/how-to-kill-a-process-which-is-using-port-8080-in-windows/)
+    - [Unix, Linux––2nd Answer](https://stackoverflow.com/questions/3855127/find-and-kill-process-locking-port-3000-on-mac)
+
+# URLs
 
 - Paths starting with `api/` are used by Vue.js frontend to save and retrieve data.
 - Other paths are for supporting django templates, which might be removed in a future release.

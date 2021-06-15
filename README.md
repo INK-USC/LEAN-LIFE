@@ -9,8 +9,7 @@
 
 - [Quick Intro](#quick-intro)
 - [Release Plan](#release-plan)
-- [Installation Instructions](#installation-instructions)
-- [Set Up Instructions](#set-up-instructions)
+- [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [Misc](#misc)
 - [Citation](#citation)
@@ -47,73 +46,71 @@ We strongly encourage community engagement, please refer to our [contribution se
 
 **Next Release's Goals:** 4-6 Weeks
 
-- Add support for NER tasks.
-- Improve UX
-- Add docker support for easier onboarding
-- Code cleanup - remove unwanted files of django templates and add more inline documentation
+- **NER training**: Include support training of NER task, using triggerNER.
+- **Import & Export**: Add support for importing and exporting of labelled with or without explanations.
+- **Docker**: Add docker files for easier onboarding/setup
+- **Code cleanup** - remove unwanted files of django templates and add more inline documentation/explanations
+- Improve CUDA management policy. Add support for per request modification of gpu device. Currently, set using environment variable.
 
 Release notes can found [here](RELEASE.md).
 
-# Installation Instructions:
+# Getting Started:
 
+<details>
+<summary><b>Setup Instructions</b></summary>
+<p>
 Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly.
 
-- Please install [Python 3.6.5](https://www.python.org/downloads/release/python-365/) (if you use `conda` you can ignore this step)
-- Please install [Postgres 12.3](http://postgresguide.com/setup/install.html) (in the linked example they use PostgreSQL 9.2, please ensure you replace 9.2 with 12.3)
-- If on linux, please make sure to start postgres `sudo service postgresql start`
-  - if you use the installation guide above for unix or windows you shouldn't have to do this
-- Open a new terminal window after installing the above
-- Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
-- Create a virtual environment using:
-  - annaconda: `conda create -n leanlife python=3.6` (annaconda doesn't have a stable 3.6.5 version, so we use 3.6)
-  - virtualenv:
-    1. `python3.6.5 -m pip install virtualenv`
-    2. `python3.6.5 -m venv leanlife`
-- Activate your environment:
-  - annaconda: `conda activate leanlife`
-  - virtualenv: `source leanlife/bin/activate`
-- `pip install -r requirements.txt`
-- `python -m spacy download en_core_web_sm` (or whatever version you'd like, just make sure to update this in [utils.py](annotation/src/server/utils.py#L8))
+1. Please install [Python 3.6.5](https://www.python.org/downloads/release/python-365/) (if you use `conda` you can ignore this step)
+2. Open a new terminal window after installing the above
+3. Clone this repo: `git clone git@github.com:INK-USC/LEAN-LIFE.git`
+4. Create a virtual environment using:
 
-- Follow Vue.js frontend installation instructions [here](frontend/README.md)
-- Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md)
+   - annaconda: `conda create -n leanlife python=3.6` (annaconda doesn't have a stable 3.6.5 version, so we use 3.6)
+   - virtualenv:
+     1. `python3.6.5 -m pip install virtualenv`
+     2. `python3.6.5 -m venv leanlife`
 
-#### Potential Errors:
+5. Activate your environment:
 
-- Postgres is not installed:
-  - To check: Open up terminal and exectue `which psql`. This should return a path.
-  - To solve: Please follow the example [provided](http://postgresguide.com/setup/install.html)
-- Some other application is listening on port 5432
-  - To check: (Unix, Linux): `sudo lsof -i:5432`, (Windows): `netstat -tulpn | grep 5432`
-    - [Useful Link](https://www.cyberciti.biz/faq/unix-linux-check-if-port-is-in-use-command/)
-  - To solve: Get the Process ID of the application running on the port and kill the process.
-    - [Windows](https://www.revisitclass.com/networking/how-to-kill-a-process-which-is-using-port-8080-in-windows/)
-    - [Unix, Linux––2nd Answer](https://stackoverflow.com/questions/3855127/find-and-kill-process-locking-port-3000-on-mac)
+   - annaconda: `conda activate leanlife`
+   - virtualenv: `source leanlife/bin/activate`
+
+6. If you are user who wants to interact with the system using web portal, then please setup Django (for annotation backend) and Vue.js (for frontend). Otherwise, skip to the next step for model training backend setup.
+
+   - Follow Django annotation backend installation instructions [here](annotation_backend/src/README.md)
+   - Follow Vue.js frontend installation instructions [here](frontend/README.md)
+
+7. Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md)
+
+</p>
+</details>
+<br/>
+
+<details>
+<summary><b>Potential Errors</b></summary>
+<p>
+
 - Wrong version of python is being used.
   - To check: if you're getting installation errors, it could be that your machine is running the wrong version of python and/or installed packages. To check run `which python` and make sure the returned folder is the path to the `leanlife` virtual environment folder. To check that python is looking in the right places check this example [here](https://bic-berkeley.github.io/psych-214-fall-2016/sys_path.html#python-looks-for-modules-in-sys-path). Again the path should be the site-packages folder in your `leanlife` virtual environment
-  - To Fix: Re-create virtual environment:
-    - `deactivate leanlife`
-    - `rm -rf leanlife`
-    - make sure no other virtualenvs are running
-      - open up terminal/command prompt and see if there are paranthesis at the start of each line, ex: `(base) user@...`
-      - if this is the case deactivate that environment: `deactivate environment-name`, in the above example it would be `deactivate base`
-    - Go to step 4 of installation instructions
+  - To Fix: Re-create virtual environment: - `deactivate leanlife` - `rm -rf leanlife` - make sure no other virtualenvs are running - open up terminal/command prompt and see if there are paranthesis at the start of each line, ex: `(base) user@...` - if this is the case deactivate that environment: `deactivate environment-name`, in the above example it would be `deactivate base` - Go to step 4 of installation instructions
 
-# Set Up Instructions:
+</p>
+</details>
+<br/>
 
-Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly. We will dockerize this project soon as well.
+<details>
+<summary><b>Directory overview</b></summary>
+<p>
 
-1. Ensure your `leanlife` environment is activated
-2. We will now setup the postgres connection. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src`.
-   - Inside the `app` folder, navigate to [settings.py](annotation/src/app/settings.py#L100)
-     - Find the `DATABASES` dictionary, and replace the `PASSWORD` "fill-this-in" with your own password
-3. Navigate to the `src` folder inside `annotation`, `cd LEAN-LIFE/annotation/src` and run:
-   - `./setup.sh PASSWORD-YOU-JUST-SET` <- (passing your password in as an argument)
-   - you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
-4. Start the backend from `cd LEAN-LIFE/annotation/src` folder: `python manage.py runserver 0.0.0.0:8000`
-5. Start Vue.js frontend instructions [here](frontend/README.md)
-6. Start FastAPI instructions [here](model_api/fast_api/readme.md)
-7. Open up an browser window and navigate to http://0.0.0.0:8080/
+- `annotation_backend/`
+  - `src/` - django applications root directory
+  - `test_data/` - sample datasets for testing more description [here](annotation_backend/test_data/readme.md)
+- `frontend/` - Vue.js frontend project directory
+- `model_api/` - consists of code related to model training and fast api routes. More details can be found [here](model_api/README.md)
+</p>
+</details>
+<br/>
 
 # Contributing
 
@@ -136,7 +133,6 @@ For updates on this project and other nlp projects being done at USC, please fol
 ### Contributors
 
 Rahul Khanna, JiaMin (Jim) Gong, Dongho Lee, Jamin Chen, Seyeon Lee, Akshen Kadakia, Raghavendra Vedula
-
 
 # Citation
 

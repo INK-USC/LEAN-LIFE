@@ -24,19 +24,19 @@ npm run serve
 
 ---
 
-### Compiles and minifies for production
+### 4. Compiles and minifies for production
 
 ```
 npm run build
 ```
 
-### Run your unit tests
+### 5. Run your unit tests
 
 ```
 npm run test:unit
 ```
 
-### Lints and fixes files
+### 6. Lints and fixes files
 
 ```
 npm run lint
@@ -56,7 +56,7 @@ lean more about `public` folder [here](https://cli.vuejs.org/guide/html-and-stat
 
 ### src
 
-actual code for the frontend
+actual code for the frontend. more structure details [here](src/README.md)
 
 ### tests
 
