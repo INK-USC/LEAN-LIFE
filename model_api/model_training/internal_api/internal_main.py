@@ -19,8 +19,8 @@ sys.path.append(PATH_TO_PARENT + "../")
 sys.path.append(PATH_TO_PARENT + "../../")
 
 from internal_api.next_pipelines import pre_train_find_module_pipeline, train_next_bilstm_pipeline, strict_match_pipeline, \
-        soft_match_data, evaluate_next_clf_pipeline, hard_match_pipeline
-from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline
+        soft_match_data, evaluate_next_clf_pipeline, hard_match_pipeline, predict_next_clf_pipeline
+from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline, predict_standard_clf_pipeline
 from fast_api.fast_api_util_functions import lean_life_error_catcher_decorator
 
 
@@ -334,3 +334,25 @@ def evaluate_standard(params, ner_label_space):
         else:
             params["ner_labels"] = ner_label_space
     return evaluate_standard_clf_pipeline(params)
+
+
+def predict_next(payload):
+    """Just passes along the payload"""
+    return predict_next_clf_pipeline(payload)
+
+
+def predict_standard(params, ner_label_space):
+    """Just passes along the payload"""
+    # provides a warning of the lack of ner_labels if the task is re
+    task = params["task"]
+    if task == "re":
+        if ner_label_space == None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            params["ner_labels"] = ner_label_space
+    return predict_standard_clf_pipeline(params)

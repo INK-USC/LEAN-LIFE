@@ -24,7 +24,8 @@ from defaults import TRAINING_DEFAULTS, BILSTM_DEFAULTS
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.training.next_util_functions import generate_save_string, build_custom_vocab, \
     set_re_dataset_ner_label_space, set_ner_label_space, build_vocab
-from next_framework.training.next_training_util_functions import build_labeled_dataset
+from next_framework.training.next_training_util_functions import build_labeled_dataset, predictions_clf, \
+    build_prediction_dataset
 from next_framework.training.standard_training_util_functions import build_datasets_from_text, evaluate_clf
 from next_framework.models import BiLSTM_Att_Clf
 
@@ -146,7 +147,8 @@ def standard_pipeline(payload):
 
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "built training data")
+            update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1,
+                                  "built training data")
 
     train_data_path = PATH_TO_PARENT + "../next_framework/data/training_data/labeled_data_{}.p".format(save_string)
     with open(train_data_path, "rb") as f:
@@ -317,7 +319,8 @@ def standard_pipeline(payload):
 
         if payload["leanlife"]:
             time_spent = time.time() - start_time
-            update_model_training(payload["project_id"], experiment_name, epoch + 1, epochs, time_spent, train_avg_loss, "training")
+            update_model_training(payload["project_id"], experiment_name, epoch + 1, epochs, time_spent, train_avg_loss,
+                                  "training")
 
     # Step 6 save metadata
     with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Clf_{}.csv".format(
@@ -445,3 +448,82 @@ def evaluate_standard_clf_pipeline(payload):
     logging.info("Avg Test Loss: {}, Avg Test F1 Score: {}".format(*test_tuple))
 
     return test_tuple[0], avg_test_f1_score
+
+
+def predict_standard_clf_pipeline(payload):
+    # ready parameters
+    experiment_name = payload["experiment_name"]
+    dataset_name = payload["dataset_name"]
+    label_map = payload["label_map"]
+    task = payload["task"]
+    prediction_data = payload["prediction_data"]
+
+    pred_batch_size = int(_check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size"))
+    embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
+    emb_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "emb_dim")
+    hidden_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "hidden_dim")
+
+    save_string = generate_save_string(dataset_name, embeddings)
+    vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    number_of_classes = len(label_map)
+
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
+
+    with open(vocab_path, "rb") as f:
+        vocab = pickle.load(f)
+
+    pad_idx = vocab["<pad>"]
+
+    # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
+    # you can either send us tokens
+    # load_spacy_to_custom_dataset_ner_mapping <- remember to say how to update this
+    custom_vocab = {}
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
+        tokens = payload["custom_vocab_tokens"]
+        custom_vocab = build_custom_vocab("", len(vocab), tokens)
+    # or if this is an "re" task and you have sent ner_labels, we will create a custom
+    # vocab for you of [SUBJ-ner_label, OBJ-ner_label] for each label in ner_labels
+    # we do this due to parsing. Look at tokenize() in:
+    # model_api/model_training/next_framework/training/util_functions.py
+    else:
+        if task == "re" and len(ner_labels) > 0:
+            custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
+        else:
+            # finally, if the task is not "re", and you just want to set a custom vocab
+            # we allow you to do so
+            custom_vocab = build_custom_vocab(dataset_name, len(vocab))
+
+    custom_vocab_length = len(custom_vocab)
+
+    # prepare eval data
+    build_prediction_dataset(prediction_data, vocab, save_string, custom_vocab)
+    logging.info("built prediction dataset")
+
+    pred_path = PATH_TO_PARENT + "../next_framework/data/training_data/prediction_data_{}.p".format(save_string)
+
+    # load model
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
+    clf.load_state_dict(
+        torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Clf_{}.p".format(experiment_name))
+    )
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+    clf = clf.to(device)
+
+    logging.info("loaded model")
+
+    # evaluate
+    total_class_probs, class_predictions = predictions_clf(pred_path, clf, batch_size=pred_batch_size)
+
+    return total_class_probs.tolist(), class_predictions.tolist()

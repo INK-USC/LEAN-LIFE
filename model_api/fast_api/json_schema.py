@@ -696,3 +696,36 @@ class StandardEvalDataOutput(BaseModel):
                 "avg_eval_f1_score": 43.32233
             }
         }
+
+
+class PredictionOutputs(BaseModel):
+    class_probs: List[List[float]]
+    class_preds: List[Any]
+
+
+class PredictApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: str
+    train_dataset_size: int
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    custom_vocab_tokens: Optional[List[str]]
+    hidden_dim: Optional[int]
+    pre_train_training_size: Optional[int]
+    eval_batch_size: Optional[int]
+
+
+class PredictNextApiParams(BaseModel):
+    params: PredictApiParams
+    label_space: Dict[str, int]
+    prediction_data: List[str]
+
+
+class PredictStandardClfPayload(BaseModel):
+    params: EvalStandardApiParams
+    ner_label_space: Optional[List[str]]
+    label_space: Dict[str, int]
+    prediction_data: List[str]

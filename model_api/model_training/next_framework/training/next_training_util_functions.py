@@ -275,7 +275,8 @@ def match_training_data(labeling_functions, train, task, function_ner_types={}):
 
     return matched_data_tuples, unlabeled_data_phrases, matched_indices
 
-def build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to_custom_ner={}, custom_vocab={}):
+def build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to_custom_ner={}, custom_vocab={},
+                                dataset_prefix="unlabeled"):
     """
         Builds and saves an UnlabeledTrainingDataset that is used for soft-training.
 
@@ -286,6 +287,7 @@ def build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to
             spacy_to_custom_ner   (dict) : key - string, spaCy NER, value - string, custom NER 
                                            -- handles intersection between sets of NER labels
             custom_vocab          (dict) : key - string, value - token_id
+            dataset_prefix         (str) : dataset prefix to be stored on disk
     """
 
     pad_idx = vocab["<pad>"]
@@ -295,7 +297,7 @@ def build_unlabeled_dataset(unlabeled_data_phrases, vocab, save_string, spacy_to
 
     logging.info("Finished building unlabeled dataset of size: {}".format(str(len(seq_tokens))))
 
-    file_name = PATH_TO_PARENT + "../data/training_data/unlabeled_data_{}.p".format(save_string)
+    file_name = PATH_TO_PARENT + "../data/training_data/{}_data_{}.p".format(dataset_prefix, save_string)
 
     with open(file_name, "wb") as f:
         pickle.dump(dataset, f)
@@ -606,6 +608,81 @@ def _apply_none_label(values, preds, none_label_id, threshold, entropy=True):
     final_preds = [none_label_id if mask else preds[i] for i, mask in enumerate(none_label_mask)]
 
     return final_preds
+
+
+def build_prediction_dataset(sentences, vocab, save_string, custom_vocab={}):
+    """
+        Builds and saves a TrainingDataset that is used for strict-match training and evaluation
+
+        Arguments:
+            sentences          (arr) : array of sentences
+            vocab (torch.text.Vocab) : Vocab object
+            save_string        (str) : string to indicate some of the hyper-params used to create the vocab
+            custom_vocab      (dict) : key - string, value - token_id
+    """
+    unlabeled_data_phrases = [generate_phrase(entry, nlp) for entry in sentences]
+    # spacy_to_custom_ner_mapping = load_spacy_to_custom_dataset_ner_mapping(dataset)
+
+    build_unlabeled_dataset(
+        unlabeled_data_phrases, vocab, save_string,
+        custom_vocab=custom_vocab, dataset_prefix="prediction"
+    )
+
+
+def predictions_clf(data_path, model, batch_size=128, hidden_dim=100, dir_x_lay=4):
+    """
+        Function that predicts for a dataset using BiLSTM+Att model
+
+        If `none_label_thresholds` == None, we always try to find threshold values, even if none_label_id=-1
+        However, if none_labels=-1, we set the thresholds so that they will never apply.
+
+        Arguments:
+            data_path               (str) : path to predict dataset
+            model                (Object) : model that needs to be evaluated
+            batch_size              (int) : _
+            hidden_dim              (int) : of BiLSTM
+            dir_x_lay               (int) : number_of_directions x num_layers in the BiLSTM
+
+        Returns: total_class_probs
+    """
+
+    with open(data_path, "rb") as f:
+        pred_dataset = pickle.load(f)
+
+    # deactivate dropout layers
+    model.eval()
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    h0 = torch.empty(dir_x_lay, batch_size, hidden_dim).to(device)
+    c0 = torch.empty(dir_x_lay, batch_size, hidden_dim).to(device)
+    nn.init.xavier_normal_(h0)
+    nn.init.xavier_normal_(c0)
+
+    total_class_probs = []
+    class_predictions = []
+    batch_count = 0
+    for step, batch in enumerate(tqdm(pred_dataset.as_batches(batch_size=batch_size, shuffle=False))):
+        unlabeled_tokens, unlabeled_token_lengths, _, _ = batch
+        unlabeled_tokens = unlabeled_tokens.to(device)
+
+        with torch.no_grad():
+            preds = model.forward(unlabeled_tokens, unlabeled_token_lengths, h0, c0)
+            class_probs = nn.functional.softmax(preds, dim=1)
+            class_preds = torch.argmax(class_probs, dim=1).cpu().numpy()
+
+            batch_count += 1
+            total_class_probs.append(class_probs.cpu().numpy())
+            class_predictions.append(class_preds)
+
+    total_class_probs = np.concatenate(total_class_probs, axis=0)
+    class_predictions = np.concatenate(class_predictions)
+
+    return total_class_probs, class_predictions
+
 
 def evaluate_next_clf(data_path, model, strict_loss_fn, num_labels, none_label_thresholds=None,
                       batch_size=128, hidden_dim=100, none_label_id=-1, dir_x_lay=4):

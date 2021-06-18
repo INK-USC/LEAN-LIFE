@@ -26,7 +26,8 @@ from internal_api.defaults import FIND_MODULE_DEFAULTS, TRAINING_DEFAULTS, BILST
 from next_framework.training.find_training_util_functions import build_pre_train_find_datasets, \
                                                                  evaluate_find_module
 from next_framework.training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
-                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching, build_labeled_dataset
+                                                                 build_datasets_from_text, evaluate_next_clf, apply_strict_matching, apply_soft_matching, build_labeled_dataset, \
+                                                                 build_prediction_dataset, predictions_clf
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                                         set_re_dataset_ner_label_space, set_ner_label_space, \
                                                         get_standard_payload_from_next
@@ -1043,3 +1044,96 @@ def evaluate_next_clf_pipeline(payload):
     logging.info("Avg Eval Loss: {}, Avg Eval Entropy F1 Score: {}, Avg Eval Max Value F1 Score: {}, Thresholds: {}".format(*dev_tuple))
 
     return dev_tuple[0], avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds
+
+
+def predict_next_clf_pipeline(payload):
+    """
+        Given a tuples of text and labels, and an experiment name, we will load the appropriate
+        saved model and evaluate it against the data provided.
+    """
+    experiment_name = payload["experiment_name"]
+    dataset_name = payload["dataset_name"]
+    train_dataset_size = payload["train_dataset_size"]
+    task = payload["task"]
+    label_map = payload["label_map"]
+    prediction_data = payload["prediction_data"]
+
+    embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
+    emb_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "emb_dim")
+    hidden_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "hidden_dim")
+    pre_training_size = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_training_size")
+    pred_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size")
+
+    number_of_classes = len(label_map)
+
+    find_module_sample_rate = pre_training_size / train_dataset_size
+
+    if find_module_sample_rate > 1:
+        find_module_sample_rate = -1.0 # no sampling
+
+    save_string = generate_save_string(dataset_name, embeddings, sample=find_module_sample_rate)
+    vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    relation_ner_types = None
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+
+        if "relation_ner_types" in payload:
+            relation_ner_types = payload["relation_ner_types"]
+        else:
+            # FILL IN MORE DATASETS HERE
+            # if using the api, you can just provide the mapping between relation to ner types (above)
+            # however this is not necessary to send
+            if dataset_name == "tacred":
+                relation_ner_types = TACRED_ENTITY_TYPES
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
+
+    with open(vocab_path, "rb") as f:
+        vocab = pickle.load(f)
+
+    # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
+    # you can either send us tokens
+    custom_vocab = {}
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
+        tokens = payload["custom_vocab_tokens"]
+        custom_vocab = build_custom_vocab("", len(vocab), tokens)
+    # or if this is an "re" task and you have sent ner_labels, we will create a custom
+    # vocab for you of [SUBJ-ner_label, OBJ-ner_label] for each label in ner_labels
+    # we do this due to parsing. Look at tokenize() in:
+    # model_api/model_training/next_framework/training/util_functions.py
+    else:
+        if task == "re" and len(ner_labels) > 0:
+            custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
+        else:
+            # finally, if the task is not "re", and you just want to set a custom vocab
+            # we allow you to do so
+            custom_vocab = build_custom_vocab(dataset_name, len(vocab))
+
+    custom_vocab_length = len(custom_vocab)
+
+    build_prediction_dataset(prediction_data, vocab, save_string, custom_vocab)
+    logging.info("built prediction dataset")
+
+    pad_idx = vocab["<pad>"]
+
+    pred_path = PATH_TO_PARENT + "../next_framework/data/training_data/prediction_data_{}.p".format(save_string)
+
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
+    clf.load_state_dict(torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)))
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+    clf = clf.to(device)
+
+    logging.info("loaded model")
+    total_class_probs, class_predictions = predictions_clf(pred_path, clf, batch_size=pred_batch_size)
+
+    return total_class_probs.tolist(), class_predictions.tolist()
