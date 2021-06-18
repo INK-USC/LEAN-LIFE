@@ -74,7 +74,11 @@ async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
     params = api_payload.params.dict()
     params["label_map"] = api_payload.label_space
     params["eval_data"] = api_payload.eval_data
-    return schema.NextEvalDataOutput(evaluate_next(params))
+    avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds = evaluate_next(params)
+    return schema.NextEvalDataOutput(
+            avg_loss=avg_loss, avg_eval_ent_f1_score=avg_eval_ent_f1_score,
+            avg_eval_val_f1_score=avg_eval_val_f1_score,
+            no_relation_thresholds=no_relation_thresholds)
 
 @app.get("/download/{file_path:path}")
 async def get_trained_model(file_path: str):
@@ -171,7 +175,7 @@ async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
     params["label_map"] = api_payload.label_space
     params["eval_data"] = api_payload.eval_data
     ner_label_space = api_payload.ner_label_space
-    if len(ner_label_space) == 0:
+    if ner_label_space is not None and len(ner_label_space) == 0:
         ner_label_space = None
     avg_loss, avg_eval_f1_score = evaluate_standard(params, ner_label_space)
     return schema.StandardEvalDataOutput(avg_loss=avg_loss, avg_eval_f1_score=avg_eval_f1_score)

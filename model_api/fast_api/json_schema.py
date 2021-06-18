@@ -83,6 +83,7 @@ class TrainingApiParams(BaseModel):
     load_model : Optional[bool]
     start_epoch : Optional[int]
     eval_data : Optional[List[Tuple[str, str]]]
+    soft_match: Optional[bool]
 
     class Config:
         schema_extra = {
@@ -100,6 +101,7 @@ class TrainingApiParams(BaseModel):
 class EvalApiParams(BaseModel):
     experiment_name : str
     dataset_name : str
+    task: str
     train_dataset_size : int
     embeddings : Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
                                   'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',

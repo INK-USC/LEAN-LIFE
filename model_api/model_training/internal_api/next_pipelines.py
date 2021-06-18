@@ -969,14 +969,33 @@ def evaluate_next_clf_pipeline(payload):
     if find_module_sample_rate > 1:
         find_module_sample_rate = -1.0 # no sampling
     
-    save_string = generate_save_string(dataset_name, embeddings, find_module_sample_rate)
+    save_string = generate_save_string(dataset_name, embeddings, sample=find_module_sample_rate)
     vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    relation_ner_types = None
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+
+        if "relation_ner_types" in payload:
+            relation_ner_types = payload["relation_ner_types"]
+        else:
+            # FILL IN MORE DATASETS HERE
+            # if using the api, you can just provide the mapping between relation to ner types (above)
+            # however this is not necessary to send
+            if dataset_name == "tacred":
+                relation_ner_types = TACRED_ENTITY_TYPES
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
 
     with open(vocab_path, "rb") as f:
         vocab = pickle.load(f)
-    
+
     # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
     # you can either send us tokens
+    custom_vocab = {}
     if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
         tokens = payload["custom_vocab_tokens"]
         custom_vocab = build_custom_vocab("", len(vocab), tokens)
@@ -985,7 +1004,7 @@ def evaluate_next_clf_pipeline(payload):
     # we do this due to parsing. Look at tokenize() in:
     # model_api/model_training/next_framework/training/util_functions.py
     else:
-        if len(ner_labels) > 0 and task == "re":
+        if task == "re" and len(ner_labels) > 0:
             custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
         else:
             # finally, if the task is not "re", and you just want to set a custom vocab
@@ -998,6 +1017,8 @@ def evaluate_next_clf_pipeline(payload):
                           [tup[1] for tup in eval_data],
                           vocab, save_string, "evaluate_next", label_map, custom_vocab)
     logging.info("built eval dataset")
+
+    pad_idx = vocab["<pad>"]
     
     eval_path = PATH_TO_PARENT + "../next_framework/data/training_data/evaluate_next_data_{}.p".format(save_string)
     strict_match_loss_function  = nn.CrossEntropyLoss()
