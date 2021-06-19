@@ -50,7 +50,7 @@ async def start_next_training_lean_life(lean_life_payload: schema.LeanLifePayloa
 
 
 @app.post("/training/next/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
-async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload):
+def start_next_training_api(api_payload: schema.ExplanationTrainingPayload):
     """
         Endpoint used to kick off training of a classifier via the next framework of learning from
         explanations. Please refer to the docs or `json_schema.py` to understand both the supported 
@@ -77,7 +77,7 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
 
 
 @app.post("/training/next/eval", status_code=status.HTTP_200_OK, response_model=schema.NextEvalDataOutput)
-async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
+def eval_next_clf(api_payload: schema.EvalNextClfPayload):
     """
         Endpoint used to evaluate a classifier trained via the next framework. Please refer to the docs or
         `json_schema.py` to understand both the supported and required paramaters.
