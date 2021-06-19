@@ -86,7 +86,7 @@ async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
 
 
 @app.post("/training/next/predict", status_code=status.HTTP_200_OK, response_model=schema.PredictionOutputs)
-async def eval_next_clf(api_payload: schema.PredictNextApiParams):
+async def predict_next_clf(api_payload: schema.PredictNextApiParams):
     """
         Endpoint used to predict from a classifier trained via the next framework. Please refer to the docs or
         `json_schema.py` to understand both the supported and required parameters.
@@ -204,7 +204,7 @@ async def eval_standard_clf(api_payload: schema.EvalStandardClfPayload):
 
 
 @app.post("/training/standard/predict", status_code=status.HTTP_200_OK, response_model=schema.PredictionOutputs)
-async def eval_next_clf(api_payload: schema.PredictStandardClfPayload):
+async def predict_standard_clf(api_payload: schema.PredictStandardClfPayload):
     """
         Endpoint used to predict from a classifier trained via the standard pipeline. Please refer to the docs or
         `json_schema.py` to understand both the supported and required parameters.
