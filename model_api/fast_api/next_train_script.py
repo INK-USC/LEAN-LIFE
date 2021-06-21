@@ -108,11 +108,22 @@ def main():
         'unlabeled_text': unlabeled_data,
         "ner_label_space": [
             "PERSON",
-            "CITY",
-            "TITLE",
             "ORGANIZATION",
+            "DATE",
+            "NUMBER",
+            "TITLE",
+            "COUNTRY",
+            "LOCATION",
+            "CITY",
+            "MISC",
+            "STATE_OR_PROVINCE",
+            "DURATION",
+            "NATIONALITY",
             "CAUSE_OF_DEATH",
-            "DATE"
+            "CRIMINAL_CHARGE",
+            "RELIGION",
+            "URL",
+            "IDEOLOGY"
         ]
     }
 

@@ -22,6 +22,7 @@ def main():
     test = json.load(open(args.test_path))
     test_formatted = list(map(lambda x: (x['text'], x['label']), test))
 
+    unlabeled_data = unlabeled_data[:100]
     test_formatted = test_formatted[:100]
 
     data = {
@@ -84,11 +85,22 @@ def main():
         },
         "ner_label_space": [
             "PERSON",
-            "CITY",
-            "TITLE",
             "ORGANIZATION",
+            "DATE",
+            "NUMBER",
+            "TITLE",
+            "COUNTRY",
+            "LOCATION",
+            "CITY",
+            "MISC",
+            "STATE_OR_PROVINCE",
+            "DURATION",
+            "NATIONALITY",
             "CAUSE_OF_DEATH",
-            "DATE"
+            "CRIMINAL_CHARGE",
+            "RELIGION",
+            "URL",
+            "IDEOLOGY"
         ]
     }
 
