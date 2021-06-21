@@ -38,7 +38,7 @@ def main():
     data = {
         'params': {
             'experiment_name': 'tacred_soft_match',
-            'dataset_name': 'tacred_soft_match',
+            'dataset_name': 'tacred',
             "dataset_size": len(unlabeled_data),
             'task': 're',
             'build_data': True,
