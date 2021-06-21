@@ -495,6 +495,7 @@ class EvalNextClfPayload(BaseModel):
     params : EvalApiParams
     label_space : Dict[str, int]
     eval_data : List[Tuple[str, str]]
+    ner_label_space: Optional[List[str]]
 
     class Config:
         schema_extra = {

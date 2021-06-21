@@ -78,7 +78,8 @@ async def eval_next_clf(api_payload: schema.EvalNextClfPayload):
     params = api_payload.params.dict()
     params["label_map"] = api_payload.label_space
     params["eval_data"] = api_payload.eval_data
-    avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds = evaluate_next(params)
+    ner_label_space = api_payload.ner_label_space
+    avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, no_relation_thresholds = evaluate_next(params, ner_label_space)
     return schema.NextEvalDataOutput(
         avg_loss=avg_loss, avg_eval_ent_f1_score=avg_eval_ent_f1_score,
         avg_eval_val_f1_score=avg_eval_val_f1_score,

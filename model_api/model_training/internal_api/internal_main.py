@@ -245,8 +245,19 @@ def apply_soft_matching(params, label_space, unlabeled_docs=None, explanation_tr
 
     return soft_match_data(params)
 
-def evaluate_next(payload):
+def evaluate_next(payload, ner_label_space=None):
     """Just passes along the payload"""
+    task = payload["task"]
+    if task == "re":
+        if ner_label_space == None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            payload["ner_labels"] = ner_label_space
     return evaluate_next_clf_pipeline(payload)
 
 
