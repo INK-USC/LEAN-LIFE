@@ -81,7 +81,7 @@ def standard_pipeline(payload):
         ner_labels = payload["ner_labels"]
         set_re_dataset_ner_label_space(dataset_name, ner_labels)
 
-        if "relation_ner_types" in payload:
+        if "relation_ner_types" in payload and payload["relation_ner_types"] is not None:
             relation_ner_types = payload["relation_ner_types"]
         else:
             # FILL IN MORE DATASETS HERE
