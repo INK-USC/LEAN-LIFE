@@ -1,0 +1,202 @@
+[
+  {
+    "text": "Apartment residents in Delaware were awarded $ 1 million for health problems due to mold SUBJ-O from unrepaired OBJ-O .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "The panelists bring knowledge and experience to a SUBJ-O focusing on OBJ-O , acquisitions and joint ventures within the world 's largest industry .",
+    "label": "Message-Topic(e1,e2)"
+  },
+  {
+    "text": "A SUBJ-O of the procedure appears in the OBJ-O .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "SUBJ-O SUBJ-O have often been featured in OBJ-O and literature .",
+    "label": "Message-Topic(e2,e1)"
+  },
+  {
+    "text": "In a literature review of 875 cases of Merkel cell carcinoma , the SUBJ-CAUSE_OF_DEATH was the cause of OBJ-O in 34 % of these patients .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "Once upon a time , the remit of getting a first SUBJ-O published by an unknown OBJ-TITLE was that you had talent for prose and storytelling , along with promise .",
+    "label": "Product-Producer(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O was landing into the high OBJ-O during the combat SAR demo with soldiers on board .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O uses OBJ-O for the part number identified in the work order to determine workstation assignment and loading .",
+    "label": "Instrument-Agency(e2,e1)"
+  },
+  {
+    "text": "An SUBJ-O of the liver caused by the hepatitis A OBJ-O -LRB- HAV -RRB- .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "Many different bacteria , SUBJ-O and viruses cause food OBJ-CAUSE_OF_DEATH , but most cases are the result of just a few species of bacteria .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "Adding a staysail gives a SUBJ-O a small OBJ-O that can balance the boat in heavier wind and sea conditions .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "General information about the SUBJ-CAUSE_OF_DEATH caused by the OBJ-O called Salmonella , when food is eaten raw or undercooked .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O explores the inevitable OBJ-O to make choices .",
+    "label": "Message-Topic(e1,e2)"
+  },
+  {
+    "text": "A US SUBJ-O was dropped into a difficult OBJ-O in Mali .",
+    "label": "no_relation"
+  },
+  {
+    "text": "He was a young SUBJ-O on the run from a OBJ-O at war .",
+    "label": "Entity-Origin(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O to the inquiry was solicited from his own OBJ-O through the questioning of the Lord , who then directed him to live in accordance with what he knew .",
+    "label": "Entity-Origin(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O was in a OBJ-O dated summer of 1938 along with several other dresses from this same period .",
+    "label": "Content-Container(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O won the Association 's championship with some OBJ-O .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O were dropped into the OBJ-O before the storm occurred .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "The executioners have carried the SUBJ-TITLE into OBJ-O .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O of OBJ-O form symbiotic relationships with the roots of several tree species .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "Clasp the big SUBJ-O of the right OBJ-O with the first finger of both hands .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "The European Ombudsman , P , Nikiforos Diamandouros , has asked the European Commission to correct an administrative SUBJ-O concerning fishing OBJ-O in the West of Scotland .",
+    "label": "no_relation"
+  },
+  {
+    "text": "So there 's a great SUBJ-O of OBJ-O outside , and in dealing with such I 've managed to bring some inside with me .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The system as described above has its greatest application in an arrayed SUBJ-O of antenna OBJ-O .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "Our SUBJ-O OBJ-O heals over because there is nothing between it and our stomach except a few thin layers of skin .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "Jeanne Carley has once again created a fun calendar with a SUBJ-O of adorable OBJ-O .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "SUBJ-O of the soils developed from the OBJ-O of Santiago-Ponte Ulla , Spain .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "Since the product has made it over that first hurdle , it was blessed with another two seconds while the SUBJ-O made his purchasing OBJ-O .",
+    "label": "Product-Producer(e2,e1)"
+  },
+  {
+    "text": "A witness SUBJ-O contains the witness 's factual OBJ-O of the circumstances of the dispute .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O completes a dismal past five OBJ-DURATION for the 25-year-old .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O of the OBJ-O was there in a perfect state and coiled up .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "Dutch National Ballet 's new SUBJ-O , by the creative OBJ-O of Rachel Beaujean and Ricardo Bustamante , is based on the original ballet by Jean Coralli and Jules Perrot .",
+    "label": "no_relation"
+  },
+  {
+    "text": "Gwathmey famously prefers curves to angularity and , though these are absent from the facade , they recur in the SUBJ-O of the OBJ-O , with rounded pylons and legato movements through space .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "This is a homeopathic nasal SUBJ-O which really helps OBJ-O keep their sinuses clear .",
+    "label": "Instrument-Agency(e1,e2)"
+  },
+  {
+    "text": "She hold the SUBJ-O in place with its OBJ-O right on the cut line .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O in the rings are caused by OBJ-O between the particles in the rings and the moons orbiting nearby .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "Ribozymes , also known as catalytic RNA and molecular scissors , break down SUBJ-O SUBJ-O inside a OBJ-O , cut out bad genetic information and splice in good material .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O works using OBJ-O , just like books and newspapers , but displays the ink particles electronically .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O portrays four OBJ-O in a trend-setting clique at a fictional Ohio high school .",
+    "label": "Message-Topic(e1,e2)"
+  },
+  {
+    "text": "The skydiving SUBJ-O was the best part of the OBJ-O .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "SUBJ-O with one OBJ-O were organized in many stud farms , and a large number of separate lines were recognized .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The sichuan SUBJ-O I got was in a OBJ-O labeled '' Prickly Ash '' , which is the name of the plant .",
+    "label": "Content-Container(e1,e2)"
+  },
+  {
+    "text": "A western SUBJ-O was behind it , a regiment of OBJ-O and marksmen .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The higher ranking SUBJ-O on the right shows his dominance by baring his OBJ-O and growling .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "A family living at Calabogie , Ontario was digging their new potatoes and came upon a different SUBJ-O of OBJ-O .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "In these cases , the SUBJ-O from the OBJ-O is not forgotten over time , but rather accumulates .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O ran away from the OBJ-O so quickly , he ran out of his shoes .",
+    "label": "Entity-Origin(e1,e2)"
+  },
+  {
+    "text": "The scientist enclosed a liquid SUBJ-O in a OBJ-O in three steps .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "To repair , he used duct tape and caulk to seal SUBJ-O in the OBJ-O OBJ-O and between joints and seams in the duct .",
+    "label": "no_relation"
+  }
+]

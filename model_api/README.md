@@ -2,17 +2,12 @@ This directory contains all the code related to model training and exposing it u
 
 ## Directory structure
 
-1. `example_notebooks/`
-
-   - Contains interactive jupyter notebooks for each tasks with sample data, processing and explanation to various input parameters.
-   - execute `jupyter notebook` in terminal and access them
-
-2. `fast_api/`
+1. `fast_api/`
 
    - Entrypoint for all training routes/pipelines
    - A thin wrapper over pipelines in `model_training` to expose them as routes and handle processing of input data.
 
-3. `model_training/`
+2. `model_training/`
 
    Consists of model training pipelines, modules like `next_framework` and more to join.
 

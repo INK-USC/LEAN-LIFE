@@ -6,7 +6,7 @@ This file contains history of release notes.
 - The UI adds support for annotating documents, training and downloading models on the annotated documents.
 
 - FastAPI layer is introduced to support asynchronous and standalone model training endpoints.
-- Support for training of RE and SA tasks with natural language explanations using NeXT framework is added.
+- Support for training of Relation Extraction and Sentiment Analysis tasks with natural language explanations using NeXT framework is added.
 - It also supports standard training of RE and SA tasks when explanations types is None or trigger.
 
 # v0.1-alpha (Date: 9/28/20)

@@ -641,7 +641,7 @@ def train_next_bilstm_pipeline(payload):
             batch_soft_scores = torch.index_select(soft_scores, 0, tensor_indices).to(device)
             unlabeled_tokens = unlabeled_tokens.to(device)
 
-            pseudo_labels = torch.index_select(torch.tensor(soft_labeling_function_labels), 0, torch.argmax(batch_soft_scores, dim=1))
+            pseudo_labels = torch.index_select(torch.tensor(soft_labeling_function_labels).to(device), 0, torch.argmax(batch_soft_scores, dim=1))
             bound = torch.max(batch_soft_scores, dim=1).values
             unlabeled_label_weights = nn.functional.softmax(10 * bound, dim=0)
 

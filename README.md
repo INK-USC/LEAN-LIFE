@@ -5,6 +5,16 @@
 [Website](http://inklab.usc.edu/leanlife/) &nbsp;&nbsp;&nbsp;&nbsp;
 [Paper](https://arxiv.org/abs/2004.07499) &nbsp;&nbsp;&nbsp;&nbsp;
 
+---
+
+## Latest release (v1.0) Highlights
+
+- Added new UI for annotation support.
+- FastAPI added for asynchronous model training.
+- Added model training support for Natural Language Explanations for Relation Extraction and Sentiment Analysis tasks.
+
+---
+
 ### Contents:
 
 - [Quick Intro](#quick-intro)
@@ -81,7 +91,8 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
    - Follow Django annotation backend installation instructions [here](annotation_backend/src/README.md)
    - Follow Vue.js frontend installation instructions [here](frontend/README.md)
 
-7. Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md)
+7. Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md).
+   For detailed guide on how to use API calls. Checkout the jupyter notebooks in [example_notebooks](example_notebooks/) directory
 
 </p>
 </details>
@@ -106,6 +117,9 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
 - `annotation_backend/`
   - `src/` - django applications root directory
   - `test_data/` - sample datasets for testing more description [here](annotation_backend/test_data/readme.md)
+- `example_notebooks` -
+  - Contains interactive jupyter notebooks for each tasks with sample data, processing and explanation to various input parameters.
+  - execute `jupyter notebook` in terminal and access them
 - `frontend/` - Vue.js frontend project directory
 - `model_api/` - consists of code related to model training and fast api routes. More details can be found [here](model_api/README.md)
 </p>
