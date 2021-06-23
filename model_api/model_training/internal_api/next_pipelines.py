@@ -1134,6 +1134,6 @@ def predict_next_clf_pipeline(payload):
     clf = clf.to(device)
 
     logging.info("loaded model")
-    total_class_probs, class_predictions = predictions_clf(pred_path, clf, batch_size=pred_batch_size)
+    total_class_probs, class_predictions = predictions_clf(pred_path, clf, label_map, batch_size=pred_batch_size)
 
     return total_class_probs.tolist(), class_predictions.tolist()

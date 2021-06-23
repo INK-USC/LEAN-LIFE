@@ -524,6 +524,6 @@ def predict_standard_clf_pipeline(payload):
     logging.info("loaded model")
 
     # evaluate
-    total_class_probs, class_predictions = predictions_clf(pred_path, clf, batch_size=pred_batch_size)
+    total_class_probs, class_predictions = predictions_clf(pred_path, clf, label_map, batch_size=pred_batch_size)
 
     return total_class_probs.tolist(), class_predictions.tolist()

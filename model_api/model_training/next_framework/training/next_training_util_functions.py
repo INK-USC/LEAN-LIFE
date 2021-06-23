@@ -629,7 +629,7 @@ def build_prediction_dataset(sentences, vocab, save_string, custom_vocab={}):
     )
 
 
-def predictions_clf(data_path, model, batch_size=128, hidden_dim=100, dir_x_lay=4):
+def predictions_clf(data_path, model, label_map, batch_size=128, hidden_dim=100, dir_x_lay=4):
     """
         Function that predicts for a dataset using BiLSTM+Att model
 
@@ -639,6 +639,7 @@ def predictions_clf(data_path, model, batch_size=128, hidden_dim=100, dir_x_lay=
         Arguments:
             data_path               (str) : path to predict dataset
             model                (Object) : model that needs to be evaluated
+            label_map              (dict) : key - label name, value - label_id
             batch_size              (int) : _
             hidden_dim              (int) : of BiLSTM
             dir_x_lay               (int) : number_of_directions x num_layers in the BiLSTM
@@ -662,6 +663,7 @@ def predictions_clf(data_path, model, batch_size=128, hidden_dim=100, dir_x_lay=
     nn.init.xavier_normal_(h0)
     nn.init.xavier_normal_(c0)
 
+    reverse_label_map = {v: k for k, v in label_map.items()}
     total_class_probs = []
     class_predictions = []
     batch_count = 0
@@ -673,6 +675,7 @@ def predictions_clf(data_path, model, batch_size=128, hidden_dim=100, dir_x_lay=
             preds = model.forward(unlabeled_tokens, unlabeled_token_lengths, h0, c0)
             class_probs = nn.functional.softmax(preds, dim=1)
             class_preds = torch.argmax(class_probs, dim=1).cpu().numpy()
+            class_preds = np.array([reverse_label_map[x] for x in class_preds])
 
             batch_count += 1
             total_class_probs.append(class_probs.cpu().numpy())
