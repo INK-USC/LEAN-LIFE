@@ -66,8 +66,13 @@ Release notes can found [here](RELEASE.md).
 
 # Getting Started:
 
+- Install [Python 3.6.5](https://www.python.org/downloads/release/python-365/). For detailed environment setup follow `Setup Environment` step.
+- Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md).
+- If you're a user who wants to use the annotation UI please follow `Setup Frontend` step. If you are a user who justs want interact with the model training API, you can skip this step and follow the detailed guide mentioned in the next step.
+- For detailed guide on how to use API calls. Checkout the jupyter notebooks in [example_notebooks](example_notebooks/) directory
+
 <details>
-<summary><b>Setup Instructions</b></summary>
+<summary><b>Setup Environment [Optional]</b></summary>
 <p>
 Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Please adjust paths accordingly.
 
@@ -86,13 +91,17 @@ Note: All paths are relative to being just outside the `LEAN-LIFE` directory. Pl
    - annaconda: `conda activate leanlife`
    - virtualenv: `source leanlife/bin/activate`
 
-6. If you are user who wants to interact with the system using web portal, then please setup Django (for annotation backend) and Vue.js (for frontend). Otherwise, skip to the next step for model training backend setup.
+</p>
+  </details>
+  <br/>
 
-   - Follow Django annotation backend installation instructions [here](annotation_backend/src/README.md)
-   - Follow Vue.js frontend installation instructions [here](frontend/README.md)
+<details>
+<summary><b>Setup Frontend [Optional]</b></summary>
+<p>
+If you are user who wants to interact with the system using web portal, then please setup Django (for annotation backend) and Vue.js (for frontend). Otherwise, you can skip this step.
 
-7. Follow FastAPI/Model training installation instructions [here](model_api/fast_api/readme.md).
-   For detailed guide on how to use API calls. Checkout the jupyter notebooks in [example_notebooks](example_notebooks/) directory
+- Follow Django annotation backend installation instructions [here](annotation_backend/src/README.md)
+- Follow Vue.js frontend installation instructions [here](frontend/README.md)
 
 </p>
 </details>
