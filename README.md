@@ -9,7 +9,7 @@
 
 ## Latest release (v1.0) Highlights
 
-- Added new UI for annotation support.
+- Added new UI for annotation.
 - FastAPI added for asynchronous model training.
 - Added model training support for Natural Language Explanations for Relation Extraction and Sentiment Analysis tasks.
 
