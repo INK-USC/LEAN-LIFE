@@ -39,11 +39,16 @@ def test_create_re_pair():
     
     actual_relation_text = "this is some SUBJ-RAND text, that we're going to insert OBJ-TEMP and objects into."
     actual_label = "relation-1"
-    
-    relation_text, label = util_f._create_re_pair(annotation, text, ner_mentions)
+    actual_subj_obj_data = (
+        ("random", "SUBJ-RAND"),
+        ("subj", "OBJ-TEMP")
+    )
+
+    relation_text, label, subj_obj_data = util_f._create_re_pair(annotation, text, ner_mentions)
 
     assert actual_relation_text == relation_text
     assert actual_label == label
+    assert actual_subj_obj_data == subj_obj_data
 
     annotation = {
         "sbj_start_offset" : 62,
@@ -55,11 +60,16 @@ def test_create_re_pair():
 
     actual_relation_text = "this is some random text, that we're going to insert OBJ-TEMP and SUBJ-NER_TYPE into."
     actual_label = "relation-2"
+    actual_subj_obj_data = (
+        ("objects", "SUBJ-NER_TYPE"),
+        ("subj", "OBJ-TEMP")
+    )
 
-    relation_text, label = util_f._create_re_pair(annotation, text, ner_mentions)
+    relation_text, label, subj_obj_data = util_f._create_re_pair(annotation, text, ner_mentions)
     
     assert actual_relation_text == relation_text
     assert actual_label == label
+    assert actual_subj_obj_data == subj_obj_data
 
 def test_generate_no_label_pairs():
     text = "this is some random text, that we're going to insert subj and objects into."

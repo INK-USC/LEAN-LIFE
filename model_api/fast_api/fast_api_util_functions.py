@@ -65,8 +65,12 @@ def _create_re_pair(annotation, text, ner_mentions):
         relation_text += "SUBJ-{}".format(subj_ner_type)
         relation_text += text[subj_end_offset:]
         relation_text = relation_text.strip()
-    
-    return relation_text, label
+
+    subj_obj_data = (
+        (text[subj_start_offset:subj_end_offset], "SUBJ-{}".format(subj_ner_type)),
+        (text[obj_start_offset:obj_end_offset], "OBJ-{}".format(obj_ner_type))
+    )
+    return relation_text, label, subj_obj_data
 
 def _generate_no_label_pairs(ner_mentions, text):
     """
@@ -106,7 +110,7 @@ def _generate_no_label_pairs(ner_mentions, text):
                     "obj_end_offset" : obj_end_offset,
                     "label_text" : ""
                 }
-                relation_text, label = _create_re_pair(annotation, text, ner_mentions)
+                relation_text, label, _ = _create_re_pair(annotation, text, ner_mentions)
                 relation_texts.append(relation_text)
                 labels.append(label)
     return relation_texts, labels
@@ -160,6 +164,7 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     text = annotated_doc.text
     explanations = annotated_doc.explanations if hasattr(annotated_doc, 'explanations') else []
     annotations = annotated_doc.annotations
+    re_annotation_data = {}
     for annotation in annotations:
         if eval(annotation["user_provided"]):
             key = _create_ner_key(annotation["start_offset"], annotation["end_offset"])
@@ -169,8 +174,9 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
             re_data.append(annotation)
     
     for annotation in re_data:
-        relation_text, label = _create_re_pair(annotation, text, ner_mentions)
+        relation_text, label, subj_obj_data = _create_re_pair(annotation, text, ner_mentions)
         temp_sentence_label_pairs[int(annotation["id"])] = (relation_text, label)
+        re_annotation_data[int(annotation["id"])] = subj_obj_data
     
     if len(re_data) == 0:
         relation_texts, labels = _generate_no_label_pairs(ner_mentions, text)
@@ -180,7 +186,10 @@ def _process_re_annotated_doc(annotated_doc, fake_id):
     
     for explanation in explanations:
         annotation_id = int(explanation["annotation_id"])
-        explanation_text = explanation["text"]
+        explanation_text: str = explanation["text"]
+        subj_data, obj_data = re_annotation_data[annotation_id]
+        explanation_text = explanation_text.replace("'%s'" % subj_data[0], subj_data[1])
+        explanation_text = explanation_text.replace("'%s'" % obj_data[0], obj_data[1])
         relation_text = temp_sentence_label_pairs[annotation_id][0]
         label = temp_sentence_label_pairs[annotation_id][1]
         if annotation_id in temp_explanation_triples:
