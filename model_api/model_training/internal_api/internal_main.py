@@ -347,8 +347,19 @@ def evaluate_standard(params, ner_label_space):
     return evaluate_standard_clf_pipeline(params)
 
 
-def predict_next(payload):
+def predict_next(payload, ner_label_space):
     """Just passes along the payload"""
+    task = payload["task"]
+    if task == "re":
+        if ner_label_space == None:
+            warning_msg = """
+                Knowledge of the NER label space is generally needed for relation extraction.
+                We will used SPACY's NER labels as default, but please provide a custom label
+                space for better performance
+            """
+            warnings.warn(warning_msg)
+        else:
+            payload["ner_labels"] = ner_label_space
     return predict_next_clf_pipeline(payload)
 
 

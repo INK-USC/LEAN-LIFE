@@ -967,6 +967,7 @@ class PredictNextApiParams(BaseModel):
     params: PredictApiParams
     label_space: Dict[str, int]
     prediction_data: List[str]
+    ner_label_space: Optional[List[str]]
 
     class Config:
         schema_extra = {

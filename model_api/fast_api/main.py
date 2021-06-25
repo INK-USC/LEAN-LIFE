@@ -95,7 +95,8 @@ async def predict_next_clf(api_payload: schema.PredictNextApiParams):
     params = api_payload.params.dict()
     params["label_map"] = api_payload.label_space
     params["prediction_data"] = api_payload.prediction_data
-    probs, preds = predict_next(params)
+    ner_label_space = api_payload.ner_label_space
+    probs, preds = predict_next(params, ner_label_space)
     return schema.PredictionOutputs(class_probs=probs, class_preds=preds)
 
 
