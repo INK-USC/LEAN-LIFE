@@ -1,5 +1,11 @@
 Implementation details about NeXT Framework can be found [here](../model_training/next_framework/readme.md)
 
+**Important Notes while training:**
+
+1. For RE task, the entity type matching is relaxed while applying soft labeling functions. To ensure type matching occurs, `relation_ner_types` needs to populated using one of the below methods -
+   1. _**Passing in request body**_ (recommended): you will have to pass `relation_ner_types` in the request body while placing train, predict or evaluate API call.
+   2. _**Defining in code**_: define it the code like done for tacred at these locations: [training](../model_training/internal_api/next_pipelines.py#L425), [evaluation](../model_training/internal_api/next_pipelines.py#L987) and [prediction](../model_training/internal_api/next_pipelines.py#L1088).
+
 # Table of contents
 
 1. [Steps to run the FAST api](#steps-to-run-the-fast-api)

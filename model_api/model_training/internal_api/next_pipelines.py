@@ -138,7 +138,7 @@ def pre_train_find_module_pipeline(payload):
     # we do this due to parsing. Look at tokenize() in:
     # model_api/model_training/next_framework/training/util_functions.py
     else:
-        if task == "re" and len(payload["ner_labels"]) == 0:
+        if task == "re" and len(payload["ner_labels"]) > 0:
             ner_labels = payload["ner_labels"]
             custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
         else:
@@ -585,7 +585,7 @@ def train_next_bilstm_pipeline(payload):
                     func, rel = pair
                     batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach() # 1 x B
 
-                    if task == "re":
+                    if task == "re" and relation_ner_types is not None:
                         type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach() # 1 x B
                         final_scores = batch_scores * type_restrict_multiplier  # 1 x B
                     else:
@@ -893,7 +893,7 @@ def soft_match_data(payload):
                 func, rel = pair
                 batch_scores = func(lfind_output, quoted_words_to_index, mask_mat)(phrase_input).detach()  # 1 x B
 
-                if task == "re":
+                if task == "re" and relation_ner_types is not None:
                     type_restrict_multiplier = batch_type_restrict_re(rel, phrase_input, relation_ner_types).detach()  # 1 x B
                     final_scores = batch_scores * type_restrict_multiplier  # 1 x B
                 else:
