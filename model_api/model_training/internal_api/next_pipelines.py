@@ -678,7 +678,8 @@ def train_next_bilstm_pipeline(payload):
         
         # Step 6.
         if len(eval_path):
-            dev_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes, batch_size=eval_batch_size, none_label_id=none_label_id)
+            dev_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes,
+                batch_size=eval_batch_size, none_label_id=none_label_id, hidden_dim=hidden_dim)
         
             avg_loss, avg_dev_ent_f1_score, avg_dev_val_f1_score, total_dev_class_probs, no_relation_thresholds = dev_results
 
@@ -1036,7 +1037,8 @@ def evaluate_next_clf_pipeline(payload):
 
     logging.info("loaded model")
 
-    eval_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes, batch_size=eval_batch_size, none_label_id=none_label_id)
+    eval_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes,
+                batch_size=eval_batch_size, none_label_id=none_label_id, hidden_dim=hidden_dim)
     avg_loss, avg_eval_ent_f1_score, avg_eval_val_f1_score, _, no_relation_thresholds = eval_results
 
     logging.info("Eval Results")

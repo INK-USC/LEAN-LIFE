@@ -262,7 +262,7 @@ def standard_pipeline(payload):
         loss_per_epoch.append((train_avg_loss, train_avg_strict_loss, train_avg_soft_loss))
 
         train_results = evaluate_clf(train_data_path, clf, train_loss_function, batch_size=eval_batch_size,
-                                     none_label_id=none_label_id)
+                                     none_label_id=none_label_id, hidden_dim=hidden_dim)
         avg_loss, avg_train_f1_score, total_train_class_probs = train_results
 
         logging.info("Train Results")
@@ -270,7 +270,7 @@ def standard_pipeline(payload):
         logging.info("Avg Train Loss: {}, Avg Train F1 Score: {}".format(*train_tuple))
 
         dev_results = evaluate_clf(dev_data_path, clf, train_loss_function, batch_size=eval_batch_size,
-                                   none_label_id=none_label_id)
+                                   none_label_id=none_label_id, hidden_dim=hidden_dim)
 
         avg_loss, avg_dev_f1_score, total_dev_class_probs = dev_results
 
@@ -287,7 +287,7 @@ def standard_pipeline(payload):
         # Step 5 evaluate
         if len(eval_data_path):
             test_results = evaluate_clf(eval_data_path, clf, train_loss_function, batch_size=eval_batch_size,
-                                        none_label_id=none_label_id)
+                                        none_label_id=none_label_id, hidden_dim=hidden_dim)
 
             avg_loss, avg_test_f1_score, total_test_class_probs = test_results
 
@@ -439,7 +439,7 @@ def evaluate_standard_clf_pipeline(payload):
 
     # evaluate
     test_results = evaluate_clf(eval_data_path, clf, train_loss_function, batch_size=eval_batch_size,
-                                none_label_id=none_label_id)
+                                none_label_id=none_label_id, hidden_dim=hidden_dim)
 
     avg_loss, avg_test_f1_score, total_test_class_probs = test_results
 
