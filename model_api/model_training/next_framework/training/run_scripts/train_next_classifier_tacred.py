@@ -3,12 +3,12 @@ import torch
 import sys
 sys.path.append(".")
 sys.path.append("../")
-from training.train_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
+from training.next_training_util_functions import batch_type_restrict_re, build_phrase_input, build_mask_mat_for_batch,\
                                           build_datasets_from_splits, evaluate_next_clf
-from training.util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
+from training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                     set_re_dataset_ner_label_space
-from training.util_classes import BaseVariableLengthDataset
-from training.constants import TACRED_LABEL_MAP, FIND_MODULE_HIDDEN_DIM, TACRED_ENTITY_TYPES, TACRED_NERS
+from training.next_util_classes import BaseVariableLengthDataset
+from training.next_constants import TACRED_LABEL_MAP, FIND_MODULE_HIDDEN_DIM, TACRED_ENTITY_TYPES, TACRED_NERS
 from models import BiLSTM_Att_Clf, Find_Module
 import pickle
 from tqdm import tqdm
@@ -167,6 +167,10 @@ def main():
     best_dev_f1_score = -1
 
     loss_per_epoch = []
+    
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, args.emb_dim, args.hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
 
     if args.load_clf_model:
         clf.load_state_dict(torch.load("../data/saved_models/Next-Clf_{}.p".format(args.experiment_name)))
@@ -246,10 +250,6 @@ def main():
     else:
         with open("../data/training_data/soft_scores_{}.p".format(args.experiment_name), "rb") as f:
             soft_scores = pickle.load(f)
-
-    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, args.emb_dim, args.hidden_dim,
-                                        torch.cuda.is_available(), number_of_classes,
-                                        custom_token_count=custom_vocab_length)
 
     del vocab
 

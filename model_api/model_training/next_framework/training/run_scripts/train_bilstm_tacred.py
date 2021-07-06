@@ -4,11 +4,11 @@ import torch
 import sys
 sys.path.append(".")
 sys.path.append("../")
-from training.train_util_functions import build_datasets_from_splits, evaluate_next_clf                             
-from training.util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
+from training.next_training_util_functions import build_datasets_from_splits, evaluate_next_clf                             
+from training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                     set_re_dataset_ner_label_space
-from training.util_classes import BaseVariableLengthDataset
-from training.constants import TACRED_LABEL_MAP, FIND_MODULE_HIDDEN_DIM, TACRED_ENTITY_TYPES
+from training.next_util_classes import BaseVariableLengthDataset
+from training.next_constants import TACRED_LABEL_MAP, FIND_MODULE_HIDDEN_DIM, TACRED_ENTITY_TYPES
 from models import BiLSTM_Att_Clf, Find_Module
 import pickle
 from tqdm import tqdm

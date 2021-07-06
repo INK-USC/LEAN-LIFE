@@ -4,10 +4,10 @@ from transformers import AdamW
 import sys
 sys.path.append(".")
 sys.path.append("../")
-from training.find_util_functions import build_pre_train_find_datasets_from_splits, \
+from training.find_training_util_functions import build_pre_train_find_datasets_from_splits, \
                                          evaluate_find_module
-from training.util_functions import similarity_loss_function, generate_save_string, build_custom_vocab
-from training.util_classes import BaseVariableLengthDataset
+from training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab
+from training.next_util_classes import BaseVariableLengthDataset
 from models import Find_Module
 import pickle
 from tqdm import tqdm
