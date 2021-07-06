@@ -1,0 +1,22 @@
+[
+  "ORGANIZATION",
+  "PERSON",
+  "MONEY",
+  "NATIONALITY",
+  "SET",
+  "COUNTRY",
+  "NUMBER",
+  "MISC",
+  "CAUSE_OF_DEATH",
+  "STATE_OR_PROVINCE",
+  "DATE",
+  "IDEOLOGY",
+  "ORDINAL",
+  "RELIGION",
+  "LOCATION",
+  "TIME",
+  "DURATION",
+  "CRIMINAL_CHARGE",
+  "TITLE",
+  "O"
+]

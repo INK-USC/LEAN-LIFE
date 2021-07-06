@@ -1,0 +1,202 @@
+[
+  {
+    "text": "After the family leaves , remove the towel from under the SUBJ-O of the deceased OBJ-O .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "So there 's a great SUBJ-O of OBJ-O outside , and in dealing with such I 've managed to bring some inside with me .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O was extracted from the OBJ-O of Rubia tinctorium and Rubia peregrina which grew wild in the Mediterranean region .",
+    "label": "Entity-Origin(e1,e2)"
+  },
+  {
+    "text": "For the original stud farm , desirous of producing the best SUBJ-O for the OBJ-O and hussars , the lighter horse of a square frame was the ideal .",
+    "label": "Instrument-Agency(e1,e2)"
+  },
+  {
+    "text": "An SUBJ-O hatches with both a OBJ-O and talons and these will continue to grow throughout the bird 's life .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "Recovery from the global economic SUBJ-O triggered by the OBJ-O of Lehman Brothers was achieved with cooperation from Brazil , Russia , India and China .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "A great SUBJ-O is the best tool for a successful career OBJ-O .",
+    "label": "no_relation"
+  },
+  {
+    "text": "It 's coming along really well ; I 've got a base SUBJ-O with OBJ-O in it released in less than a couple of weeks .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "The user-friendly control device is mounted on the SUBJ-O of the OBJ-O .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "It dated back to the Meiji time that ryes were the raw material of SUBJ-O OBJ-O .",
+    "label": "Entity-Origin(e2,e1)"
+  },
+  {
+    "text": "SUBJ-O with one OBJ-O were organized in many stud farms , and a large number of separate lines were recognized .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "AT&T inserted a new SUBJ-O into their latest OBJ-O .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O has used a 45-meter cosmic radio emission OBJ-O to make a number of important contributions .",
+    "label": "Instrument-Agency(e2,e1)"
+  },
+  {
+    "text": "Baird 's scanning SUBJ-O produced an OBJ-O of 30 lines resolution , just enough to discern a human face , from a double spiral of lenses .",
+    "label": "Product-Producer(e2,e1)"
+  },
+  {
+    "text": "Another mathematical system SUBJ-O is presented in the next OBJ-O .",
+    "label": "Message-Topic(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O gives the inaccurate OBJ-O that the Apaches all surrendered .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "In theory , SUBJ-O of independent OBJ-O look after the interests of individual shareholders .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O were thrown into the OBJ-O .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "California SUBJ-O consists of 29 OBJ-O , covering various subject areas , the State Constitution and Statutes .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O makes a parabolic OBJ-O , much like a roller coaster with steep climbs and descents , that simulates zero gravity conditions .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The efficiency of the SUBJ-O of OBJ-O , taken as a whole , during the past seven years has at no time been better than it was during the past year .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "The resulting SUBJ-O caused the OBJ-O of the town , and The Conqueror , Wisecrack , Jackdaw and most of the citizens of the town were transported to a demon-dimension .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O labelled the 13 colonies using a OBJ-O .",
+    "label": "Instrument-Agency(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O were dropped into the OBJ-O from a height of about 5 metres .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "She bought a SUBJ-O OBJ-O for her sister .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O creates pictures using random OBJ-O , and prints them in sections on multiple pages which can be trimmed and assembled to fashion large posters .",
+    "label": "Instrument-Agency(e2,e1)"
+  },
+  {
+    "text": "SUBJ-O with OBJ-O has become a common trend these days .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O OBJ-O has cast a spotlight on America 's self-help industry .",
+    "label": "Product-Producer(e2,e1)"
+  },
+  {
+    "text": "Manufacturing extra neutral SUBJ-O which is the basic ingredient used for making OBJ-O , the commodity was largely used by companies making Indian Made Foreign Liquor -LRB- IMFL -RRB- .",
+    "label": "Entity-Origin(e2,e1)"
+  },
+  {
+    "text": "China has tested Barack Obama early in his presidency , with a SUBJ-O of naval OBJ-O surrounding and harassing a US spy ship in the South China Sea .",
+    "label": "Member-Collection(e2,e1)"
+  },
+  {
+    "text": "Mr Clinton made the SUBJ-O in a twenty-minute OBJ-O OBJ-O to the prime minister , John Howard .",
+    "label": "Message-Topic(e2,e1)"
+  },
+  {
+    "text": "EU is pouring a SUBJ-NUMBER into next , next generation OBJ-TITLE .",
+    "label": "Entity-Destination(e1,e2)"
+  },
+  {
+    "text": "The risks to housing and general corporate SUBJ-O from OBJ-O were quite clear and the defensive strategy over the long term has paid dividends .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "The spring SUBJ-O produces mottled brown OBJ-O , making the female almost invisible as she sits on her nest .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O of the OBJ-O was used in this study .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "The newer lesser-known attraction that the kibbutz offers is a reconstructed SUBJ-O OBJ-O whose beginnings can be traced to the early 20th century in Jaffa .",
+    "label": "no_relation"
+  },
+  {
+    "text": "Apartment residents in Delaware were awarded $ 1 million for health problems due to mold SUBJ-O from unrepaired OBJ-O .",
+    "label": "Cause-Effect(e2,e1)"
+  },
+  {
+    "text": "For many years , a recurring SUBJ-O by the senior dental OBJ-O at Louisiana State University School of Dentistry -LRB- LSUSD -RRB- during exit interviews is their lack of confidence regarding the business aspects of running a dental practice .",
+    "label": "Product-Producer(e1,e2)"
+  },
+  {
+    "text": "I found some SUBJ-O in my OBJ-O .",
+    "label": "Content-Container(e1,e2)"
+  },
+  {
+    "text": "An electro-magnetic motion-tracking system -LRB- Ascension Flock of Birds -RRB- was installed in the SUBJ-O of the OBJ-O to provide positional data .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "Because winter has been mild in much of the country , SUBJ-O OBJ-O have been low for the past few months .",
+    "label": "no_relation"
+  },
+  {
+    "text": "The SUBJ-O contains short OBJ-O , it is regarded as the first book of juvenile literature .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "The SUBJ-O was hidden in an air-conditioning system 's OBJ-O OBJ-O , which conveniently connected to the room behind .",
+    "label": "Content-Container(e1,e2)"
+  },
+  {
+    "text": "I had the SUBJ-O OBJ-O in my office for couple of days , but like anybody else in the world I wanted to play with the device for a little longer .",
+    "label": "Content-Container(e1,e2)"
+  },
+  {
+    "text": "The cheddar cheese in the SUBJ-O OBJ-O of this apple pie is a stroke of genius .",
+    "label": "Component-Whole(e2,e1)"
+  },
+  {
+    "text": "Such parodies are encouraged by the SUBJ-O that the British government 's league OBJ-O for schools and health authorities contain basic flaws which render them practically useless .",
+    "label": "Message-Topic(e1,e2)"
+  },
+  {
+    "text": "There are many types and causes of OBJ-O , from SUBJ-O headaches due to stress to migraines triggered by certain foods .",
+    "label": "Cause-Effect(e1,e2)"
+  },
+  {
+    "text": "The SUBJ-O ran away from the OBJ-O so quickly , he ran out of his shoes .",
+    "label": "Entity-Origin(e1,e2)"
+  },
+  {
+    "text": "The Appellant noticed that the switch of the circuit breaker which feeds 440 volts A.C , power to the main SUBJ-O in the OBJ-O .",
+    "label": "Component-Whole(e1,e2)"
+  },
+  {
+    "text": "As longtime publishers in the healthcare industry , we , too , are skeptical about the SUBJ-O of OBJ-O in this area .",
+    "label": "no_relation"
+  }
+]

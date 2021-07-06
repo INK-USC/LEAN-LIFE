@@ -1,0 +1,1122 @@
+[
+    {
+        "label": "per:children",
+        "sent": "SUBJ-PERSON 's daughter OBJ-PERSON said Tuesday that her uncle was `` doing very well '' in his lengthy recovery , and was following very closely a gender equality bill under debate .",
+        "explanation": "The phrase \"'s daughter\" links SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's daughter OBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_birth",
+        "sent": "SUBJ-PERSON was born OBJ-DATE , in Nashville , Tenn , and graduated with honors from the University of Alabama .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"was born\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was born OBJ-DATE"
+    },
+    {
+        "label": "org:parents",
+        "sent": "Under the agreement , AT&T will begin offering SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION service after Jan. 31 , when AT&T 's current agreement with Dish Network expires .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and \"as part of its\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION as part of its OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH Monday at the age of 78 , was a complicated person , and any attempt to sum up her life and work will necessarily turn into a string of contradictions .",
+        "explanation": "Between SUBJ and OBJ the phrase \"who died of\" occurs and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , who died of OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "sent": "[ People are ] giving you unlimited high-end alcohol , and SUBJ-PERSON is from OBJ-STATE_OR_PROVINCE and probably did not have fun [ before ] , especially when your new BFF is Stacie the bartender . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"is from\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON is from OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:other_family",
+        "sent": "The style and concept is inspired by three generations of women in their family , with the name `` Der\u00e9on '' paying tribute to SUBJ-PERSON 's grandmother , OBJ-PERSON .",
+        "explanation": "The phrase \"'s grandmother\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's grandmother , OBJ-PERSON"
+    },
+    {
+        "label": "org:stateorprovince_of_headquarters",
+        "sent": "The SUBJ-ORGANIZATION is based in the OBJ-STATE_OR_PROVINCE province and enjoys widespread popularity with the Pakhtuns .",
+        "explanation": "The phrase \"is based in\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION is based in the OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "Although not a Playboy Playmate , she has appeared in nude pictorials with her Girls Next Door costars and fellow Hefner girlfriends Holly Madison and OBJ-PERSON , then known as SUBJ-PERSON .",
+        "explanation": "The term \"then known as\" occurs between SUBJ and OBJ and there are no more than six words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , then known as SUBJ-PERSON"
+    },
+    {
+        "label": "per:parents",
+        "sent": "SUBJ-PERSON 's mother OBJ-PERSON was a singer in the dance group Soul II Soul , which had hits in the 1980s and 1990s .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"'s mother\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's mother OBJ-PERSON"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "OBJ-PERSON secretly married SUBJ-PERSON Congratulations to the newlyweds and let them live happily ever after !!",
+        "explanation": "There are no more than four words between SUBJ and OBJ and SUBJ and OBJ sandwich the phrase \"secretly married\"",
+        "pattern": "OBJ-PERSON secretly married SUBJ-PERSON"
+    },
+    {
+        "label": "per:other_family",
+        "sent": "BAGHDAD , Iraq ( AP ) OBJ-PERSON , cousin of SUBJ-PERSON al-Majid , said the discussion was about `` the Iraqi arms industry . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"cousin of\" occurs and there are no more than four words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , cousin of SUBJ-PERSON"
+    },
+    {
+        "label": "per:parents",
+        "sent": "SUBJ-PERSON 's father , OBJ-PERSON , a senator himself and a prosecutor at the Nuremberg war crimes trials of Nazi leaders , was censured by the US Senate in 1967 for diverting campaign funds for his personal use .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and the phrase \"'s father\" links SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's father , OBJ-PERSON"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "SUBJ-PERSON 's ex-wife , OBJ-PERSON , a journalist , has also come out against the changes .",
+        "explanation": "Between SUBJ and OBJ the phrase \"'s ex-wife\" occurs and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's ex-wife , OBJ-PERSON"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "Bangladesh 's former prime minister Sheikh Hasina , who was arrested by military - backed interim administration on Monday morning on extortion charges while she was in power , was the eldest daughter of the SUBJ-ORGANIZATION 's founder OBJ-PERSON .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and \"'s founder\" links SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION 's founder OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "McCain and his lawyer , former SUBJ-ORGANIZATION chairman OBJ-PERSON , have argued that McCain is entitled to turn down the primary matching funds in the same manner that Democratic presidential candidates Richard Gephardt , John Kerry and Howard Dean did in the 2004 primaries .",
+        "explanation": "There are no more than two words between SUBJ and OBJ and the word \"chairman\" occurs between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION chairman OBJ-PERSON"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "sent": "Peterson died at SUBJ-PERSON home in the OBJ-CITY suburb of Mississauga on Sunday , said Oliver Jones , a family friend and jazz musician .",
+        "explanation": "Between SUBJ and OBJ \"home in\" comes and there are no more than six words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON home in the OBJ-CITY"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "SUBJ-PERSON 's husband OBJ-PERSON died in 1995 .",
+        "explanation": "Between SUBJ and OBJ the phrase \"'s husband\" occurs and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's husband OBJ-PERSON"
+    },
+    {
+        "label": "org:website",
+        "sent": "When 30,000 people tried to view the constitutional convention debate on gay marriage Tuesday on SUBJ-ORGANIZATION website ( OBJ-URL .",
+        "explanation": "\"website (\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION website ( OBJ-URL"
+    },
+    {
+        "label": "org:city_of_headquarters",
+        "sent": "The new company will keep SUBJ-ORGANIZATION 's headquarters in OBJ-CITY , where 1,300 people work in research and administration .",
+        "explanation": "Between SUBJ and OBJ the phrase \"'s headquarters in\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION 's headquarters in OBJ-CITY"
+    },
+    {
+        "label": "per:siblings",
+        "sent": "As we all know SUBJ-PERSON 's sister OBJ-PERSON was arrested on Sunday morning in Hollywood for a DUI .",
+        "explanation": "The term \"'s sister\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's sister OBJ-PERSON"
+    },
+    {
+        "label": "org:country_of_headquarters",
+        "sent": "Gabriel Weimann , professor of communication at OBJ-COUNTRY 's SUBJ-ORGANIZATION and a former research fellow at the United States Institute of Peace , agreed that coordination of international efforts needed to be stepped up .",
+        "explanation": "There are no more than two words between SUBJ and OBJ and the word \"'s\" occurs between SUBJ and OBJ",
+        "pattern": "OBJ-COUNTRY 's SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:alternate_names",
+        "sent": "Description : City Phillipsburg State NJ Job Title PRODUCTION SUPERINTENDENT Description Mallinckrodt Baker , Inc. ( MBI ) is part of the Pharmaceuticals Division of Mallinckrodt , a unit of SUBJ-ORGANIZATION ( formerly OBJ-ORGANIZATION ) .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and the phrase \"( formerly\" links SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION ( formerly OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded",
+        "sent": "SUBJ-ORGANIZATION was founded OBJ-DATE with the help of Pakistan 's intelligence agencies as a proxy force to challenge Indian control of part of Muslim-dominated Kashmir .",
+        "explanation": "SUBJ and OBJ sandwich \"was founded\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION was founded OBJ-DATE"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "sent": "Australia 's government said Tuesday it would seek powers to ban Pakistan-based OBJ-RELIGION militant group SUBJ-ORGANIZATION and Palestinian group Hamas .",
+        "explanation": "The phrase \"militant group\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "OBJ-RELIGION militant group SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "[ ] Do any of y ' all remember that this same sort of thing happened last year when there were rumors that SUBJ-PERSON 's real name was OBJ-PERSON ?",
+        "explanation": "Between SUBJ and OBJ \"'s real name was\" occurs and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's real name was OBJ-PERSON"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "The lobbying reports filed by Buse 's firm say SUBJ-PERSON work for OBJ-ORGANIZATION involved `` general issues affecting the mortgage industry . ''",
+        "explanation": "\"work for\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON work for OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "Democratic US congresswoman SUBJ-PERSON dies of OBJ-CAUSE_OF_DEATH He said she had been receiving hospice care .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and the phrase \"dies of\" links SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON dies of OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "org:country_of_headquarters",
+        "sent": "GM China , OBJ-COUNTRY ' s SUBJ-ORGANIZATION launch joint venture",
+        "explanation": "There are no more than three words between SUBJ and OBJ and the phrase \"' s\" links SUBJ and OBJ",
+        "pattern": "OBJ-COUNTRY ' s SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "2009-11-02T00 :00:00 SUBJ-ORGANIZATION founder OBJ-PERSON will end his 32-year stint as the voice of the conservative Christian ministry at the end of February , the Colorado Springs-based nonprofit announced Friday .",
+        "explanation": "The word \"founder\" occurs between SUBJ and OBJ and there are no more than two words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION founder OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "New York lawyer OBJ-PERSON , who heads the SUBJ-ORGANIZATION 's antitrust division , said the rules set early in the 20th century `` do n't stand up to scrutiny today . ''",
+        "explanation": "\"who heads\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , who heads the SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "SUBJ-PERSON , president of OBJ-ORGANIZATION , is the author of `` Basic Black : The Essential Guide for Getting Ahead At Work ( and in Life ) . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"president of\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , president of OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "Meanwhile , Miss Cavallari recently chatted with Dan Levy about her regrets of introducing Heidi and SUBJ-PERSON ( aka OBJ-PERSON ) .",
+        "explanation": "Between SUBJ and OBJ the phrase \"( aka\" appears and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON ( aka OBJ-PERSON"
+    },
+    {
+        "label": "per:title",
+        "sent": "How OBJ-TITLE SUBJ-PERSON is going to keep things interesting as Ned revives/kills dead people each week and continues to be unable to touch Chuck will be one of the TV season 's true wonders .",
+        "explanation": "OBJ-TITLE is right before SUBJ-PERSON",
+        "pattern": "OBJ-TITLE SUBJ-PERSON"
+    },
+    {
+        "label": "org:member_of",
+        "sent": "SUBJ-ORGANIZATION is part of OBJ-ORGANIZATION , the world 's largest cruise group .",
+        "explanation": "\"is part of\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION is part of OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "sent": "It called Guevara a `` cold-blooded killer '' and said the government should raise a monument in SUBJ-PERSON 's hometown of OBJ-CITY , in the nearby lowland plains , if it wants to commemorate the Argentine revolutionary .",
+        "explanation": "The phrase \"'s hometown of\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's hometown of OBJ-CITY"
+    },
+    {
+        "label": "org:founded",
+        "sent": "The SUBJ-ORGANIZATION was formed in OBJ-DATE to oversee the international monetary system , including exchange rates , and to provide temporary finance to countries struggling with balance of payments problems .",
+        "explanation": "The phrase \"was formed in\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION was formed in OBJ-DATE"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "`` We always want to work very closely with terminal vendors in locations we fly in case our customers want to bring something more substantial onboard , '' said SUBJ-PERSON , a spokesman for OBJ-ORGANIZATION .",
+        "explanation": "The phrase \"spokesman for\" links SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , a spokesman for OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "sent": "And in perhaps a sign that she is also thinking about 2012 , she has been sticking close to her base , granting taped radio interviews to Dr. James Dobson of the OBJ-RELIGION conservative group SUBJ-ORGANIZATION , and Michael Medved , the conservative commentator .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and the phrase \"conservative group\" links SUBJ and OBJ",
+        "pattern": "OBJ-RELIGION conservative group SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "Born in New York , she inherited most of her fortune from her father , OBJ-PERSON , who founded SUBJ-ORGANIZATION and also owned the Miami Heat basketball team .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and \"who founded\" appears between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , who founded SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:date_of_death",
+        "sent": "MINNEAPOLIS 2007-10-14 05:24:48 UTC SUBJ-PERSON died OBJ-DATE at Abbott Northwestern Hospital of complications of pneumonia , according to Clyde Bellecourt , a founding member of the militant American Indian rights group .",
+        "explanation": "There is only one word \"died\" between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON died OBJ-DATE"
+    },
+    {
+        "label": "per:siblings",
+        "sent": "SUBJ-PERSON brother OBJ-PERSON helped shepherd the major civil rights legislation of the late 1950s and 1960s as the principal lobbyist for the National Association for the Advancement of Colored People , and was known as the 101st Senator .",
+        "explanation": "There are no more than two words between SUBJ and OBJ and the word \"brother\" occurs between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON brother OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "Former SUBJ-ORGANIZATION head OBJ-PERSON , who oversaw the Japanese company 's transformation into one of the world 's top computer makers during his long tenure , has died , the company said Monday .",
+        "explanation": "There is only one word \"head\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION head OBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_death",
+        "sent": "SUBJ-PERSON , who died on OBJ-DATE at 78 , was a popular figure in the opera world and society at large , and no less so among the security guards , press officers , high-level executives , secretaries and many others who work at Lincoln Center .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and the phrase \"who died on\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , who died on OBJ-DATE"
+    },
+    {
+        "label": "org:shareholders",
+        "sent": "He said that in 1978 , new SUBJ-ORGANIZATION owners OBJ-PERSON and Buddy LeRoux hired a private detective to follow him .",
+        "explanation": "There is only one word \"owners\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION owners OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "The Asian economy was picking up speed to recover from the global economic downturn , said OBJ-PERSON , vice president of SUBJ-ORGANIZATION ( ADB ) , on Friday at the ongoing 2009 Summer Davos in northeast China 's port city of Dalian .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and \"vice president of\" appears between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , vice president of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:parents",
+        "sent": "SUBJ-PERSON ' mother , OBJ-PERSON , has given $ 700 to help defeat the initiative .",
+        "explanation": "The phrase \"' mother\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON ' mother , OBJ-PERSON"
+    },
+    {
+        "label": "org:subsidiaries",
+        "sent": "Italy 's state-owned shipbuilder Fincantieri signed a euro500 million ( US$ 700 million ) deal to build a new 2,092 passenger liner to be named Queen Elizabeth for OBJ-ORGANIZATION , a unit of SUBJ-ORGANIZATION , the companies said Wednesday .",
+        "explanation": "Between SUBJ and OBJ the phrase \"unit of\" appears and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-ORGANIZATION , a unit of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "Col. SUBJ-PERSON 's wife , OBJ-PERSON , died in 2005 .",
+        "explanation": "The phrase \"'s wife\" occurs between SUBJ and OBJ and there are no more than six words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's wife , OBJ-PERSON"
+    },
+    {
+        "label": "org:subsidiaries",
+        "sent": "SUBJ-ORGANIZATION owns OBJ-ORGANIZATION , eleven pipe mills , and scrap processing centers and product finishing facilities in the United States and Canada .",
+        "explanation": "There is only one word \"owns\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION owns OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "sent": "James Dobson , chairman of the OBJ-RELIGION political activist group SUBJ-ORGANIZATION , said in a statement , `` We thank God that the Supreme Court has affirmed the value of human life by banning the Nazi-esque barbarism that is partial-birth abortion . ''",
+        "explanation": "There are no more than four words between SUBJ and OBJ and the phrase \"political activist group\" links SUBJ and OBJ",
+        "pattern": "OBJ-RELIGION political activist group SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "SUBJ-PERSON was nicknamed `` OBJ-PERSON '' because he helped his boss , McCain , find pork-barrel provisions buried in legislation .",
+        "explanation": "The phrase \"was nicknamed ``\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was nicknamed `` OBJ-PERSON"
+    },
+    {
+        "label": "org:parents",
+        "sent": "`` I was completely stunned by this , '' said Dr Irwin Redlener , director of the SUBJ-ORGANIZATION , a part of OBJ-ORGANIZATION .",
+        "explanation": "The phrase \"part of\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , a part of OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:city_of_death",
+        "sent": "Chadian Prime Minister SUBJ-PERSON dies in OBJ-CITY at age 56",
+        "explanation": "The phrase \"dies in\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON dies in OBJ-CITY"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "1999 : President Lee Teng-hui confers the Order of the Brilliant Star with a Violet Grand Cordon on OBJ-PERSON , founder of the SUBJ-ORGANIZATION , for his devoted service to local citizens over the past four decades .",
+        "explanation": "The term \"founder of\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , founder of the SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "The organization was borrowing money to cover Gustav expenses that could reach more than $ 70 million and expects to go deeper into debt as it prepares for the other storms , said SUBJ-ORGANIZATION vice president OBJ-PERSON .",
+        "explanation": "The term \"vice president\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION vice president OBJ-PERSON"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "SUBJ-PERSON died in OBJ-CAUSE_OF_DEATH in September .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"died in\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON died in OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:children",
+        "sent": "SUBJ-PERSON 's son OBJ-PERSON was killed on June 21 , 1964 , in central Mississippi 's Neshoba County , along with fellow civil rights workers Michael Schwerner and James Chaney .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"'s son\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's son OBJ-PERSON"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "sent": "Indian police hunt militants after Delhi gunbattle The massive hunt for the two militant suspects came as police said the group that claimed responsibility was supported by the Pakistan-based OBJ-RELIGION rebel group SUBJ-ORGANIZATION .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and SUBJ and OBJ sandwich the phrase \"rebel group\"",
+        "pattern": "OBJ-RELIGION rebel group SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:date_of_death",
+        "sent": "SUBJ-PERSON died at her home OBJ-DATE .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and SUBJ and OBJ sandwich \"died at her home\"",
+        "pattern": "SUBJ-PERSON died at her home OBJ-DATE"
+    },
+    {
+        "label": "per:children",
+        "sent": "The Egyptian actor also indicated he has no intention of leaving the series , in which he plays the role of OBJ-PERSON 's son-in-law SUBJ-PERSON , who defected from Iraq to Jordan but eventually returned and was executed .",
+        "explanation": "Between SUBJ and OBJ \"'s son-in-law\" comes and there are no more than four words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON 's son-in-law SUBJ-PERSON"
+    },
+    {
+        "label": "per:parents",
+        "sent": "SUBJ-PERSON , daughter of OBJ-PERSON , dies Yolanda King is survived by her sister , the Rev",
+        "explanation": "Between SUBJ and OBJ \"daughter of\" appears and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , daughter of OBJ-PERSON"
+    },
+    {
+        "label": "org:shareholders",
+        "sent": "The company , which was 34-percent owned by SUBJ-ORGANIZATION major shareholder OBJ-PERSON prior to the Initial Public Offering ( IPO ) , raised 912 million dollars after selling all 329 million shares .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and the phrase \"major shareholder\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION major shareholder OBJ-PERSON"
+    },
+    {
+        "label": "org:shareholders",
+        "sent": "OBJ-PERSON , owner of SUBJ-ORGANIZATION , US News & World Report and chair of the Conference of Presidents of Major Jewish American Organizations , one of the largest pro-Israel lobbying groups .",
+        "explanation": "\"owner of\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , owner of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded",
+        "sent": "The SUBJ-ORGANIZATION was founded in OBJ-DATE in Maputo , the capital of Mozambique , under the theme `` Africa United Against Crime . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"was founded in\" occurs and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION was founded in OBJ-DATE"
+    },
+    {
+        "label": "per:charges",
+        "sent": "SUBJ-PERSON was convicted of OBJ-CRIMINAL_CHARGE in St Paul and sent to prison at 19 .",
+        "explanation": "The phrase \"was convicted of\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was convicted of OBJ-CRIMINAL_CHARGE"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "A Democratic congresswoman , SUBJ-PERSON , has died of OBJ-CAUSE_OF_DEATH .",
+        "explanation": "\"has died of\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , has died of OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:charges",
+        "sent": "Rapper SUBJ-PERSON convicted of OBJ-CRIMINAL_CHARGE She faces up to 25 years in prison .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"convicted of\" and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON convicted of OBJ-CRIMINAL_CHARGE"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "OBJ-PERSON , chief executive of SUBJ-ORGANIZATION , told The Sunday Times in an interview he did n't think the newest edition will be printed .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and \"chief executive of\" links SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , chief executive of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "SUBJ-ORGANIZATION executive vice president OBJ-PERSON said his company -- which has been researching next-generation lithium-ion batteries since the early 1990s for mobile telephones -- sees good growth prospects for the technology .",
+        "explanation": "\"executive vice president\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION executive vice president OBJ-PERSON"
+    },
+    {
+        "label": "per:siblings",
+        "sent": "Holly Montag says it 's been tough for SUBJ-PERSON sister OBJ-PERSON to deal with all the critics of her massive plastic surgery .",
+        "explanation": "The word \"sister\" occurs between SUBJ and OBJ and there are no more than two words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON sister OBJ-PERSON"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "sent": "He lives in Hammond , Louisiana , about half an hour south of SUBJ-PERSON 's home in OBJ-CITY .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and \"'s home in\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's home in OBJ-CITY"
+    },
+    {
+        "label": "org:subsidiaries",
+        "sent": "Investors have been expecting gold futures to rise to $ 1,000 as they watched the dollar spiral lower , said Scott Meyers , senior trading analyst with OBJ-ORGANIZATION , a division of SUBJ-ORGANIZATION .",
+        "explanation": "There are no more than six words between SUBJ and OBJ and \"division of\" appears between SUBJ and OBJ",
+        "pattern": "OBJ-ORGANIZATION , a division of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:alternate_names",
+        "sent": "Abu Mujahid , spokesman of the OBJ-ORGANIZATION ( SUBJ-ORGANIZATION ) said in a statement sent to reporters that the contradicted statements of the Israeli officials `` show that Israel is the one which delays and blocks the swap . ''",
+        "explanation": "There is only one word \"(\" between SUBJ and OBJ",
+        "pattern": "OBJ-ORGANIZATION ( SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "sent": "Share this on Facebook : Share OBJ-RELIGION group SUBJ-ORGANIZATION is asking its members to pray for rain during Barack Obama 's outdoor speech at Denver 's Invesco Field at the end of the Democratic convention .",
+        "explanation": "There is only one word \"group\" between SUBJ and OBJ",
+        "pattern": "OBJ-RELIGION group SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "sent": "In retirement , SUBJ-PERSON lived in the OBJ-STATE_OR_PROVINCE area , because his wife preferred it there .",
+        "explanation": "The phrase \"lived in\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON lived in the OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "While SUBJ-PERSON was known for OBJ-PERSON lightning-fast keyboard runs , jazz piano veteran Hank Jones called attention to his finesse and deft touch on melodic slow-tempo tunes .",
+        "explanation": "\"was known for\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was known for OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` One rule for the rich and famous and different rules for everyone else , '' said OBJ-PERSON , director of SUBJ-ORGANIZATION .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and \"director of\" links SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , director of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "The idea , said SUBJ-ORGANIZATION president OBJ-PERSON , is to have `` pesky facts provide the foundation to make informed decisions '' by governments wanting to do better , rights groups considering where to intervene , and businesses deciding where to invest .",
+        "explanation": "There is only one word \"president\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION president OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` The German consumer did n't join in the spending party when times were good and they are even more reluctant to join in now , '' said OBJ-PERSON , chief economist at SUBJ-ORGANIZATION , a data provider that surveys sentiment in the retailing industry .",
+        "explanation": "Between SUBJ and OBJ \"chief economist at\" occurs and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , chief economist at SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:date_of_death",
+        "sent": "In the U.S. 's lone congressional race , in northwest Ohio , Democrat Robin Weirauch and Republican state Rep. Bob Latta won their primaries in the race to succeed Rep. SUBJ-PERSON , who died in OBJ-DATE from a fall at his Washington apartment .",
+        "explanation": "The term \"who died in\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , who died in OBJ-DATE"
+    },
+    {
+        "label": "per:stateorprovince_of_birth",
+        "sent": "SUBJ-PERSON was born in OBJ-STATE_OR_PROVINCE , the last of six children .",
+        "explanation": "Between SUBJ and OBJ \"was born in\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was born in OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "OBJ-PERSON , who had known SUBJ-PERSON from his days in Sacramento , said that : `` There were a lot of people who could do backdrops .",
+        "explanation": "\"who had known\" occurs between SUBJ and OBJ and there are no more than six words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , who had known SUBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` Well I think we 've got plenty of financial firepower to make transfers that Arsene Wenger wishes to make , '' SUBJ-ORGANIZATION managing director OBJ-PERSON said .",
+        "explanation": "The phrase \"managing director\" occurs between SUBJ and OBJ and there are no more than three words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION managing director OBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_birth",
+        "sent": "Stepping out following SUBJ-PERSON birthday OBJ-DATE , Holly Montag attended the ESPN Magazine ` The Body ' issue event in West Hollywood on Monday night ( October 19 ) .",
+        "explanation": "The word \"birthday\" occurs between SUBJ and OBJ and there are no more than two words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON birthday OBJ-DATE"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "Credit : Celebrity Gossip MTV brought in new party girls because the first season was so boring and because SUBJ-PERSON now works at OBJ-ORGANIZATION and ca n't be out going wild . ''",
+        "explanation": "There are no more than four words between SUBJ and OBJ and \"now works at\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON now works at OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded",
+        "sent": "The SUBJ-ORGANIZATION , established in OBJ-DATE , had believed that Varitek was only the fourth captain in their history .",
+        "explanation": "There are no more than six words between SUBJ and OBJ and \"established in\" links SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , established in OBJ-DATE"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "SUBJ-ORGANIZATION was established by OBJ-PERSON on May 21 , 1881 , based on an international organization in Switzerland .",
+        "explanation": "Between SUBJ and OBJ the phrase \"was established by\" comes and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION was established by OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` The idea was to show our employees what is common in the Czech Republic , '' said SUBJ-ORGANIZATION chief executive OBJ-PERSON .",
+        "explanation": "The phrase \"chief executive\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION chief executive OBJ-PERSON"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "SUBJ-PERSON died from OBJ-CAUSE_OF_DEATH at his home in Dothan on Thursday , his son , Richmond Flowers Jr. , said Friday .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and \"died from\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON died from OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:stateorprovince_of_birth",
+        "sent": "`` Dedication '' Art-house hunk ( and OBJ-STATE_OR_PROVINCE native ) SUBJ-PERSON , 36 , has so far made his living playing oddballs , sexy beasts and other edgy fellas in such varied fare as David Lynch 's recent mindbenders and a season of `` Six Feet Under . ''",
+        "explanation": "Between SUBJ and OBJ the phrase \"native )\" comes and there are no more than three words between SUBJ and OBJ",
+        "pattern": "OBJ-STATE_OR_PROVINCE native ) SUBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_death",
+        "sent": "SUBJ-PERSON , who died OBJ-DATE at 81 , was my professional hero .",
+        "explanation": "SUBJ and OBJ sandwich \"who died\" and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , who died OBJ-DATE"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` Thanks to our withdrawal from the overseas handset business , which was previously loss-making , we managed to post some profit in the mobile handset business , '' SUBJ-ORGANIZATION senior vice president OBJ-PERSON said at a press conference .",
+        "explanation": "SUBJ and OBJ sandwich \"senior vice president\" and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION senior vice president OBJ-PERSON"
+    },
+    {
+        "label": "per:cause_of_death",
+        "sent": "SUBJ-PERSON died of OBJ-CAUSE_OF_DEATH , with his family at his bedside , the Austrian APA news agency said , quoting Waldheim 's son-in-law .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and \"died of\" links SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON died of OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "I totally missed it when I was looking at the list of his lobbying clients , but the Washington Post and others are reporting that openly gay McCain chief of staff SUBJ-PERSON once worked for OBJ-ORGANIZATION as a lobbyist .",
+        "explanation": "Between SUBJ and OBJ \"once worked for\" occurs and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON once worked for OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "In 1966 , OBJ-PERSON and her husband , SUBJ-PERSON , started the Andrew Goodman Foundation , which supports a variety of social causes .",
+        "explanation": "The term \"and her husband\" occurs between SUBJ and OBJ and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON and her husband , SUBJ-PERSON"
+    },
+    {
+        "label": "org:city_of_headquarters",
+        "sent": "All three represented El Salvador at the SUBJ-ORGANIZATION , based in OBJ-CITY City .",
+        "explanation": "SUBJ and OBJ sandwich the phrase \"based in\" and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , based in OBJ-CITY"
+    },
+    {
+        "label": "per:employee_of",
+        "sent": "OBJ-ORGANIZATION coach SUBJ-PERSON insisted he would put the club 's 2-0 defeat to Palermo firmly behind him and move forward .",
+        "explanation": "There is only one word \"coach\" between SUBJ and OBJ",
+        "pattern": "OBJ-ORGANIZATION coach SUBJ-PERSON"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "The only child he publicly recognized was his first son , Fidel Jr , who he had with SUBJ-PERSON first wife , OBJ-PERSON .",
+        "explanation": "There are no more than six words between SUBJ and OBJ and SUBJ and OBJ sandwich \"first wife\"",
+        "pattern": "SUBJ-PERSON first wife , OBJ-PERSON"
+    },
+    {
+        "label": "org:member_of",
+        "sent": "The SUBJ-ORGANIZATION joined OBJ-ORGANIZATION , which is led by the Pakistan People 's Party of slain former premier Benazir Bhutto , after beating allies of former president Pervez Musharraf in elections in January .",
+        "explanation": "There is only one word \"joined\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION joined OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` The problem is major , '' said Dr. OBJ-PERSON , chairman of the SUBJ-ORGANIZATION 's medical oversight board , which is urging more doctor visits in many cases for truckers with serious medical conditions .",
+        "explanation": "Between SUBJ and OBJ the phrase \"chairman of\" comes and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , chairman of the SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "`` Through the ups and downs , this is still a moderate recovery , '' said OBJ-PERSON , chief economist for SUBJ-ORGANIZATION .",
+        "explanation": "There are no more than six words between SUBJ and OBJ and \"chief economist for\" appears between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , chief economist for SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:date_of_birth",
+        "sent": "SUBJ-PERSON , born on OBJ-DATE , in Poughkeepsie , New York , was the daughter of a successful lawyer .",
+        "explanation": "The term \"born on\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON , born on OBJ-DATE"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "Sheikh OBJ-PERSON , leader of the SUBJ-ORGANIZATION party , stood in the dock of a special fast-track court alongside her cousin and co - accused , Sheikh Fazlul Karim Selim , prosecutor Mohammad Borhanuddin said .",
+        "explanation": "The phrase \"leader of\" occurs between SUBJ and OBJ and there are no more than six words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , leader of the SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:founded",
+        "sent": "The SUBJ-ORGANIZATION , formed only OBJ-DATE by veteran politician Tom Thabane , managed to get 17 constituency seats to become a major opposition in the tiny country , with one going to the small Alliance of Congress Parties ( ACP ) .",
+        "explanation": "\"formed only\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , formed only OBJ-DATE"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "The other group which split from SUBJ-ORGANIZATION , founded by OBJ-PERSON as one of the first rebel groups , is relatively unknown and is headed by veteran rebel Abu Garda and a military commander called Abdallah Banda .",
+        "explanation": "\"founded by\" links SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , founded by OBJ-PERSON"
+    },
+    {
+        "label": "org:founded_by",
+        "sent": "OBJ-PERSON , co-founder of SUBJ-ORGANIZATION employs her intimate knowledge of high-end restaurants within a 15-minute drive of any major airport and suggests travelers go and enjoy a pleasant meal instead of hanging around the fast-food joints .",
+        "explanation": "Between SUBJ and OBJ the phrase \"co-founder of\" comes and there are no more than four words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , co-founder of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "Another reason not to worry about a potential export business setback is the possibility of improved cross-Taiwan Strait economic ties in the wake of the election , said OBJ-PERSON , chief economist of SUBJ-ORGANIZATION Taiwan .",
+        "explanation": "SUBJ and OBJ sandwich \"chief economist of\" and there are no more than five words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , chief economist of SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "Where Other Bush Loyalists Have Gone , Gonzales Follows SUBJ-PERSON and his wife , OBJ-PERSON , enjoyed a comfortable relationship with the Bushes ; they were among those who received coveted invitations to spend weekends at Camp David and view movies at the White House .",
+        "explanation": "SUBJ and OBJ sandwich \"and his wife\" and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON and his wife , OBJ-PERSON"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "sent": "Then SUBJ-PERSON family moved to OBJ-CITY , where the young George was confronted by `` this civil war '' of segregation vs. integration .",
+        "explanation": "Between SUBJ and OBJ the phrase \"family moved to\" appears and there are no more than five words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON family moved to OBJ-CITY"
+    },
+    {
+        "label": "per:title",
+        "sent": "SUBJ-PERSON was appointed OBJ-TITLE to the Dominican Republic in 1957 and to Panama in 1960 .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and \"was appointed\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was appointed OBJ-TITLE"
+    },
+    {
+        "label": "per:siblings",
+        "sent": "SUBJ-PERSON 's sister-in-law , OBJ-PERSON , was the long - time head and legal counsel of the Maryland NAACP .",
+        "explanation": "SUBJ and OBJ sandwich \"'s sister-in-law\" and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON 's sister-in-law , OBJ-PERSON"
+    },
+    {
+        "label": "org:top_members/employees",
+        "sent": "Rome 's Stadio Olympico is the host venue for May 's Champions League final and SUBJ-ORGANIZATION director OBJ-PERSON said : `` We stayed away from Barcelona , who are favourites , and Panathinaikos , which would have meant a long trip .",
+        "explanation": "There is only one word \"director\" between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION director OBJ-PERSON"
+    },
+    {
+        "label": "org:founded",
+        "sent": "ISLAMABAD , Aug 3 , 2010 ( AFP ) The SUBJ-ORGANIZATION was established in OBJ-DATE to fight Indian rule in Kashmir and has past links to Pakistani intelligence services and Al-Qaeda .",
+        "explanation": "\"was established in\" occurs between SUBJ and OBJ and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION was established in OBJ-DATE"
+    },
+    {
+        "label": "per:spouse",
+        "sent": "SUBJ-PERSON is married to OBJ-PERSON and is the father of three sons .",
+        "explanation": "There are no more than four words between SUBJ and OBJ and the phrase \"is married to\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON is married to OBJ-PERSON"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "sent": "Kurnaz has returned to SUBJ-PERSON hometown of OBJ-CITY in northern German following his release .",
+        "explanation": "There are no more than three words between SUBJ and OBJ and SUBJ and OBJ sandwich the phrase \"hometown of\"",
+        "pattern": "SUBJ-PERSON hometown of OBJ-CITY"
+    },
+    {
+        "label": "per:alternate_names",
+        "sent": "The dispute centers on hundreds of hours of CIA videotape showing coercive interrogation tactics used on two senior al-Qaida suspects in 2002 : OBJ-PERSON , commonly known as SUBJ-PERSON , and Abd al-Rahim al-Nashiri .",
+        "explanation": "Between SUBJ and OBJ the phrase \"commonly known as\" appears and there are no more than six words between SUBJ and OBJ",
+        "pattern": "OBJ-PERSON , commonly known as SUBJ-PERSON"
+    },
+    {
+        "label": "per:date_of_birth",
+        "sent": "SUBJ-PERSON was born on OBJ-DATE , 1931 in Cuba 's Oriente Province and educated at Jesuit schools and the University of Havana .",
+        "explanation": "There are no more than five words between SUBJ and OBJ and the phrase \"was born on\" appears between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON was born on OBJ-DATE"
+    },
+    {
+        "label": "per:title",
+        "sent": "President George W. Bush has settled on Michael B. Mukasey , a retired federal judge from New York , to replace SUBJ-PERSON as OBJ-TITLE and will announce his selection Monday , a person familiar with the president 's decision said .",
+        "explanation": "There are no more than two words between SUBJ and OBJ and the word \"as\" occurs between SUBJ and OBJ",
+        "pattern": "SUBJ-PERSON as OBJ-TITLE"
+    },
+    {
+        "label": "org:alternate_names",
+        "sent": "Shiite List Announced for January Elections It groups a large number of Shiite and other parties , including the Supreme Council for Islamic Revolution in Iraq ( Abdul Aziz al-Hakim ) ; the SUBJ-ORGANIZATION ( former OBJ-ORGANIZATION ) ; The Dawa Party ( Ibrahim Jaafari ) ; the Islamic Dawa ( Abdu ` llah al-Unzi ) ; the Iraqi National Congress ( Ahmad Chalabi ) ; and a large number of independents , about half the list ( who are leaders in their localities ) in the national elections .",
+        "explanation": "Between SUBJ and OBJ \"( former\" appears and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION ( former OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:alternate_names",
+        "sent": "When SUBJ-ORGANIZATION , then called OBJ-ORGANIZATION of Utah , sought to accept low-level waste in 1991 , the state backed the company .",
+        "explanation": "Between SUBJ and OBJ \"then called\" occurs and there are no more than four words between SUBJ and OBJ",
+        "pattern": "SUBJ-ORGANIZATION , then called OBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:number_of_employees/members",
+        "pat": [
+            "SUBJ-ORGANIZATION OBJ-NUMBER employees"
+        ],
+        "explanation": "The word 'employees' appears right after OBJ",
+        "sent": "SUBJ-ORGANIZATION , founded in 1951 , is a civilian and military aircraft manufacturer with OBJ-NUMBER employees and works with such companies as Boeing , Airbus , Bombardier , Spirit AeroSystems and Singapore Aerospace"
+    },
+    {
+        "label": "org:founded",
+        "pat": [
+            "founded SUBJ-ORGANIZATION in OBJ-DATE"
+        ],
+        "explanation": "the word 'founded' is right before <S> and the word 'in' is right after <S> and the word 'in' is right before Y",
+        "sent": "Wilhelmina Cole Holladay , an art collector , founded SUBJ-ORGANIZATION in OBJ-DATE"
+    },
+    {
+        "label": "per:cause_of_death",
+        "pat": [
+            "SUBJ-PERSON , died following OBJ-CAUSE_OF_DEATH"
+        ],
+        "explanation": "The word ', died following' right after SUBJ",
+        "sent": "Farinas launched his protest at the end of February , a day after another dissident , SUBJ-PERSON , died following an 85-day OBJ-CAUSE_OF_DEATH"
+    },
+    {
+        "label": "org:founded",
+        "pat": [
+            "founded SUBJ-ORGANIZATION OBJ-DATE"
+        ],
+        "explanation": "The word 'founded' appears less than 3 words before SUBJ and the word 'in' is right before OBJ",
+        "sent": "Doblin founded the SUBJ-ORGANIZATION ( MAPS ) in Boston in OBJ-DATE with the goal of supporting clinical research into hallucinogenic drugs and marijuana"
+    },
+    {
+        "label": "org:members",
+        "pat": [
+            "is owned by OBJ-ORGANIZATION SUBJ-ORGANIZATION"
+        ],
+        "explanation": "The words 'is owned by' appears right before OBJ",
+        "sent": "The truck is owned by OBJ-ORGANIZATION , which had the highest possible rating , from the SUBJ-ORGANIZATION"
+    },
+    {
+        "label": "org:shareholders",
+        "pat": [
+            "SUBJ-ORGANIZATION shares OBJ-PERSON"
+        ],
+        "explanation": "the word 'shares' is right after SUBJ",
+        "sent": "As part of the deal , DCC also paid euro3 4 million ( US$ 54 million ) to four institutional investors that lost out from Flavin 's dumping of SUBJ-ORGANIZATION shares : Eagle Star Insurance and Hibernian Insurance in Ireland , and US investment houses OBJ-PERSON and Founders Asset Management"
+    },
+    {
+        "label": "org:website",
+        "pat": [
+            "SUBJ-ORGANIZATION please visit OBJ-URL"
+        ],
+        "explanation": "the phrase 'please visit' is right before OBJ",
+        "sent": "To learn more about SUBJ-ORGANIZATION , our facilities , and our programs , please visit OBJ-URL"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "pat": [
+            "SUBJ-PERSON had a home in OBJ-CITY"
+        ],
+        "explanation": "the words 'had a home in' occur right before Y",
+        "sent": "SUBJ-PERSON was 79 and also had a home in OBJ-CITY , Conn"
+    },
+    {
+        "label": "org:members",
+        "pat": [
+            "SUBJ-ORGANIZATION members are OBJ-ORGANIZATION"
+        ],
+        "explanation": "the word 'members are' is right after <S>",
+        "sent": "Besides Pakistan , Iran and Turkey , SUBJ-ORGANIZATION members are Afghanistan , Azerbaijan , Kazakhstan , OBJ-ORGANIZATION , Tajikistan , Turkmenistan and Uzbekistan"
+    },
+    {
+        "label": "per:date_of_birth",
+        "pat": [
+            "Born on OBJ-DATE SUBJ-PERSON"
+        ],
+        "explanation": "The word 'Born on' is right before OBJ",
+        "sent": "Born on OBJ-DATE , SUBJ-PERSON studied economics , but joined the insurgency without completing his studies"
+    },
+    {
+        "label": "per:origin",
+        "pat": [
+            "SUBJ-PERSON is a OBJ-NATIONALITY citizen"
+        ],
+        "explanation": "The words 'is a' appear right before OBJ and the word 'citizen' is right after OBJ",
+        "sent": "Officials in Mumbai said that the two suspects , David Coleman Headley , an American with links of Pakistan , and SUBJ-PERSON , who was born in Pakistan but is a OBJ-NATIONALITY citizen , both visited Mumbai and several other Indian cities in before the attacks , and may have visited some of the sites that were attacked"
+    },
+    {
+        "label": "per:age",
+        "pat": [
+            "SUBJ-PERSON Dies at OBJ-NUMBER"
+        ],
+        "explanation": "the words 'Dies at' is right before Y",
+        "sent": "Doctor SUBJ-PERSON , Rights Champion , Dies at OBJ-NUMBER"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "pat": [
+            "SUBJ-PERSON settling in OBJ-STATE_OR_PROVINCE"
+        ],
+        "explanation": "the words 'settling' is within 5 words before Y and 'in' occur right before Y",
+        "sent": "In 1958 she married SUBJ-PERSON , who taught philosophy and African-American studies at the University at Buffalo , eventually settling with him in OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "per:date_of_birth",
+        "pat": [
+            "SUBJ-PERSON gave birth in OBJ-DATE"
+        ],
+        "explanation": "'gave birth in' occurs right before Y",
+        "sent": "Although SUBJ-PERSON 's father is still alive , his mother died shortly after she gave birth in OBJ-DATE"
+    },
+    {
+        "label": "org:shareholders",
+        "pat": [
+            "investors stakes SUBJ-ORGANIZATION OBJ-PERSON"
+        ],
+        "explanation": "the word 'investors' occurs before SUBJ and 'stakes' is within 5 words before SUBJ",
+        "sent": "NEW YORK 2008-01-14 15:45:15 UTC In February 2000 several investors bought stakes of undisclosed size in SUBJ-ORGANIZATION , including General Atlantic LLC , a private equity firm ; the venture capital firm Kleiner Perkins Caufield & Byers ; investment bank Allen & Co as well as OBJ-PERSON ; former Microsoft Corp executive Nathan Myhrvold and Nicholas Negroponte , a computer scientist who founded the Massachusetts Institute of Technology 's Media Lab and the One Laptop Per Child project"
+    },
+    {
+        "label": "per:alternate_names",
+        "pat": [
+            "SUBJ-PERSON real name is OBJ-PERSON"
+        ],
+        "explanation": "'real name is' is right before Y",
+        "sent": "Grammy-nominated SUBJ-PERSON , 26 , whose real name is OBJ-PERSON , is charged with assault and witness tampering"
+    },
+    {
+        "label": "per:stateorprovince_of_birth",
+        "pat": [
+            "raised in OBJ-STATE_OR_PROVINCE SUBJ-PERSON"
+        ],
+        "explanation": "'raised in' is right before Y",
+        "sent": "23-year old Adam Senn is an American model born in Paris and raised in OBJ-STATE_OR_PROVINCE who began SUBJ-PERSON career right after high school in 2002 and quickly became an in-demand star thanks to a provocative Gucci campaign in 2003"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "pat": [
+            "SUBJ-PERSON living in OBJ-CITY"
+        ],
+        "explanation": "The words 'living in' occur right before OBJ-CITY",
+        "sent": "The high court is expected to set a date next week to rule on whether Madonna can officially adopt SUBJ-PERSON , who has been living in OBJ-CITY with the star and her filmmaker husband Guy Ritchie under an interim custody order"
+    },
+    {
+        "label": "org:city_of_headquarters",
+        "pat": [
+            "SUBJ-ORGANIZATION 's headquarters in OBJ-CITY"
+        ],
+        "explanation": "\"'s headquarters in\" is written right before OBJ-CITY",
+        "sent": "The new company will keep SUBJ-ORGANIZATION 's headquarters in OBJ-CITY , where 1,300 people work in research and administration"
+    },
+    {
+        "label": "per:cause_of_death",
+        "pat": [
+            "SUBJ-PERSON died in OBJ-CAUSE_OF_DEATH"
+        ],
+        "explanation": "'died in' is within 3 words before Y",
+        "sent": "The body of Polish first lady SUBJ-PERSON remains unidentified more than a day after she died in an OBJ-CAUSE_OF_DEATH with President Lech Kaczynski and dozens of other officials , an aide said Sunday"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "pat": [
+            "SUBJ-ORGANIZATION OBJ-RELIGION party"
+        ],
+        "explanation": "the word \"party\" is right after Y",
+        "sent": "BADR BRIGADE The Badr Brigade - sometimes called the SUBJ-ORGANIZATION - is the armed wing of the largest OBJ-RELIGION party in Iraq , the Supreme Council for the Islamic Revolution ( Sciri ) in Iraq"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "pat": [
+            "SUBJ-PERSON settling in OBJ-STATE_OR_PROVINCE"
+        ],
+        "explanation": "the words 'settling' is within 5 words before Y and 'in' occur right before Y",
+        "sent": "In 1958 she married SUBJ-PERSON , who taught philosophy and African-American studies at the University at Buffalo , eventually settling with him in OBJ-STATE_OR_PROVINCE"
+    },
+    {
+        "label": "org:founded",
+        "pat": [
+            "SUBJ-ORGANIZATION founded in OBJ-DATE"
+        ],
+        "explanation": "the word 'founded in' is right before Y",
+        "sent": "SUBJ-ORGANIZATION , a privately held company founded in OBJ-DATE by Len Blavatnik , has a diverse portfolio of investments in industry , real estate , media and telecommunications"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "pat": [
+            "SUBJ-ORGANIZATION OBJ-RELIGION Islamic"
+        ],
+        "explanation": "The word 'Islamic' appears after OBJ and the word 'separatist' is right after OBJ",
+        "sent": "Malik is a member of the SUBJ-ORGANIZATION ( MNLF ) , a former OBJ-RELIGION separatist group that waged a bloody Islamic separatist war in the 1970s but which signed a peace accord in 1996"
+    },
+    {
+        "label": "per:cause_of_death",
+        "pat": [
+            "SUBJ-PERSON died of OBJ-CAUSE_OF_DEATH"
+        ],
+        "explanation": "'died of' is right before Y",
+        "sent": "Jong-Un was born to the leader 's third wife SUBJ-PERSON , who reportedly died of OBJ-CAUSE_OF_DEATH in 2004 , and was educated at an international school in Switzerland"
+    },
+    {
+        "label": "per:employee_of",
+        "pat": [
+            "OBJ-ORGANIZATION SUBJ-PERSON arrived as chairman"
+        ],
+        "explanation": "the words 'arrived as chairman' occur right after Y",
+        "sent": "At the raucous OBJ-ORGANIZATION in Chicago in the summer of 1968 , SUBJ-PERSON arrived as chairman of both the Southern Governors Conference and the National Democratic Governors Conference"
+    },
+    {
+        "label": "per:spouse",
+        "pat": [
+            "His wife OBJ-PERSON him SUBJ-PERSON"
+        ],
+        "explanation": "The word 'His wife' precedes OBJ by no more than 3 words and 'him' is within 3 words of SUBJ",
+        "sent": "His wife , OBJ-PERSON , often accompanied him on SUBJ-PERSON expeditions , as she did in 1947 , when she became the first woman to climb Mount McKinley"
+    },
+    {
+        "label": "per:age",
+        "pat": [
+            "SUBJ-PERSON is OBJ-NUMBER"
+        ],
+        "explanation": "The words 'year old' are to the right of OBJ and 'is' is right before OBJ",
+        "sent": "SUBJ-PERSON is OBJ-NUMBER years old now"
+    },
+    {
+        "label": "org:founded",
+        "pat": [
+            "set up SUBJ-ORGANIZATION OBJ-DATE"
+        ],
+        "explanation": "the word 'set up' occurs within 4 words before <S> and the word 'in' is right before Y",
+        "sent": "Congress set up the SUBJ-ORGANIZATION in OBJ-DATE amid a wave of post-Watergate reforms intended to end corruption in the political process"
+    },
+    {
+        "label": "per:cause_of_death",
+        "pat": [
+            "SUBJ-PERSON died from OBJ-CAUSE_OF_DEATH"
+        ],
+        "explanation": "The word 'died from' right before <O>",
+        "sent": "The renowned mountain photographer , SUBJ-PERSON and cartographer died from OBJ-CAUSE_OF_DEATH Wednesday"
+    },
+    {
+        "label": "per:siblings",
+        "pat": [
+            "OBJ-PERSON other children , SUBJ-PERSON"
+        ],
+        "explanation": "the word 'other children ,' occurs right before SUBJ",
+        "sent": "In addition to OBJ-PERSON , he is survived by four of his other children , SUBJ-PERSON , Elva Corrales , Robert and Kelly Harris ; 11 grandchildren ; and 11 great-grandchildren"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "pat": [
+            "living in OBJ-CITY SUBJ-PERSON"
+        ],
+        "explanation": "The words 'living in' appear right before OBJ",
+        "sent": "`` My father 's main purpose was to hear me play while he was living in OBJ-CITY , because I was always being broadcast , '' SUBJ-PERSON told Peter Lavezzoli , the author of `` The Dawn of Indian Music in the West . ''"
+    },
+    {
+        "label": "org:subsidiaries",
+        "pat": [
+            "SUBJ-ORGANIZATION acquired OBJ-ORGANIZATION"
+        ],
+        "explanation": "the word 'acquired' is right before OBJ",
+        "sent": "SUBJ-ORGANIZATION , Britain 's largest bus operator , entered the North American market in 1999 when it acquired OBJ-ORGANIZATION"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "pat": [
+            "SUBJ-PERSON moved to OBJ-STATE_OR_PROVINCE"
+        ],
+        "explanation": "the words 'moved to' occur right before Y",
+        "sent": "SUBJ-PERSON then joined the senatorial campaign of John Warner , R-Va , and moved to OBJ-STATE_OR_PROVINCE after Warner was elected in 1978"
+    },
+    {
+        "label": "per:other_family",
+        "pat": [
+            "SUBJ-PERSON nephews OBJ-PERSON"
+        ],
+        "explanation": "'nephews' is right after X",
+        "sent": "He also gained notoriety during the Wedtech scandal in the 1980s , initiating the congressional investigation that eventually ensnared SUBJ-PERSON nephews , state Sens. Clarence Mitchell III and OBJ-PERSON"
+    },
+    {
+        "label": "org:city_of_headquarters",
+        "pat": [
+            "SUBJ-ORGANIZATION hometown OBJ-CITY"
+        ],
+        "explanation": "the word 'hometown' occur within 2 words before Y",
+        "sent": "The story was inspired by the renowned SUBJ-ORGANIZATION of Art in Gibbons ' hometown , OBJ-CITY"
+    },
+    {
+        "label": "per:countries_of_residence",
+        "pat": [
+            "settled in the OBJ-LOCATION SUBJ-PERSON"
+        ],
+        "explanation": "the words 'settled in the' occur right before X",
+        "sent": "He settled in the OBJ-LOCATION town of Ramallah , but in 1999 , after a trip to Jordan , SUBJ-PERSON was barred by Israel from returning"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "pat": [
+            "SUBJ-PERSON who currently lives in OBJ-STATE_OR_PROVINCE"
+        ],
+        "explanation": "the words 'who currently lives in' is right before <O>",
+        "sent": "SUBJ-PERSON , who currently lives in OBJ-STATE_OR_PROVINCE , just north of London , claims he is constantly harrassed by photographers as he tries to go about his daily business"
+    },
+    {
+        "label": "per:countries_of_residence",
+        "pat": [
+            "SUBJ-PERSON as the OBJ-COUNTRY ambassador"
+        ],
+        "explanation": "the word 'ambassador' is right after Y and 'as the' is right before OBJ",
+        "sent": "SUBJ-PERSON , who as the OBJ-COUNTRY ambassador to Pakistan in 1971 helped Henry A Kissinger surreptitiously slip into China for 36 hours to lay the groundwork for President Richard M Nixon 's historic visit to China , died Sunday at his home in Winchester , Va"
+    },
+    {
+        "label": "per:cities_of_residence",
+        "pat": [
+            "SUBJ-PERSON raised in OBJ-CITY"
+        ],
+        "explanation": "'raised in' appears right before OBJ",
+        "sent": "Named for the chief theorist of modern Zionism , Theodor Herzl , SUBJ-PERSON was born in Nagyvaszony near Budapest in 1911 and raised in OBJ-CITY"
+    },
+    {
+        "label": "org:political/religious_affiliation",
+        "pat": [
+            "SUBJ-ORGANIZATION OBJ-RELIGION militia Shiite"
+        ],
+        "explanation": "The word 'Shiite' appears after OBJ and the word 'militia' is right after OBJ",
+        "sent": "The SUBJ-ORGANIZATION , formerly known as the Badr Brigade , was a OBJ-RELIGION militia organized in Iran during the 1980s by Iraqi Shiite exiles"
+    },
+    {
+        "label": "org:number_of_employees/members",
+        "pat": [
+            "SUBJ-ORGANIZATION over OBJ-NUMBER"
+        ],
+        "explanation": "The word 'over' appears right before OBJ and the word 'staff member' is right after OBJ",
+        "sent": "The SUBJ-ORGANIZATION is an independent , non-profit , non-governmental organisation , with over OBJ-NUMBER staff members on five continents , working through field-based analysis and high-level advocacy to prevent and resolve deadly conflict"
+    },
+    {
+        "label": "org:top_members/employees",
+        "pat": [
+            "OBJ-PERSON acting head of SUBJ-ORGANIZATION"
+        ],
+        "explanation": "the term 'acting head of' is within 4 words after OBJ",
+        "sent": "OBJ-PERSON , acting head of the National Prosecuting Authority , which oversees the SUBJ-ORGANIZATION , said he was shocked and concerned at the police action"
+    },
+    {
+        "label": "org:founded",
+        "pat": [
+            "set up SUBJ-ORGANIZATION OBJ-DATE"
+        ],
+        "explanation": "the word 'set up' occurs within 4 words before <S> and the word 'in' is right before Y",
+        "sent": "Congress set up the SUBJ-ORGANIZATION in OBJ-DATE amid a wave of post-Watergate reforms intended to end corruption in the political process"
+    },
+    {
+        "label": "per:age",
+        "pat": [
+            "OBJ-NUMBER SUBJ-PERSON"
+        ],
+        "explanation": "The words \"at the age of\" appear right before OBJ-NUMBER",
+        "sent": "At the age of OBJ-NUMBER , SUBJ-PERSON vanished into America 's shadow prison system in the war on terror"
+    },
+    {
+        "label": "per:stateorprovinces_of_residence",
+        "pat": [
+            "SUBJ-PERSON at home in OBJ-STATE_OR_PROVINCE"
+        ],
+        "explanation": "the word 'at home in' occurs right before Y",
+        "sent": "Jockey agent Ron Anderson said SUBJ-PERSON died early Monday at home in OBJ-STATE_OR_PROVINCE , after a battle with cancer"
+    },
+    {
+        "label": "org:members",
+        "pat": [
+            "OBJ-ORGANIZATION of the SUBJ-ORGANIZATION were"
+        ],
+        "explanation": "The word 'were' appears right after SUBJ and the words 'of the' is right before SUBJ",
+        "sent": "The OBJ-ORGANIZATION of the SUBJ-ORGANIZATION were here for three seasons from 1967-70 before poor attendance , arena issues , and financial problems led to a move to Memphis"
+    },
+    {
+        "label": "org:subsidiaries",
+        "pat": [
+            "OBJ-ORGANIZATION the work of SUBJ-ORGANIZATION"
+        ],
+        "explanation": "The word 'the work of' is right before SUBJ and OBJ precedes SUBJ",
+        "sent": "Although they are too chickenshit to say so on their site , the OBJ-ORGANIZATION is actually the work of SUBJ-ORGANIZATION and the Portland Catholic Diocese"
+    },
+    {
+        "label": "per:schools_attended",
+        "pat": [
+            "SUBJ-PERSON attended OBJ-ORGANIZATION"
+        ],
+        "explanation": "The word 'attended' is right before the OBJ",
+        "sent": "The family moved to California shortly after World War I , when SUBJ-PERSON was 11 ; he attended OBJ-ORGANIZATION and UCLA"
+    },
+    {
+        "label": "org:dissolved",
+        "pat": [
+            "OBJ-DATE SUBJ-ORGANIZATION was dissolved"
+        ],
+        "explanation": "'was dissolved' is right after SUBJ",
+        "sent": "In OBJ-DATE , five years after the state was established , the SUBJ-ORGANIZATION was dissolved and re-organized as an Israeli company"
+    }
+]
