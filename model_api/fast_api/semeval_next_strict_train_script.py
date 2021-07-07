@@ -31,9 +31,9 @@ def main():
     dev = json.load(open(args.dev_path))
     dev = list(map(lambda x: (x['text'], x['label']), dev))
 
-    labeled_data = labeled_data[:10]
-    unlabeled_data = unlabeled_data[:100]
-    dev = dev[:50]
+    # labeled_data = labeled_data[:10]
+    # unlabeled_data = unlabeled_data[:100]
+    # dev = dev[:50]
 
     data = {
         'params': {

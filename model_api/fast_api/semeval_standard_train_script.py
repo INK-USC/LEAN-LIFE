@@ -31,9 +31,9 @@ def main():
     test = json.load(open(args.test_path))
     test = list(map(lambda x: (x['text'], x['label']), test))
 
-    train = train[:100]
-    dev = dev[:200]
-    test = test[:10]
+    # train = train[:100]
+    # dev = dev[:200]
+    # test = test[:10]
 
     data = {
         'params': {
@@ -46,7 +46,7 @@ def main():
             "learning_rate": 0.1,
             "embeddings": "glove.840B.300d",
             "hidden_dim": 100,
-            "random_state": 7698,
+            # "random_state": 7698,
             "load_model": False,
             "start_epoch": 0,
             "emb_dim": 300,
