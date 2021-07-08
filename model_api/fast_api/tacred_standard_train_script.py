@@ -1,24 +1,24 @@
 import argparse
 import json
 
-from json_schema import ExplanationTrainingPayload
-from main import start_next_training_api
+from json_schema import StandardPipelinePayload
+from main import start_standard_training_api
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--labeled_path",
+    parser.add_argument("--train_path",
                         type=str,
-                        default="./data/tacred_labeled.json",
-                        help="Path to labled+explanation data.")
-    parser.add_argument("--unlabeled_path",
-                        type=str,
-                        default="./data/tacred_unlabeled.json",
+                        default="./data/tacred_train.json",
                         help="Path to unlabled data.")
     parser.add_argument("--dev_path",
                         type=str,
                         default="./data/tacred_dev.json",
                         help="Path to dev data.")
+    parser.add_argument("--test_path",
+                        type=str,
+                        default="./data/tacred_test.json",
+                        help="Path to test data.")
     parser.add_argument("--epochs",
                         default=60,
                         type=int,
@@ -26,40 +26,32 @@ def main():
 
     args = parser.parse_args()
 
-    labeled_data = json.load(open(args.labeled_path))
-    unlabeled_data = json.load(open(args.unlabeled_path))
+    train = json.load(open(args.train_path))
     dev = json.load(open(args.dev_path))
-    dev = list(map(lambda x: (x['text'], x['label']), dev))
+    test = json.load(open(args.test_path))
+    test = list(map(lambda x: (x['text'], x['label']), test))
 
-    # labeled_data = labeled_data[:10]
-    # unlabeled_data = unlabeled_data[:100]
-    # dev = dev[:50]
+    # train = train[:100]
+    # dev = dev[:200]
+    # test = test[:10]
 
     data = {
         'params': {
-            'experiment_name': 'tacred_strict_match',
+            'experiment_name': 'tacred',
             'dataset_name': 'tacred',
-            "dataset_size": len(unlabeled_data),
             'task': 're',
             'build_data': True,
             "match_batch_size": 50,
-            "unlabeled_batch_size": 100,
             "none_label_key": "no_relation",
             "learning_rate": 0.1,
             "embeddings": "glove.840B.300d",
             "hidden_dim": 100,
-            "random_state": 7698,
+            # "random_state": 7698,
             "load_model": False,
             "start_epoch": 0,
-            "gamma": 0.5,
             "emb_dim": 300,
             "epochs": args.epochs,
-            "eval_data": dev,
-            "pre_train_hidden_dim": 300,
-            "pre_train_training_size": 50000,
-            "stage": "both",
-            "pre_train_build_data": True,
-            "soft_match": False,
+            "eval_data": test
         },
         'label_space': {
             'org:subsidiaries': 0,
@@ -105,31 +97,20 @@ def main():
             'org:founded_by': 40,
             'per:origin': 41
         },
-        'explanation_triples': labeled_data,
-        'unlabeled_text': unlabeled_data,
+        'labeled_data': train,
+        'dev_data': dev,
         "ner_label_space": [
             "PERSON",
-            "ORGANIZATION",
-            "DATE",
-            "NUMBER",
-            "TITLE",
-            "COUNTRY",
-            "LOCATION",
             "CITY",
-            "MISC",
-            "STATE_OR_PROVINCE",
-            "DURATION",
-            "NATIONALITY",
+            "TITLE",
+            "ORGANIZATION",
             "CAUSE_OF_DEATH",
-            "CRIMINAL_CHARGE",
-            "RELIGION",
-            "URL",
-            "IDEOLOGY"
+            "DATE"
         ]
     }
 
-    payload = ExplanationTrainingPayload(**data)
-    data = start_next_training_api(payload)
+    payload = StandardPipelinePayload(**data)
+    data = start_standard_training_api(payload)
     print(data)
 
 
