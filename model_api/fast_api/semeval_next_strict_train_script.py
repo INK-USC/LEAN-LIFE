@@ -19,6 +19,10 @@ def main():
                         type=str,
                         default="./data/semeval_dev.json",
                         help="Path to dev data.")
+    parser.add_argument("--test_path",
+                        type=str,
+                        default="./data/semeval_test.json",
+                        help="Path to train data.")
     parser.add_argument("--epochs",
                         default=60,
                         type=int,
@@ -30,10 +34,13 @@ def main():
     unlabeled_data = json.load(open(args.unlabeled_path))
     dev = json.load(open(args.dev_path))
     dev = list(map(lambda x: (x['text'], x['label']), dev))
+    test = json.load(open(args.test_path))
+    test = list(map(lambda x: (x['text'], x['label']), test))
 
     # labeled_data = labeled_data[:10]
     # unlabeled_data = unlabeled_data[:100]
     # dev = dev[:50]
+    # test = test[:100]
 
     data = {
         'params': {
@@ -54,7 +61,7 @@ def main():
             # "gamma": 0.5,
             "emb_dim": 300,
             "epochs": args.epochs,
-            "eval_data": dev,
+            "eval_data": test,
             "pre_train_hidden_dim": 300,
             "pre_train_training_size": 50000,
             "stage": "both",
@@ -84,6 +91,7 @@ def main():
         },
         'explanation_triples': labeled_data,
         'unlabeled_text': unlabeled_data,
+        'dev_data': dev,
         "ner_label_space": [
             'ORGANIZATION',
             'PERSON',
