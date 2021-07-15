@@ -33,7 +33,7 @@ def main():
     labeled_data = json.load(open(args.labeled_path))
     unlabeled_data = json.load(open(args.unlabeled_path))
     dev = json.load(open(args.dev_path))
-    dev = list(map(lambda x: (x['text'], x['label']), dev))
+    # dev = list(map(lambda x: (x['text'], x['label']), dev))
     test = json.load(open(args.test_path))
     test = list(map(lambda x: (x['text'], x['label']), test))
 
