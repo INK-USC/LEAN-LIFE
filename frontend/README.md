@@ -12,6 +12,7 @@
 
 ## 2. Install required packages
 
+Under "frontend" directory:
 ```
 npm install
 ```
