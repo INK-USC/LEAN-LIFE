@@ -59,13 +59,20 @@ async def start_next_training_api(api_payload: schema.ExplanationTrainingPayload
     params = api_payload.params
     prepped_data = util_f.prepare_next_data(api_payload, lean_life=False)
     label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
+    data = params.dict()
     if len(ner_label_space) == 0:
         ner_label_space = None
     if len(unlabeled_docs) == 0:
         unlabeled_docs = None
     if len(explanation_triples) == 0:
         explanation_triples = None
-    return schema.SavePathOutput(save_path=train_next_framework(params.dict(), label_space, unlabeled_docs,
+    if hasattr(api_payload, "dev_data") and api_payload.dev_data is not None:
+        data["dev_data"] = api_payload.dev_data
+        for i, doc in enumerate(data["dev_data"]):
+            data["dev_data"][i] = doc.dict()
+    else:
+        data["dev_data"] = None
+    return schema.SavePathOutput(save_path=train_next_framework(data, label_space, unlabeled_docs,
                                                                 explanation_triples, ner_label_space))
 
 

@@ -326,11 +326,18 @@ class ExplanationTriple(BaseModel):
     explanation : str
     label : str
 
+
+class LabeledDoc(BaseModel):
+    text: str
+    label: str
+
+
 class ExplanationTrainingPayload(BaseModel):
     params : TrainingApiParams
     label_space : Dict[str, int]
     explanation_triples : Optional[List[ExplanationTriple]]
     unlabeled_text : Optional[List[str]]
+    dev_data: Optional[List[LabeledDoc]]
     ner_label_space : Optional[List[str]]
 
     class Config:
@@ -562,11 +569,6 @@ class EvalNextClfPayload(BaseModel):
 
 class SoftMatchData(BaseModel):
     scores: List[List[str]]
-
-
-class LabeledDoc(BaseModel):
-    text: str
-    label: str
 
 
 class StandardTrainingApiParams(BaseModel):

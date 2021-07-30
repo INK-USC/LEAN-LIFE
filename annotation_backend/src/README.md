@@ -17,12 +17,13 @@
 2.  Ensure your `leanlife` environment is activated
 3.  Open a terminal in the root directory execute `pip install -r requirements.txt`
 4.  Execute `python -m spacy download en_core_web_sm` (or whatever version you'd like, just make sure to update this in [utils.py](server/utils.py#L8))
-5.  We will now setup the postgres connection. Navigate to the `src` folder inside `annotation_backend`, execute `cd LEAN-LIFE/annotation_backend/src`.
+5.  We will now setup the postgres connection. So, ensure that postgres is up and running. Navigate to the `src` folder inside `annotation_backend`, execute `cd LEAN-LIFE/annotation_backend/src`.
     - Inside the `app` folder, navigate to [settings.py](app/settings.py#L100)
       - Find the `DATABASES` dictionary, and replace the `PASSWORD` value with your own password
 6.  Navigate to the `src` folder inside `annotation_backend`, `cd LEAN-LIFE/annotation_backend/src` and run:
     - `./setup.sh PASSWORD-YOU-JUST-SET` <- (passing your password in as an argument)
     - you will be asked to create a user here, this user is what you will use to login to the LEAN-LIFE application
+    - To create additional superuser/admin use django's `python manage.py createsuperuser`
 7.  Start the backend from `cd LEAN-LIFE/annotation_backend/src` folder: `python manage.py runserver 0.0.0.0:8000`
 
 ### Potential Errors:

@@ -292,18 +292,21 @@ def generate_phrase(sentence, nlp):
     subj_posi = 2*len(tokens)
     obj_posi = 2*len(tokens)
     indices_to_pop = []
+    indices_delete = 0
     for i, token in enumerate(tokens):
         if token == "subj":
             if subj_posi < len(tokens):
                 indices_to_pop.append(i)
+                indices_delete += 1
             else:
-                subj_posi = i
+                subj_posi = i - indices_delete
                 ners[i] = subj_type
         elif token == "obj":
             if obj_posi < len(tokens):
                 indices_to_pop.append(i)
+                indices_delete += 1
             else:
-                obj_posi = i
+                obj_posi = i - indices_delete
                 ners[i] = obj_type
 
     if len(indices_to_pop):
