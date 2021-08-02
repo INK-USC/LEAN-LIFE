@@ -30,7 +30,7 @@ from next_framework.training.next_training_util_functions import batch_type_rest
                                                                  build_prediction_dataset, predictions_clf
 from next_framework.training.next_util_functions import similarity_loss_function, generate_save_string, build_custom_vocab,\
                                                         set_re_dataset_ner_label_space, set_ner_label_space, \
-                                                        get_standard_payload_from_next
+                                                        get_standard_payload_from_next, build_vocab
 from next_framework.training.next_util_classes import BaseVariableLengthDataset
 from next_framework.training.next_constants import TACRED_ENTITY_TYPES, SPACY_NERS
 from next_framework.models import Find_Module, BiLSTM_Att_Clf
@@ -739,7 +739,7 @@ def train_next_bilstm_pipeline(payload):
     
     return save_path
 
-def strict_match_pipeline(payload):
+def strict_match_data(payload):
     """
         Takes in explanation data, and a source of unlabeled data and will annotate the unlabeled data
         with the explanations provided. Converts explanations into binary labeling functions and if an
@@ -913,32 +913,317 @@ def soft_match_data(payload):
     return soft_scores.tolist()
 
 
-def hard_match_pipeline(payload):
+def hard_match_bilstm_pipeline(payload):
     """
-        Format strict match data and call standard pipeline
+        Pipeline that takes in a payload of parameters and optionally data, and will preform the following steps:
+            1. Read parameters sent in and fill with default values where appropriate
+            2. Builds datasets that will be needed for training. The datasets will be cached, future experiments
+               running off the same data will not need data to be passed in.
+            3. Loads cached data and sets up model, loading a previously checkpointed model if needed
+            4. Trains a BiLSTM+Att classifier instance using the NExT Framework's Training Algorithm
+            5. Optionally evaluates a model if a evaluation data is sent and checkpoints when prior f1 
+               performance. Otherwise just saves after every epoch.
+            6. Save performance data across epochs to a csv data.
     """
+    start_time = time.time()
+
+    # Step 1.
     build_data = payload["build_data"]
+    experiment_name = payload["experiment_name"]
+    dataset_name = payload["dataset_name"]
+    dataset_size = payload["dataset_size"]
+    label_map = payload["label_map"]
+    task = payload["task"]
+
+    clip_gradient_size = BILSTM_DEFAULTS["clip_gradient_size"]
+    n_layer_x_n_directions = BILSTM_DEFAULTS["layer_x_directions"]
+
+    match_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "match_batch_size")
+    unlabeled_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "unlabeled_batch_size")
+    eval_batch_size = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "eval_batch_size")
+    learning_rate = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "learning_rate")
+    epochs = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "epochs")
+    embeddings = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "embeddings")
+    emb_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "emb_dim")
+    hidden_dim = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "hidden_dim")
+    random_state = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "random_state")
+    none_label_key = _check_or_load_defaults(payload, BILSTM_DEFAULTS, "none_label_key")
+
+    full_batch_size = int(match_batch_size) + int(unlabeled_batch_size)
+
+    load_model = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "load_model")
+    start_epoch = _check_or_load_defaults(payload, TRAINING_DEFAULTS, "start_epoch")
+
+    pre_training_size = _check_or_load_defaults(payload, FIND_MODULE_DEFAULTS, "pre_train_training_size")
+
+    find_module_sample_rate = pre_training_size / dataset_size
+    if find_module_sample_rate > 1:
+        find_module_sample_rate = -1.0 # no sampling
+
+    save_string = generate_save_string(dataset_name, embeddings, sample=find_module_sample_rate)
+    vocab_path = PATH_TO_PARENT + "../next_framework/data/vocabs/vocab_{}.p".format(save_string)
+
+    number_of_classes = len(label_map)
+    if none_label_key != None:
+        none_label_id = label_map[none_label_key]
+    else:
+        none_label_id = -1
+
+    relation_ner_types = None
+
+    if task == "re":
+        ner_labels = payload["ner_labels"]
+        set_re_dataset_ner_label_space(dataset_name, ner_labels)
+
+        if "relation_ner_types" in payload and payload["relation_ner_types"] is not None:
+            relation_ner_types = payload["relation_ner_types"]
+        else:
+            # FILL IN MORE DATASETS HERE
+            # if using the api, you can just provide the mapping between relation to ner types (above)
+            # however this is not necessary to send
+            if dataset_name == "tacred":
+                relation_ner_types = TACRED_ENTITY_TYPES
+    else:
+        temp = SPACY_NERS[:]
+        temp.append("<PAD>")
+        set_ner_label_space(temp)
+
+    torch.manual_seed(random_state)
+    random.seed(random_state)
+
+    if build_data:
+        text_data = payload["training_data"]
+        vocab = build_vocab(text_data, embeddings, save_string)
+    else:
+        with open(vocab_path, "rb") as f:
+            vocab = pickle.load(f)
+
+    # HERE IS WHERE YOU CAN DEFINE CUSTOM TOKENS FOR YOUR VOCAB
+    # you can either send us tokens
+    # load_spacy_to_custom_dataset_ner_mapping <- remember to say how to update this
+    custom_vocab= {}
+    if "custom_vocab_tokens" in payload and payload["custom_vocab_tokens"] is not None:
+        tokens = payload["custom_vocab_tokens"]
+        custom_vocab = build_custom_vocab("", len(vocab), tokens)
+    # or if this is an "re" task and you have sent ner_labels, we will create a custom
+    # vocab for you of [SUBJ-ner_label, OBJ-ner_label] for each label in ner_labels
+    # we do this due to parsing. Look at tokenize() in:
+    # model_api/model_training/next_framework/training/util_functions.py
+    else:
+        if task == "re" and len(ner_labels) > 0:
+            custom_vocab = build_custom_vocab("", len(vocab), ner_labels, "re")
+        else:
+            # finally, if the task is not "re", and you just want to set a custom vocab
+            # we allow you to do so
+            custom_vocab = build_custom_vocab(dataset_name, len(vocab))
+    
+    custom_vocab_length = len(custom_vocab)
+
+    if payload["leanlife"]:
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, -1, -1, "starting training pipeline")
+
+    # Step 2.
     if build_data:
         text_data = payload["training_data"]
         explanation_data = payload["explanation_data"]
-        task = payload["task"]
+        build_datasets_from_text(text_data, vocab_path, explanation_data, custom_vocab, save_string, label_map, task=task, dataset=dataset_name)
 
-        matched_tuples, _ = apply_strict_matching(text_data, explanation_data, task)
-        # check if there is no hard matched entries
-        if len(matched_tuples) == 0:
-            logging.info("fallback to standard pipeline")
-            payload = get_standard_payload_from_next(payload)
-            if payload["leanlife"]:
-                # tell django model is being is_standard_trained
-                send_model_metadata(payload["project_id"], payload["experiment_name"], is_standard_trained=True)
-            return standard_pipeline(payload)
+        if "eval_data" in payload and payload["eval_data"] is not None:
+            eval_data = payload["eval_data"]
+            build_labeled_dataset([tup[0] for tup in eval_data], 
+                                  [tup[1] for tup in eval_data],
+                                  vocab, save_string, "dev", label_map, custom_vocab)
 
-        del payload["training_data"]
-        del payload["explanation_data"]
+        if payload["leanlife"]:
+            time_spent = time.time() - start_time
+            update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "built training data")
 
-        payload['labeled_data'] = list(map(lambda x: {'text': x[0], 'label': x[1]}, matched_tuples))
+    # Step 3.
+    with open(PATH_TO_PARENT + "../next_framework/data/training_data/matched_data_{}.p".format(save_string), "rb") as f:
+        strict_match_data = pickle.load(f)
+    # check if there is no hard matched entries
+    if len(strict_match_data.tokens) == 0:
+        logging.info("fallback to standard pipeline")
+        payload = get_standard_payload_from_next(payload)
+        if payload["leanlife"]:
+            # tell django model is being is_standard_trained
+            send_model_metadata(payload["project_id"], payload["experiment_name"], is_standard_trained=True)
+        return standard_pipeline(payload)
 
-    return standard_pipeline(payload)
+    if "eval_data" in payload and payload["eval_data"] is not None:
+        eval_path = PATH_TO_PARENT + "../next_framework/data/training_data/dev_data_{}.p".format(save_string)
+    else:
+        eval_path = ""
+
+    pad_idx = vocab["<pad>"]
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    epochs = epochs
+
+    loss_per_epoch = []
+    if len(eval_path):
+        dev_epoch_f1_scores = []
+        best_dev_f1_score = -1
+    best_loss = 1e30
+
+    clf = BiLSTM_Att_Clf.BiLSTM_Att_Clf(vocab.vectors, pad_idx, emb_dim, hidden_dim,
+                                        torch.cuda.is_available(), number_of_classes,
+                                        custom_token_count=custom_vocab_length)
+
+    if load_model:
+        clf.load_state_dict(torch.load(PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)))
+        logging.info("loaded model")
+        
+        with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Next-Clf_{}.csv".format(experiment_name)) as f:
+            reader=csv.reader(f)
+            next(reader)
+            for row in reader:
+                loss_per_epoch.append(tuple(map(float, row)))
+                if float(row[0]) < best_loss:
+                    best_loss = float(row[0])
+        
+        if len(eval_path):
+            with open(PATH_TO_PARENT + "../next_framework/data/result_data/dev_f1_per_epoch_Next-Clf_{}.csv".format(experiment_name)) as f:
+                reader=csv.reader(f)
+                next(reader)
+                for row in reader:
+                    dev_epoch_f1_scores.append(row)
+                    if float(row[-1]) > best_dev_f1_score:
+                        best_dev_f1_score = float(row[-1])
+        
+        logging.info("loaded past results")
+
+    clf = clf.to(device)
+    optimizer = SGD(clf.parameters(), lr=learning_rate)
+
+    h0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
+    c0 = torch.empty(n_layer_x_n_directions, full_batch_size, hidden_dim).to(device)
+    nn.init.xavier_normal_(h0)
+    nn.init.xavier_normal_(c0)
+
+    del vocab
+
+    # define loss functions
+    strict_match_loss_function  = nn.CrossEntropyLoss()
+
+    if payload["leanlife"]:
+        time_spent = time.time() - start_time
+        update_model_training(payload["project_id"], experiment_name, -1, epochs, time_spent, -1, "starting training")
+
+    start_time = time.time()
+
+    # Step 4. TRAINING
+    for epoch in range(start_epoch, start_epoch+epochs):
+        logging.info('\n Epoch {:} / {:}'.format(epoch + 1, start_epoch+epochs))
+
+        total_loss, strict_total_loss = 0, 0
+        batch_count = 0
+        clf.train()
+
+        for step, batch_pair in enumerate(tqdm(strict_match_data.as_batches(batch_size=full_batch_size, seed=epoch))):
+            # prepping batch data
+            strict_match_data_batch = batch_pair
+
+            strict_match_tokens, strict_match_lengths, strict_match_labels = strict_match_data_batch
+
+            strict_match_tokens = strict_match_tokens.to(device)
+            strict_match_labels = strict_match_labels.to(device)
+
+            # clear previously calculated gradients 
+            clf.zero_grad()
+
+            strict_match_predictions = clf.forward(strict_match_tokens, strict_match_lengths, h0, c0)
+
+            strict_match_loss = strict_match_loss_function(strict_match_predictions, strict_match_labels)
+
+
+            strict_total_loss = strict_total_loss + strict_match_loss.item()
+
+            total_loss = total_loss + strict_match_loss.item()
+            batch_count += 1
+
+            strict_match_loss.backward()
+            torch.nn.utils.clip_grad_norm_(clf.parameters(), clip_gradient_size)
+
+            optimizer.step()
+
+        # compute the training loss of the epoch
+        train_avg_loss = total_loss / batch_count
+        train_avg_strict_loss = strict_total_loss / batch_count
+        train_avg_soft_loss = 0
+
+        logging.info("Train Losses")
+        loss_tuples = ("%.5f" % train_avg_loss, "%.5f" % train_avg_strict_loss, "%.5f" % train_avg_soft_loss)
+        logging.info("Avg Train Total Loss: {}, Avg Train Strict Loss: {}, Avg Train Soft Loss: {}".format(*loss_tuples))
+        
+        loss_per_epoch.append((train_avg_loss, train_avg_strict_loss, train_avg_soft_loss))
+        
+        # Step 5.
+        if len(eval_path):
+            dev_results = evaluate_next_clf(eval_path, clf, strict_match_loss_function, number_of_classes,
+                batch_size=eval_batch_size, none_label_id=none_label_id, hidden_dim=hidden_dim)
+        
+            avg_loss, avg_dev_ent_f1_score, avg_dev_val_f1_score, total_dev_class_probs, no_relation_thresholds = dev_results
+
+            logging.info("Eval Results")
+            dev_tuple = ("%.5f" % avg_loss, "%.5f" % avg_dev_ent_f1_score, "%.5f" % avg_dev_val_f1_score, str(no_relation_thresholds))
+            logging.info("Avg Eval Loss: {}, Avg Eval Entropy F1 Score: {}, Avg Eval Max Value F1 Score: {}, Thresholds: {}".format(*dev_tuple))
+
+            dev_epoch_f1_scores.append((avg_loss, avg_dev_ent_f1_score, avg_dev_val_f1_score, max(avg_dev_ent_f1_score, avg_dev_val_f1_score)))
+
+            if best_dev_f1_score < max(avg_dev_ent_f1_score, avg_dev_val_f1_score):
+                logging.info("Saving Model")
+                dir_name = PATH_TO_PARENT + "../next_framework/data/saved_models/"
+                torch.save(clf.state_dict(), "{}Next-Clf_{}.p".format(dir_name, experiment_name))
+                with open(PATH_TO_PARENT + "../next_framework/data/result_data/eval_predictions_Next-Clf_{}.csv".format(experiment_name), "wb") as f:
+                    pickle.dump(total_dev_class_probs, f)
+                if none_label_id > 0:
+                    with open(PATH_TO_PARENT + "../next_framework/data/result_data/thresholds.p", "wb") as f:
+                        pickle.dump({"thresholds" : no_relation_thresholds}, f)
+                
+                best_dev_f1_score = max(avg_dev_ent_f1_score, avg_dev_val_f1_score)
+            
+            logging.info("Best Test F1: {}".format("%.5f" % best_dev_f1_score))
+            logging.info(dev_epoch_f1_scores[-3:])
+        
+        else:
+            logging.info("Saving Model")
+            dir_name = PATH_TO_PARENT + "../next_framework/data/saved_models/"
+            torch.save(clf.state_dict(), "{}Next-Clf_{}.p".format(dir_name, experiment_name))
+        
+        if payload["leanlife"]:
+            time_spent = time.time() - start_time
+            update_model_training(payload["project_id"], experiment_name, epoch+1, epochs, time_spent, train_avg_loss, "training")
+    
+    # Step 6.
+    with open(PATH_TO_PARENT + "../next_framework/data/result_data/train_loss_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
+        writer=csv.writer(f)
+        writer.writerow(['train_avg_loss', 'train_avg_strict_loss', 'train_avg_soft_loss'])
+        for row in loss_per_epoch:
+            writer.writerow(row)
+    
+    if len(eval_path):
+        with open(PATH_TO_PARENT + "../next_framework/data/result_data/eval_f1_per_epoch_Next-Clf_{}.csv".format(experiment_name), "w") as f:
+            writer=csv.writer(f)
+            writer.writerow(['avg_loss', 'entropy_f1_score', 'max_value_f1_score', 'max'])
+            for row in dev_epoch_f1_scores:
+                writer.writerow(row)
+    
+    print(experiment_name)
+    save_path = PATH_TO_PARENT + "../next_framework/data/saved_models/Next-Clf_{}.p".format(experiment_name)
+    print(PATH_TO_PARENT)
+    print(save_path)
+
+    if payload["leanlife"]:
+        best_train_loss = min([row[0] for row in loss_per_epoch])
+        file_size = os.path.getsize(save_path)
+        send_model_metadata(payload["project_id"], experiment_name, save_path, best_train_loss, file_size)
+    
+    return save_path
 
 
 def evaluate_next_clf_pipeline(payload):
