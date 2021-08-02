@@ -21,7 +21,7 @@ def main():
     test = json.load(open(args.test_path))
     test_formatted = list(map(lambda x: (x['text'], x['label']), test))
 
-    test_formatted = test_formatted[:1000]
+    # test_formatted = test_formatted[:1000]
 
     data = {
         'params': {

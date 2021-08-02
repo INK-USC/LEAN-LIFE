@@ -35,9 +35,9 @@ def main():
     test = json.load(open(args.test_path))
     test = list(map(lambda x: (x['text'], x['label']), test))
 
-    train = train[:100]
-    dev = dev[:200]
-    test = test[:10]
+    # train = train[:100]
+    # dev = dev[:200]
+    # test = test[:10]
 
     data = {
         'params': {

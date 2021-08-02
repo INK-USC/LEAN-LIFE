@@ -39,13 +39,13 @@ def main():
     dev = json.load(open(args.dev_path))
     dev = list(map(lambda x: (x['text'], x['label']), dev))
 
-    labeled_data = labeled_data[:10]
-    unlabeled_data = unlabeled_data[:100]
-    dev = dev[:50]
+    # labeled_data = labeled_data[:10]
+    # unlabeled_data = unlabeled_data[:100]
+    # dev = dev[:50]
 
     data = {
         'params': {
-            'experiment_name': '%s_%s_match' % (args.prefix, "soft" if args.soft_match.lower() else "strict"),
+            'experiment_name': '%s_%s_match' % (args.prefix, "soft" if args.soft_match.lower() == "true" else "strict"),
             'dataset_name': 'semeval_%s' % args.prefix,
             "dataset_size": len(unlabeled_data),
             'task': 'sa',

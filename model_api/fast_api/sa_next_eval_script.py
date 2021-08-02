@@ -30,12 +30,12 @@ def main():
     test = json.load(open(args.test_path))
     test_formatted = list(map(lambda x: (x['text'], x['label']), test))
 
-    unlabeled_data = unlabeled_data[:100]
-    test_formatted = test_formatted[:100]
+    # unlabeled_data = unlabeled_data[:100]
+    # test_formatted = test_formatted[:100]
 
     data = {
         'params': {
-            'experiment_name': '%s_%s_match' % (args.prefix, "soft" if args.soft_match.lower() else "strict"),
+            'experiment_name': '%s_%s_match' % (args.prefix, "soft" if args.soft_match.lower()== "true" else "strict"),
             'dataset_name': 'semeval_%s' % args.prefix,
             "train_dataset_size": len(unlabeled_data),
             'task': 'sa',
