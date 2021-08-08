@@ -1093,13 +1093,13 @@ class FileUploadAPIView(APIView):
                                                            end_offset=annotation["end_offset"])
                     ner_annotation.save()
 
-                    self.create_annotations_and_explanations(
-                        entry.get("annotations", []),
-                        all_annotation_labels,
-                        project,
-                        user,
-                        current_doc
-                    )
+                self.create_annotations_and_explanations(
+                    entry.get("annotations", []),
+                    all_annotation_labels,
+                    project,
+                    user,
+                    current_doc
+                )
 
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
