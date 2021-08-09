@@ -6,11 +6,11 @@ import pickle
 from CCG.parser import CCGParserTrainer, TrainedCCGParser
 from CCG.CCG_utils import prepare_token_for_rule_addition, _find_quoted_phrases
 
-ec_ccg_trainer = CCGParserTrainer(task="ec", explanation_file="data/ec_test_data.json",
-                                  unlabeled_data_file="data/carer_test_data.json")
+ec_ccg_trainer = CCGParserTrainer(task="ec", explanation_file="unit_test_data/ec_test_data.json",
+                                  unlabeled_data_file="unit_test_data/carer_test_data.json")
 
-re_ccg_trainer = CCGParserTrainer(task="re", explanation_file="data/tacred_test_explanation_data.json",
-                                  unlabeled_data_file="data/tacred_test_unlabeled_data.json")
+re_ccg_trainer = CCGParserTrainer(task="re", explanation_file="unit_test_data/tacred_test_explanation_data.json",
+                                  unlabeled_data_file="unit_test_data/tacred_test_unlabeled_data.json")
 
 def test_trainer_load_data_ec():
     explanation_file = ec_ccg_trainer.params["explanation_file"]
@@ -209,11 +209,11 @@ def test_filter_matrix_ec():
     
     # If the below file needs to be changed, this is how it was generated
     # ec_ccg_trainer.prepare_unlabeled_data(ec_ccg_trainer.params["unlabeled_data_file"])
-    # with open("data/carer_test_data_phrase.p", "wb") as f:
+    # with open("unit_test_data/carer_test_data_phrase.p", "wb") as f:
     #     pickle.dump(ec_ccg_trainer.unlabeled_data, f)
     # unlabeled_data = ec_ccg_trainer.unlabeled_data
 
-    with open("data/carer_test_data_phrase.p", "rb") as f:
+    with open("unit_test_data/carer_test_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
 
     parser.low_end_filter_count = 0
@@ -305,11 +305,11 @@ def test_filter_matrix_re():
     
     # If the below file needs to be changed, this is how it was generated
     # re_ccg_trainer.prepare_unlabeled_data(re_ccg_trainer.params["unlabeled_data_file"])
-    # with open("data/tacred_test_unlabeled_data_phrase.p", "wb") as f:
+    # with open("unit_test_data/tacred_test_unlabeled_data_phrase.p", "wb") as f:
     #     pickle.dump(re_ccg_trainer.unlabeled_data, f)
     # unlabeled_data = re_ccg_trainer.unlabeled_data
     
-    with open("data/tacred_test_unlabeled_data_phrase.p", "rb") as f:
+    with open("unit_test_data/tacred_test_unlabeled_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
 
     parser.low_end_filter_count = 0
@@ -387,7 +387,7 @@ def test_parser_build_soft_labeling_rules_ec():
     parser.create_and_set_grammar()
     parser.tokenize_explanations()
     parser.build_labeling_rules()
-    with open("data/carer_test_data_phrase.p", "rb") as f:
+    with open("unit_test_data/carer_test_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
     parser.low_end_filter_count = 0
     parser.matrix_filter(unlabeled_data, task="ec")
@@ -421,7 +421,7 @@ def test_parser_build_soft_labeling_rules_re():
     parser.create_and_set_grammar()
     parser.tokenize_explanations()
     parser.build_labeling_rules()
-    with open("data/tacred_test_unlabeled_data_phrase.p", "rb") as f:
+    with open("unit_test_data/tacred_test_unlabeled_data_phrase.p", "rb") as f:
         unlabeled_data = pickle.load(f)
     parser.low_end_filter_count = 0
     parser.matrix_filter(unlabeled_data)
