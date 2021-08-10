@@ -125,7 +125,7 @@ If you are user who wants to interact with the system using web portal, then ple
 
 - `annotation_backend/`
   - `src/` - django applications root directory
-  - `test_data/` - sample datasets for testing more description [here](annotation_backend/test_data/readme.md)
+  - `ui_sample_data/` - sample datasets for testing more description [here](annotation_backend/ui_sample_data/readme.md)
 - `example_notebooks` -
   - Contains interactive jupyter notebooks for each tasks with sample data, processing and explanation to various input parameters.
   - execute `jupyter notebook` in terminal and access them
