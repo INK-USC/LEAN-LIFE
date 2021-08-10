@@ -26,14 +26,14 @@ The data in this section can be used to create dummy projects in LEAN-LIFE to se
 - JSON sample with annotation and no explanations [here](sa/imdb_sa_none_example.json)
 - JSON sample with annotation and Natural Language explanations [here](sa/imdb_sa_nle_example.json)
 
-[comment]: <> (## Annotation History Examples)
+## Annotation History Examples
 
-[comment]: <> (LEAN-LIFE offers support for uploading a seed list of annotations to act as distant supervision for NER and RE tasks. If a word/phrase appears in a unlabeled text sequence we can suggest to the annotator that it is likely an entity of a certain type, similarly for relations. These two example data files can be used to test out our recommendation-via-annotation-history functionality, which can be accessed from the Settings Page. These files are to be used with the provided annotation example files above. In order to properly use these files, please make sure to create the labels stated in each file on the Label-Space-Creation Page.)
+LEAN-LIFE offers support for uploading a seed list of annotations to act as distant supervision for NER and RE tasks. If a word/phrase appears in a unlabeled text sequence we can suggest to the annotator that it is likely an entity of a certain type, similarly for relations. These two example data files can be used to test out our recommendation-via-annotation-history functionality, which can be accessed from the Settings Page. These files are to be used with the provided annotation example files above. In order to properly use these files, please make sure to create the labels stated in each file on the Label-Space-Creation Page.
 
-[comment]: <> (### annotation_history_example_ner.json)
+### annotation_history_example_ner.json
 
-[comment]: <> (Example of seed/historical NER annotations)
+Example of seed/historical NER annotations
 
-[comment]: <> (### annotation_history_example_re.json)
+### annotation_history_example_re.json
 
-[comment]: <> (Example of seed/historical RE annotations)
+Example of seed/historical RE annotations

@@ -1,0 +1,34 @@
+{
+  "data": [
+      {
+        "word_1" : "tumor shrinkage",
+        "word_2" : "radiation therapy",
+        "label" : "Cause-Effect"
+      },
+      {
+        "word_1" : "discomfort",
+        "word_2" : "traveling",
+        "label" : "Cause-Effect"
+      },
+      {
+        "word_1" : "footballer",
+        "word_2" : "ball",
+        "label" : "Instrument-Agency"
+      },
+      {
+        "word_1" : "tones",
+        "word_2" : "tranquil mood",
+        "label" : "Cause-Effect"
+      },
+      {
+        "word_1" : "port",
+        "word_2" : "scanner",
+        "label" : "Theme-Tool"
+      },
+      {
+        "word_1" : "edge",
+        "word_2" : "spreader",
+        "label" : "Part-Whole"
+      }
+  ]
+}

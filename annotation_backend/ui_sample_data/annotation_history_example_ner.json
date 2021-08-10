@@ -1,0 +1,60 @@
+{
+  "data": [
+      {
+        "word_1" : "EU",
+        "label" : "ORG"
+      },
+      {
+        "word_1" : "German",
+        "label" : "MISC"
+      },
+      {
+        "word_1" : "British",
+        "label" : "MISC"
+      },
+      {
+        "word_1" : "European Commission",
+        "label" : "ORG"
+      },
+      {
+        "word_1" : "Germany",
+        "label" : "LOC"
+      },
+      {
+        "word_1" : "Britain",
+        "label" : "LOC"
+      },
+      {
+        "word_1" : "England",
+        "label" : "LOC"
+      },
+      {
+        "word_1" : "Werner Zwingmann",
+        "label" : "PER"
+      },
+      {
+        "word_1" : "Franz Fischler",
+        "label" : "PER"
+      },
+      {
+        "word_1" : "Bovine Spongiform Encephalopathy",
+        "label" : "MISC"
+      },
+      {
+        "word_1" : "BSE",
+        "label" : "MISC"
+      },
+      {
+        "word_1" : "Loyola de Palacio",
+        "label" : "PER"
+      },
+      {
+        "word_1" : "Spanish",
+        "label" : "MISC"
+      },
+      {
+        "word_1" : "France",
+        "label" : "LOC"
+      }
+  ]
+}
