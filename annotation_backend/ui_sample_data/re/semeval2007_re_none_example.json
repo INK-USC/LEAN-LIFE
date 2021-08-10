@@ -16,7 +16,7 @@
       ],
       "annotations": [
         {
-          "label": "Test1",
+          "label": "Cause-Effect",
           "sbj_start_offset": 14,
           "sbj_end_offset": 29,
           "obj_start_offset": 36,
