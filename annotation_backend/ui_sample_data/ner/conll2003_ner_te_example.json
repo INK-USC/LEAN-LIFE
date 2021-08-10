@@ -4,7 +4,7 @@
       "text": "EU rejects German call to boycott British lamb.",
       "annotations": [
         {
-          "label": "Cause-Effect",
+          "label": "ORG",
           "start_offset": 0,
           "end_offset": 2,
           "explanations": [

@@ -4,10 +4,9 @@
       "text": "first think another Disney movie, might good, it's kids movie. watch it, can't help enjoy it. ages love movie. first saw movie 10 8 years later still love it! Danny Glover superb could play part better. Christopher Lloyd hilarious perfect part. Tony Danza believable Mel Clark. can't help, enjoy movie! give 10/10!",
       "annotations": [
         {
-          "label": "Cause-Effect",
+          "label": "Positive",
           "explanations": [
-            "test1",
-            "test2"
+            "The word 'superb' appears in the text."
           ]
         }
       ]
