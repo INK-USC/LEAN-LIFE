@@ -5,12 +5,12 @@ import fast_api_constants as const
 import json_schema as schema
 import fast_api_util_functions as util_f
 
-with open("re_test_dataset.json") as f:
+with open("unit_test_re_dataset.json") as f:
     re_data = json.load(f)
 
 re_data = schema.LeanLifeData.parse_obj(re_data)
 
-with open("sa_test_dataset.json") as f:
+with open("unit_test_sa_dataset.json") as f:
     sa_data = json.load(f)
 
 sa_data = schema.LeanLifeData.parse_obj(sa_data)

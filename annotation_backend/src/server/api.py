@@ -22,7 +22,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 
 from .models import Project, Label, Document, Setting, NamedEntityAnnotationHistory, Annotation, \
     TriggerExplanation, NaturalLanguageExplanation, RelationExtractionAnnotationHistory, Task, NamedEntityAnnotation, \
-    ModelMetaData
+    ModelMetaData, SentimentAnalysisAnnotation, RelationExtractionAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, SettingSerializer, \
 NamedEntityAnnotationHistorySerializer, CreateBaseAnnotationSerializer, \
@@ -959,14 +959,66 @@ class FileUploadAPIView(APIView):
             return json.dumps(entry["metadata"])
         else:
             temp = {}
-            ignore_keys = set(["text", "annotations", "doc_id", "user"])
+            ignore_keys = set(["text", "annotations", "doc_id", "user", "ner_annotations"])
             for key in entry:
                 if key not in ignore_keys:
                     temp[key] = entry[key]
             return json.dumps(temp)
 
-    def create_plain_docs_from_json(self, project, data_file, text_key="text", max_batch=500):
-        docs = []
+    def create_annotations_and_explanations(self, annotations, all_annotation_labels, project, user, current_doc):
+        for annotation in annotations:
+            # check label
+            if annotation['label'] not in all_annotation_labels:
+                new_label = Label(text=annotation["label"], project=project)
+                new_label.save()
+                all_annotation_labels[annotation["label"]] = new_label
+
+            # create base annotation
+            cur_annotation = Annotation(task=project.task, user=user, document=current_doc,
+                                        label=all_annotation_labels[annotation["label"]])
+            cur_annotation.save()
+
+            # Task extended annotation
+            if project.task.name == SENTIMENT_ANALYSIS_VALUE:
+                ex_annotation = SentimentAnalysisAnnotation(annotation=cur_annotation)
+                ex_annotation.save()
+            if project.task.name == NAMED_ENTITY_RECOGNITION_VALUE:
+                ex_annotation = NamedEntityAnnotation(annotation=cur_annotation,
+                                                      start_offset=annotation["start_offset"],
+                                                      end_offset=annotation["end_offset"])
+                ex_annotation.save()
+            if project.task.name == RELATION_EXTRACTION_VALUE:
+                ex_annotation = RelationExtractionAnnotation(annotation=cur_annotation,
+                                                             sbj_start_offset=annotation["sbj_start_offset"],
+                                                             sbj_end_offset=annotation["sbj_end_offset"],
+                                                             obj_start_offset=annotation["obj_start_offset"],
+                                                             obj_end_offset=annotation["obj_end_offset"])
+                ex_annotation.save()
+
+            # Explanation
+            # No explanation
+            if project.explanation_type == 1:
+                pass
+            # Natural Language explanation
+            if project.explanation_type == 2:
+                for explanation in annotation.get("explanations", []):
+                    cur_explanation = NaturalLanguageExplanation(annotation=cur_annotation, text=explanation)
+                    cur_explanation.save()
+            # Trigger explanation
+            if project.explanation_type == 3:
+                for index, explanation_array in enumerate(annotation.get("explanations", [])):
+                    for explanation in explanation_array:
+                        cur_explanation = TriggerExplanation(annotation=cur_annotation, trigger_id=index,
+                                                             start_offset=explanation["start_offset"],
+                                                             end_offset=explanation["end_offset"])
+                        cur_explanation.save()
+
+    def create_plain_docs_from_json(self, project, data_file, user, text_key="text"):
+        # load previous
+        all_annotation_labels = {}
+        for label in Label.objects.filter(project=project, user_provided=False):
+            all_annotation_labels[label.text] = label
+
         try:
             if data_file.multiple_chunks():
                 data = ijson.items(data_file, "data.item")
@@ -984,16 +1036,28 @@ class FileUploadAPIView(APIView):
                     raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
 
                 metadata = self.extract_metadata_json(entry)
+                cur_doc = Document(text=text, metadata=metadata, project=project)
+                cur_doc.save()
 
-                docs.append(Document(text=text, metadata=metadata, project=project))
-                if len(docs) == max_batch:
-                    Document.objects.bulk_create(docs)
-                    docs = []
+                self.create_annotations_and_explanations(
+                    entry.get("annotations", []),
+                    all_annotation_labels,
+                    project,
+                    user,
+                    cur_doc
+                )
 
-            Document.objects.bulk_create(docs)
 
     def create_ner_docs_from_json(self, project, data_file, user, text_key="text"):
-        all_labels = {}
+        all_ner_labels = {}
+        # load previous
+        for label in Label.objects.filter(project=project, user_provided=True):
+            all_ner_labels[label.text] = label
+
+        all_annotation_labels = {}
+        for label in Label.objects.filter(project=project, user_provided=False):
+            all_annotation_labels[label.text] = label
+
         try:
             if data_file.multiple_chunks():
                 data = ijson.items(data_file, "data.item")
@@ -1015,19 +1079,27 @@ class FileUploadAPIView(APIView):
                 current_doc = Document(text=text, metadata=metadata, project=project)
                 current_doc.save()
 
-                for annotation in entry["annotations"]:
-                    if annotation['label'] not in all_labels:
+                for annotation in entry["ner_annotations"]:
+                    if annotation['label'] not in all_ner_labels:
                         new_label = Label(text=annotation["label"], project=project, user_provided=True)
                         new_label.save()
-                        all_labels[annotation["label"]] = new_label
+                        all_ner_labels[annotation["label"]] = new_label
 
                     cur_annotation = Annotation(user_provided=True, task=project.task, user=user, document=current_doc,
-                                                label=all_labels[annotation["label"]])
+                                                label=all_ner_labels[annotation["label"]])
                     cur_annotation.save()
                     ner_annotation = NamedEntityAnnotation(annotation=cur_annotation,
                                                            start_offset=annotation["start_offset"],
                                                            end_offset=annotation["end_offset"])
                     ner_annotation.save()
+
+                self.create_annotations_and_explanations(
+                    entry.get("annotations", []),
+                    all_annotation_labels,
+                    project,
+                    user,
+                    current_doc
+                )
 
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
@@ -1042,7 +1114,7 @@ class FileUploadAPIView(APIView):
                 if upload_type == "ner":
                     self.create_ner_docs_from_json(project, data_file, user)
                 else:
-                    self.create_plain_docs_from_json(project, data_file)
+                    self.create_plain_docs_from_json(project, data_file, user)
             return Response({"success": "your file has been received"}, status=status.HTTP_202_ACCEPTED, )
         except FileUploadAPIView.ImportFileError as e:
             return Response(exception=e)

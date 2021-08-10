@@ -40,7 +40,7 @@ class DocumentManager(models.Manager):
                         output[key] = extended_output[key]
 
                     if explanation:
-                        output["explanation"] = a.format_explanations("json", doc.text)
+                        output["explanations"] = a.format_explanations("json", doc.text)
 
                     annotations.append(output)
 

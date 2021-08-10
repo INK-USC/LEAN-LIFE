@@ -13,49 +13,79 @@
               <b>JSON (recommended)</b>
               <br/><u>Format:</u>
               <pre style="width: fit-content;padding-left: 20px; padding-right: 20px; height: fit-content">
-                <code v-if="this.$store.getters.getProjectInfo.task!==3">
+                <code>
 {
   "data" : [
-    {
+    {<template v-if="this.$store.getters.getProjectInfo.task===1">
       "text" : "Louis Armstrong the great trumpet player lived in Corona.",
       "foo" : "bar",
-      "bar" : "foo"
-    },
-    {
-      "text" : "Spanish Farm Minister Loyola de Palacio had earlier accused Fischler at
-                an EU farm ministers' meeting of causing unjustified alarm through
-                dangerous generalisation.",
+      "bar" : "foo",
+      "annotations": [
+        {
+          "label": "Label-Name-1"
+    </template><template v-if="this.$store.getters.getProjectInfo.task===2">
+      "text" : "Louis Armstrong the great trumpet player lived in Corona.",
       "foo" : "bar",
-      "bar" : "foo"
+      "bar" : "foo",
+      "annotations": [
+        {
+          "label": "Label-Name-1",
+          "start_offset": 0,
+          "end_offset": 5,
+    </template><template v-if="this.$store.getters.getProjectInfo.task===3">
+      "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
+      "ner_annotations": [
+          {
+                "label": "", # can be empty string, or actual NER label
+                "start_offset": 52,
+                "end_offset": 58
+          },
+          {
+                "label": "", # can be empty string, or actual NER label
+                "start_offset": 0,
+                "end_offset": 5
+          }
+          ...
+      ],
+      "metadata": {"foo" : "bar"},
+      "annotations": [
+        {
+          "sbj_start_offset": 0,
+          "sbj_end_offset": 5,
+          "obj_start_offset": 52,
+          "obj_end_offset": 58 
+          </template><template v-if="this.$store.getters.getProjectInfo.explanation_type===2">"explanations": [
+            "natural language explanation 1",
+            "natural language explanation 2",
+            ...
+          ]
+          </template><template v-if="this.$store.getters.getProjectInfo.explanation_type===3">"explanations": [
+            [
+              {
+                "start_offset": 27,
+                "end_offset": 41,
+              },
+              ...
+            ]
+            ...
+          ]
+      </template>}
+      ]
     },
     ...
   ]
 }
               </code>
-								<code v-if="this.$store.getters.getProjectInfo.task===3">
-{
-  "data": [
-      {
-            "text": "Louis Armstrong, the great trumpet player, lived in Corona.",
-            "annotations": [
-                {
-                      "label": "", # can be empty string, or actual NER label
-                      "start_offset": 52,
-                      "end_offset": 58
-                }
-                ...
-            ],
-            "metadata": {"foo" : "bar"}
-      }
-      ...
-  ]
-}
-						</code>
 							</pre>
               Each entry within <i>data</i> must have a key <i><b>text</b></i>. All other keys will be saved in a
               metadata
               dictionary associated
-              with the text
+              with the text <br/>
+              The <i><b>annotations</b></i> key in each entry is optional. And, can be used to populate the document 
+              with label and explanations.
+              <template v-if="this.$store.getters.getProjectInfo.task===3">
+              <br/>The <i><b>ner_annotations</b></i> key in each entry provides entities in each document and is required to 
+              </template>
             </li>
             <li v-if="this.$store.getters.getProjectInfo.task !== 3" style="margin-top: 40px">
               <b>CSV</b>--<u v-if="this.$store.getters.getProjectInfo.task !== 3">(Two formats are acceptable (but file

@@ -186,8 +186,8 @@ def test_generate_phrase():
     assert phrase.obj_posi == phrase_obj_posi
 
 def test_parse_tokens_re():
-    re_ccg_trainer = CCGParserTrainer(task="re", explanation_file="data/tacred_test_explanation_data.json",
-                                      unlabeled_data_file="data/tacred_test_unlabeled_data.json")
+    re_ccg_trainer = CCGParserTrainer(task="re", explanation_file="unit_test_data/tacred_test_explanation_data.json",
+                                      unlabeled_data_file="unit_test_data/tacred_test_unlabeled_data.json")
     explanation_file = re_ccg_trainer.params["explanation_file"]
 
     re_ccg_trainer.load_data(explanation_file)
@@ -230,8 +230,8 @@ def test_parse_tokens_re():
         assert c_parse in parses[i]
 
 def test_parse_tokens_ec():
-    ec_ccg_trainer = CCGParserTrainer(task="ec", explanation_file="data/ec_test_data.json",
-                                      unlabeled_data_file="data/carer_test_data.json")
+    ec_ccg_trainer = CCGParserTrainer(task="ec", explanation_file="unit_test_data/ec_test_data.json",
+                                      unlabeled_data_file="unit_test_data/carer_test_data.json")
     explanation_file = ec_ccg_trainer.params["explanation_file"]
     ec_ccg_trainer.load_data(explanation_file)
     parser = ec_ccg_trainer.parser
@@ -449,7 +449,7 @@ def test_create_labeling_function_sa():
 def test_create_labeling_function_re():
     # to ensure parity with original paper code, author gave semantic reps
     # and just ensuring the create label works on all of them.
-    with open("data/semantic_reps_re.p", "rb") as f:
+    with open("unit_test_data/semantic_reps_re.p", "rb") as f:
         re_semantic_reps = pickle.load(f)
     
     for rep in re_semantic_reps:

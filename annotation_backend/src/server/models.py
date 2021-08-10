@@ -310,17 +310,31 @@ class TriggerExplanation(models.Model):
     
     @staticmethod
     def format_explanations(triggers, text, output_format):
-        trigger_dict = {}
-        for trigger in triggers.all():
-            phrase = text[trigger.start_offset:trigger.end_offset]
-            if trigger.trigger_id in trigger_dict:
-                trigger_dict[trigger.trigger_id] = trigger_dict[trigger.trigger_id] + " " + phrase
-            else:
-                trigger_dict[trigger.trigger_id] = phrase
-        
         if output_format == "csv":
+            trigger_dict = {}
+            for trigger in triggers.all():
+                phrase = text[trigger.start_offset:trigger.end_offset]
+                if trigger.trigger_id in trigger_dict:
+                    trigger_dict[trigger.trigger_id] = trigger_dict[trigger.trigger_id] + " " + phrase
+                else:
+                    trigger_dict[trigger.trigger_id] = phrase
             return EXPLANATION_SEPERATOR.join(list(trigger_dict.values()))
         elif output_format == "json":
+            trigger_dict = {}
+            for trigger in triggers.all():
+                phrase = text[trigger.start_offset:trigger.end_offset]
+                if trigger.trigger_id in trigger_dict:
+                    trigger_dict[trigger.trigger_id].append({
+                        "text": phrase,
+                        "start_offset": trigger.start_offset,
+                        "end_offset": trigger.end_offset
+                    })
+                else:
+                    trigger_dict[trigger.trigger_id] = [{
+                        "text": phrase,
+                        "start_offset": trigger.start_offset,
+                        "end_offset": trigger.end_offset
+                    }]
             return list(trigger_dict.values())
 
     class Meta:
