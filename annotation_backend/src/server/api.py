@@ -1036,11 +1036,12 @@ class FileUploadAPIView(APIView):
                     raise FileUploadAPIView.ImportFileError("Document dictionaries do not have the '{}' key".format(text_key))
 
                 metadata = self.extract_metadata_json(entry)
-                cur_doc = Document(text=text, metadata=metadata, project=project)
+                annotations = entry.get("annotations", [])
+                cur_doc = Document(text=text, metadata=metadata, project=project, annotated=len(annotations) > 0)
                 cur_doc.save()
 
                 self.create_annotations_and_explanations(
-                    entry.get("annotations", []),
+                    annotations,
                     all_annotation_labels,
                     project,
                     user,
