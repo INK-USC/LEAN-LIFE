@@ -22,6 +22,7 @@ from internal_api.next_pipelines import pre_train_find_module_pipeline, train_ne
         soft_match_data, evaluate_next_clf_pipeline, hard_match_bilstm_pipeline, predict_next_clf_pipeline
 from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline, predict_standard_clf_pipeline
 from fast_api.fast_api_util_functions import lean_life_error_catcher_decorator
+from internal_api.trigger_pipelines import standard_ner_pipeline
 
 
 def _remove_trailing_period(string):
@@ -378,3 +379,57 @@ def predict_standard(params, ner_label_space):
         else:
             params["ner_labels"] = ner_label_space
     return predict_standard_clf_pipeline(params)
+
+
+@lean_life_error_catcher_decorator
+def train_standard_ner_lean_life(params, labeled_data=None, dev_data=None):
+    """
+        Function that transforms converted LEAN-LIFE datastructures into a more standard form for training purposes
+
+        Is called by the `start_standard_training_ner_lean_life` api function in "main.py"
+
+        This function really just calls the `train_standard_ner_pipeline` after some custom LEAN-LIFE dataprep
+    """
+    # If data is sent, train full pipeline
+    # If data is not sent, just tune downstream classifier
+    if labeled_data is not None:
+        params["build_data"] = True
+    else:
+        params["build_data"] = False
+
+    if params["project_type"] == "Sentiment Analysis":
+        params["task"] = "sa"
+    elif params["project_type"] == "Relation Extraction":
+        params["task"] = "re"
+    elif params["project_type"] == "Named Entity Recognition":
+        params["task"] = "ner"
+
+    params["leanlife"] = True
+
+    return train_standard_ner_pipeline(params, labeled_data, dev_data)
+
+
+def train_standard_ner_pipeline(params, labeled_data=None, dev_data=None):
+    # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
+    # so more of a double check
+    required_keys = ["experiment_name", "build_data", "dataset_name"]
+    for key in required_keys:
+        if key not in params:
+            error_msg = "{} not found in params".format(key)
+            raise HTTPException(status_code=500, detail=error_msg)
+
+    # this key is only set in `train_standard_ner_pipeline_lean_life()`, so if its not there its not LEAN-LIFE data
+    if "leanlife" not in params:
+        params["leanlife"] = False
+
+    build_data = params["build_data"]
+
+    if build_data:
+        if labeled_data is None or len(labeled_data) == 0:
+            error_msg = "labeled_data is required for training"
+            raise HTTPException(status_code=500, detail=error_msg)
+
+        params["labeled_data"] = labeled_data
+        params["dev_data"] = dev_data
+
+    return standard_ner_pipeline(params)

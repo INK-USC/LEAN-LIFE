@@ -737,18 +737,25 @@ class TrainModelAPIView(APIView):
 		model_meta = ModelMetaData(project=project, name=model_name, training_meta_data=model_settings)
 		model_meta.save()
 
-		train_standard = False
-		if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:
+		if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:  # NER
+			# train_standard = True if project.explanation_type != 3 else False
+			# if train_standard:  # standard
 			train_standard = True
-		elif project.explanation_type != 2:
-			train_standard = True
+			req_url = "http://localhost:9000/training/standard/ner/lean-life/"
+			# else:
+			#	 req_url = "http://localhost:9000/training/trigger/lean-life/"
+		else:  # RE or SA
+			train_standard = True if project.explanation_type != 2 else False
+			if train_standard:  # standard
+				req_url = "http://localhost:9000/training/standard/lean-life/"
+			else:
+				req_url = "http://localhost:9000/training/next/lean-life/"
 
 		if train_standard:
 			json_object = self.generate_json_for_standard_training_api(project, model_settings, include_documents)
-			response = requests.post("http://localhost:9000/training/standard/lean-life/", json=json_object)
 		else:
 			json_object = self.generate_json_for_model_training_api(project, model_settings, include_documents)
-			response = requests.post("http://localhost:9000/training/next/lean-life/", json=json_object)
+		response = requests.post(req_url, json=json_object)
 		if response.status_code == 201:
 			return Response(status=201)
 		else:

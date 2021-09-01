@@ -23,7 +23,8 @@ import fast_api_util_functions as util_f
 import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, \
     apply_soft_matching, evaluate_next, train_standard_pipeline, \
-    train_standard_lean_life, evaluate_standard, predict_next, predict_standard
+    train_standard_lean_life, evaluate_standard, predict_next, predict_standard, train_standard_ner_pipeline, \
+    train_standard_ner_lean_life
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -226,3 +227,37 @@ async def predict_standard_clf(api_payload: schema.PredictStandardClfPayload):
         ner_label_space = None
     probs, preds = predict_standard(params, ner_label_space)
     return schema.PredictionOutputs(class_probs=probs, class_preds=preds)
+
+
+@app.post("/training/standard/ner/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_standard_training_ner_lean_life(lean_life_payload: schema.LeanLifeStandardNERPayload,
+                                            background_tasks: BackgroundTasks):
+    """
+        Endpoint hit by annotation tool's django api
+    """
+    params = lean_life_payload.params
+    lean_life_data = lean_life_payload.lean_life_data
+    prepped_data = util_f.prepare_standard_data(lean_life_data, project_type=params.project_type)
+    _, labeled_docs, dev_docs, _ = prepped_data
+    if len(labeled_docs) == 0:
+        labeled_docs = None
+    if len(dev_docs) == 0:
+        dev_docs = None
+    background_tasks.add_task(train_standard_ner_lean_life, params.dict(), labeled_docs, dev_docs)
+
+
+@app.post("/training/standard/ner/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
+async def start_standard_training_ner_api(api_payload: schema.StandardNERTrainingPayload):
+    """
+        Endpoint used to kick off training of a classifier.
+        Please refer to the docs or `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params
+    prepped_data = util_f.prepare_standard_data(api_payload, lean_life=False)
+    _, labeled_docs, dev_docs, _ = prepped_data
+    if len(labeled_docs) == 0:
+        labeled_docs = None
+    if len(dev_docs) == 0:
+        dev_docs = None
+    return schema.SavePathOutput(
+                    save_path=train_standard_ner_pipeline(params.dict(), labeled_docs, dev_docs))

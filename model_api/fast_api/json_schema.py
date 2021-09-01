@@ -1041,3 +1041,78 @@ class PredictStandardClfPayload(BaseModel):
                 ]
             }
         }
+
+
+class StandardNERTrainingApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    content_emb: Optional[Literal['none', 'elmo']]
+    seed: Optional[int]
+    digit2zero: Optional[bool]
+    hidden_dim: Optional[int]
+    dropout: Optional[float]
+    use_char_rnn: Optional[bool]
+    use_crf_layer: Optional[bool]
+    optimizer: Optional[Literal['sgd', 'adam']]
+    trig_optimizer: Optional[Literal['sgd', 'adam']]
+    learning_rate: Optional[float]
+    momentum: Optional[float]
+    l2: Optional[float]
+    num_epochs: Optional[int]
+    pre_train_num_epochs: Optional[int]
+    batch_size: Optional[int]
+    lr_decay: Optional[float]
+    build_data: bool
+
+
+class StandardNERTrainingPayload(BaseModel):
+    params: StandardNERTrainingApiParams
+    labeled_data: List[LabeledDoc]
+    dev_data: Optional[List[LabeledDoc]]
+
+
+class LeanLifeStandardNERParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    project_type: str
+    project_id: int
+
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+
+    emb_dim: Optional[int]
+    # content_emb: Optional[Literal['none', 'elmo']]
+    seed: Optional[int]
+    digit2zero: Optional[bool]
+    hidden_dim: Optional[int]
+    dropout: Optional[float]
+    use_char_rnn: Optional[bool]
+    use_crf_layer: Optional[bool]
+    # optimizer: Optional[Literal['sgd', 'adam']]
+    # trig_optimizer: Optional[Literal['sgd', 'adam']]
+    learning_rate: Optional[float]
+    momentum: Optional[float]
+    l2: Optional[float]
+    num_epochs: Optional[int]
+    pre_train_num_epochs: Optional[int]
+    batch_size: Optional[int]
+    lr_decay: Optional[float]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "test_experiment_1",
+                "dataset_name": "test_dataset",
+                "project_type": "Named Entity Recognition"
+            }
+        }
+
+
+class LeanLifeStandardNERPayload(BaseModel):
+    lean_life_data: LeanLifeStandardData
+    params: LeanLifeStandardNERParams
