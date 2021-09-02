@@ -30,6 +30,8 @@ class Reader:
         """
         for inst in insts:
             output = inst.output
+            if not output:
+                continue
             for pos in range(len(inst)):
                 curr_entity = output[pos]
                 if pos == len(inst) - 1:
@@ -52,10 +54,13 @@ class Reader:
 
         for row in tqdm(dataset):
             sentence: str = row['text']
-            label: str = row['label']
-
             words = sentence.split(' ')
-            labels = label.split(' ')
+
+            if 'label' in row:
+                label: str = row['label']
+                labels = label.split(' ')
+            else:
+                labels = None
 
             if self.digit2zero:
                 words = list(map(

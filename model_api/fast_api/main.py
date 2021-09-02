@@ -24,7 +24,7 @@ import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, \
     apply_soft_matching, evaluate_next, train_standard_pipeline, \
     train_standard_lean_life, evaluate_standard, predict_next, predict_standard, train_standard_ner_pipeline, \
-    train_standard_ner_lean_life
+    train_standard_ner_lean_life, evaluate_standard_ner, predict_standard_ner
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -261,3 +261,27 @@ async def start_standard_training_ner_api(api_payload: schema.StandardNERTrainin
         dev_docs = None
     return schema.SavePathOutput(
                     save_path=train_standard_ner_pipeline(params.dict(), labeled_docs, dev_docs))
+
+
+@app.post("/training/standard/ner/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardNEREvalDataOutput)
+async def start_eval_standard_ner(api_payload: schema.EvalStandardNERPayload):
+    """
+        Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["eval_data"] = api_payload.eval_data
+    precision, recall, f1 = evaluate_standard_ner(params)
+    return schema.StandardNEREvalDataOutput(precision=precision, recall=recall, f1=f1)
+
+
+@app.post("/training/standard/ner/predict", status_code=status.HTTP_200_OK, response_model=schema.NERPredictionOutputs)
+async def start_predict_standard_ner(api_payload: schema.PredictStandardNERPayload):
+    """
+        Endpoint used to predict from a classifier trained via the standard pipeline. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["prediction_data"] = api_payload.prediction_data
+    preds = predict_standard_ner(params)
+    return schema.NERPredictionOutputs(class_preds=preds)

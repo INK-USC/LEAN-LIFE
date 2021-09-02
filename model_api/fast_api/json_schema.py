@@ -1116,3 +1116,110 @@ class LeanLifeStandardNERParams(BaseModel):
 class LeanLifeStandardNERPayload(BaseModel):
     lean_life_data: LeanLifeStandardData
     params: LeanLifeStandardNERParams
+
+
+class StandardNEREvalDataOutput(BaseModel):
+    precision: float
+    recall: float
+    f1: float
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "precision": 0.68117,
+                "recall": 0.7,
+                "f1": 0.6,
+            }
+        }
+
+
+class EvalStandardNERApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: Literal['sa', 're', 'ner']
+
+    batch_size: Optional[int]
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                  'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                  'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    hidden_dim: Optional[int]
+    seed: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "conll_ner_standard",
+                "dataset_name": "conll_ner_standard",
+                "task": "ner",
+                "eval_batch_size": 10,
+                "embeddings": "charngram.100d",
+                "emb_dim": 100,
+                "hidden_dim": 100
+            }
+        }
+
+
+class EvalStandardNERPayload(BaseModel):
+    params: EvalStandardNERApiParams
+    eval_data: List[Tuple[str, str]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "params": {
+                    "experiment_name": "conll_ner_standard",
+                    "dataset_name": "conll_ner_standard",
+                    "task": "ner",
+                    "eval_batch_size": 10,
+                    "embeddings": "charngram.100d",
+                    "emb_dim": 100,
+                    "hidden_dim": 200
+                },
+                "eval_data": [
+                    [
+                        "SOCCER - JAPAN GET LUCKY WIN , CHINA IN SURPRISE DEFEAT .",
+                        "O O B-LOC O O O O B-PER O O O O"
+                    ],
+                    [
+                        "Nadim Ladki",
+                        "B-PER I-PER"
+                    ]
+                ]
+            }
+        }
+
+
+class NERPredictionOutputs(BaseModel):
+    class_preds: List[Any]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "class_preds": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            }
+        }
+
+
+class PredictStandardNERPayload(BaseModel):
+    params: EvalStandardNERApiParams
+    prediction_data: List[str]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "params": {
+                    "experiment_name": "conll_ner_standard",
+                    "dataset_name": "conll",
+                    "task": "ner",
+                    "eval_batch_size": 10,
+                    "embeddings": "charngram.100d",
+                    "emb_dim": 100,
+                    "hidden_dim": 100
+                },
+                "prediction_data": [
+                    "SOCCER - JAPAN GET LUCKY WIN , CHINA IN SURPRISE DEFEAT .",
+                    "AL-AIN , United Arab Emirates 1996-12-06"
+                ]
+            }
+        }

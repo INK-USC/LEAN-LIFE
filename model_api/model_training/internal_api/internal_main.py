@@ -22,7 +22,8 @@ from internal_api.next_pipelines import pre_train_find_module_pipeline, train_ne
         soft_match_data, evaluate_next_clf_pipeline, hard_match_bilstm_pipeline, predict_next_clf_pipeline
 from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline, predict_standard_clf_pipeline
 from fast_api.fast_api_util_functions import lean_life_error_catcher_decorator
-from internal_api.trigger_pipelines import standard_ner_pipeline
+from internal_api.trigger_pipelines import standard_ner_pipeline, evaluate_standard_ner_pipeline, \
+        predict_standard_ner_pipeline
 
 
 def _remove_trailing_period(string):
@@ -433,3 +434,13 @@ def train_standard_ner_pipeline(params, labeled_data=None, dev_data=None):
         params["dev_data"] = dev_data
 
     return standard_ner_pipeline(params)
+
+
+def evaluate_standard_ner(params):
+    """Just passes along the payload"""
+    return evaluate_standard_ner_pipeline(params)
+
+
+def predict_standard_ner(params):
+    """Just passes along the payload"""
+    return predict_standard_ner_pipeline(params)

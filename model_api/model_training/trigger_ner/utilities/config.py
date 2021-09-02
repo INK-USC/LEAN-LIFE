@@ -106,7 +106,7 @@ class Config:
         # self.ds_setting = args.ds_setting
         # print(self.ds_setting)
 
-        self.is_lean_life = args["leanlife"]
+        self.is_lean_life = args.get("leanlife", False)
         self.project_id = args.get("project_id", None)
 
         self.SAVE_PATH_PARENT = PATH_TO_PARENT

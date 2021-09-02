@@ -17,6 +17,7 @@ sys.path.append(PATH_TO_PARENT + "../../")
 
 from trigger_ner.utilities.config import Config
 from trigger_ner.utilities.reader import Reader
+from trigger_ner.utilities.utils import batching_list_instances
 from trigger_ner.model.soft_inferencer_naive import SoftSequenceNaive, SoftSequenceNaiveTrainer
 
 from fast_api.fast_api_util_functions import update_model_training, send_model_metadata
@@ -98,3 +99,50 @@ def standard_ner_pipeline(payload):
         send_model_metadata(conf.project_id, conf.experiment_name, model_save_path, best_train_loss, file_size)
 
     return model_save_path
+
+
+def evaluate_standard_ner_pipeline(payload):
+    conf = Config(payload)
+
+    # load vocab
+    conf.read_label_word_emd_data()
+
+    reader = Reader(conf.digit2zero)
+    eval_data = [{'text': tup[0], 'label': tup[1]} for tup in payload["eval_data"]]
+    eval_data = reader.build_data(eval_data, "eval")
+    conf.map_insts_ids(eval_data, "eval")
+
+    encoder = SoftSequenceNaive(conf)
+    encoder.load_state_dict(
+        torch.load(conf.generate_model_path("naive"))
+    )
+    trainer = SoftSequenceNaiveTrainer(encoder, conf)
+
+    encoder.eval()
+    test_batches = batching_list_instances(conf, eval_data)
+    test_metrics = trainer.evaluate_model(test_batches, "eval", eval_data)
+    return test_metrics
+
+
+def predict_standard_ner_pipeline(payload):
+    conf = Config(payload)
+
+    # load vocab
+    conf.read_label_word_emd_data()
+
+    reader = Reader(conf.digit2zero)
+    pred_data = [{'text': row} for row in payload["prediction_data"]]
+    pred_data = reader.build_data(pred_data, "pred")
+    conf.map_insts_ids(pred_data, "pred")
+
+    encoder = SoftSequenceNaive(conf)
+    encoder.load_state_dict(
+        torch.load(conf.generate_model_path("naive"))
+    )
+    trainer = SoftSequenceNaiveTrainer(encoder, conf)
+
+    encoder.eval()
+    pred_batches = batching_list_instances(conf, pred_data)
+    trainer.predict_model(pred_batches, pred_data)
+
+    return list(map(lambda x: " ".join(x.prediction), pred_data))

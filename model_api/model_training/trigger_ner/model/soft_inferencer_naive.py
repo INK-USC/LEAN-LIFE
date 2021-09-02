@@ -93,7 +93,7 @@ class SoftSequenceNaiveTrainer(object):
             self.input_size += config.charlstm_hidden_dim
         self.dev = dev
         self.test = test
-    
+
     def save_model(self):
         logging.info("Saving Model")
         model_save_path = self.config.generate_model_path("naive")
@@ -161,6 +161,21 @@ class SoftSequenceNaiveTrainer(object):
         precision = p * 1.0 / total_predict * 100 if total_predict != 0 else 0
         recall = p * 1.0 / total_entity * 100 if total_entity != 0 else 0
         fscore = 2.0 * precision * recall / (precision + recall) if precision != 0 or recall != 0 else 0
-        print("[%s set] Precision: %.2f, Recall: %.2f, F1: %.2f" % (name, precision, recall, fscore), flush=True)
         logging.info("[%s set] Precision: %.2f, Recall: %.2f, F1: %.2f" % (name, precision, recall, fscore))
         return [precision, recall, fscore]
+
+    def predict_model(self, batch_insts_ids, insts):
+        ## prediction
+        batch_id = 0
+        batch_size = self.config.batch_size
+        for batch in batch_insts_ids:
+            one_batch_insts = insts[batch_id * batch_size:(batch_id + 1) * batch_size]
+            batch_max_scores, batch_max_ids = self.model.decode(*batch[0:5])
+            word_seq_lens = batch[1].tolist()
+            for idx in range(len(batch_max_ids)):
+                length = word_seq_lens[idx]
+                prediction = batch_max_ids[idx][:length].tolist()
+                prediction = prediction[::-1] if self.config.use_crf_layer else prediction
+                prediction = [self.config.idx2labels[l] for l in prediction]
+                one_batch_insts[idx].prediction = prediction
+            batch_id += 1
