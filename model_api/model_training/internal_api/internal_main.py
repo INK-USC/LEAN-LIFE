@@ -410,7 +410,7 @@ def train_standard_ner_lean_life(params, labeled_data=None, dev_data=None):
     return train_standard_ner_pipeline(params, labeled_data, dev_data)
 
 
-def train_standard_ner_pipeline(params, labeled_data=None, dev_data=None):
+def train_standard_ner_pipeline(params, labeled_data=None, dev_data=None, eval_data=None):
     # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
     # so more of a double check
     required_keys = ["experiment_name", "build_data", "dataset_name"]
@@ -432,6 +432,7 @@ def train_standard_ner_pipeline(params, labeled_data=None, dev_data=None):
 
         params["labeled_data"] = labeled_data
         params["dev_data"] = dev_data
+        params["eval_data"] = eval_data
 
     return standard_ner_pipeline(params)
 

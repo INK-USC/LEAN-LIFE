@@ -5,12 +5,11 @@ from .sentence import Sentence
 from typing import List, Dict
 import re
 import logging
-import pickle
+import random
 
-
-# import random
 # TODO: check seed setting
-# random.seed(1337)
+random.seed(1337)
+
 
 class Reader:
     def __init__(self, digit2zero: bool = True):

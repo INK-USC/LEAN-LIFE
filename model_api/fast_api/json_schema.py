@@ -1073,6 +1073,7 @@ class StandardNERTrainingPayload(BaseModel):
     params: StandardNERTrainingApiParams
     labeled_data: List[LabeledDoc]
     dev_data: Optional[List[LabeledDoc]]
+    eval_data: Optional[List[LabeledDoc]]
 
 
 class LeanLifeStandardNERParams(BaseModel):

@@ -44,6 +44,11 @@ def standard_ner_pipeline(payload):
         else:
             dev_data = reader.build_data(payload["dev_data"], "dev")
 
+        if "eval_data" not in payload or payload["eval_data"] is None:
+            eval_data = None
+        else:
+            eval_data = reader.build_data(payload["eval_data"], "eval")
+
         # vocab
         conf.build_label_idx(train_data)
         conf.build_word_idx(train_data, dev_data)
@@ -53,6 +58,8 @@ def standard_ner_pipeline(payload):
         conf.map_insts_ids(train_data, "labeled")
         if dev_data:
             conf.map_insts_ids(dev_data, "dev")
+        if eval_data:
+            conf.map_insts_ids(eval_data, "eval")
 
         # TODO: ask dongho about implementation
         # if conf.context_emb == ContextEmb.bert:
@@ -73,6 +80,9 @@ def standard_ner_pipeline(payload):
         with open(conf.generate_training_data_path("dev"), 'rb') as f:
             dev_data = pickle.load(f)
 
+        with open(conf.generate_training_data_path("eval"), 'rb') as f:
+            eval_data = pickle.load(f)
+
         # load vocab
         conf.read_label_word_emd_data()
 
@@ -83,7 +93,7 @@ def standard_ner_pipeline(payload):
     random.shuffle(initial_trains)
 
     encoder = SoftSequenceNaive(conf)
-    trainer = SoftSequenceNaiveTrainer(encoder, conf, dev_data, None)
+    trainer = SoftSequenceNaiveTrainer(encoder, conf, dev_data, eval_data)
 
     if conf.is_lean_life:
         time_spent = time.time() - start_time

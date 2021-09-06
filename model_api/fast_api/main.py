@@ -259,8 +259,14 @@ async def start_standard_training_ner_api(api_payload: schema.StandardNERTrainin
         labeled_docs = None
     if len(dev_docs) == 0:
         dev_docs = None
+    if hasattr(api_payload, "eval_data") and api_payload.dev_data is not None:
+        eval_docs = api_payload.eval_data
+        for i, doc in enumerate(eval_docs):
+            eval_docs[i] = doc.dict()
+    else:
+        eval_docs = []
     return schema.SavePathOutput(
-                    save_path=train_standard_ner_pipeline(params.dict(), labeled_docs, dev_docs))
+                    save_path=train_standard_ner_pipeline(params.dict(), labeled_docs, dev_docs, eval_docs))
 
 
 @app.post("/training/standard/ner/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardNEREvalDataOutput)
