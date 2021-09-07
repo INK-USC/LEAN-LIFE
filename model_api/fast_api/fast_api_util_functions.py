@@ -288,6 +288,53 @@ def _create_ner_iob_label(text, annotation=None, tokenizer=nlp):
     return " ".join(tokens), " ".join(labels)
 
 
+def _create_trigger_label(text, explanation=None, tokenizer=nlp):
+    if explanation is None:
+        spacy_tokens = [tok.text for tok in nlp.tokenizer(text)]
+        result = ["O"] * len(spacy_tokens)
+        return " ".join(spacy_tokens), " ".join(result)
+
+    trigger_id = explanation["trigger_id"]
+    start_offset = int(explanation["start_offset"])
+    end_offset = int(explanation["end_offset"])
+    label_text = "T-%s" % trigger_id
+
+    tokens = []
+    labels = []
+
+    # text before annotation
+    token, label = _create_trigger_label(text[:start_offset])
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    # annotation text
+    spacy_tokens = [tok.text for tok in nlp.tokenizer(text[start_offset:end_offset])]
+    label_tokens = [label_text] * len(spacy_tokens)
+
+    tokens.append(" ".join(spacy_tokens))
+    labels.append(" ".join(label_tokens))
+
+    # text after annotation
+    token, label = _create_trigger_label(text[end_offset:].lstrip())
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    return " ".join(tokens), " ".join(labels)
+
+
+def _merge_labels(label_arrays):
+    final_labels = []
+    for labels in zip(*map(lambda x: x.split(" "), label_arrays)):
+        filtered_labels = [i for i in labels if i != "O"]
+        if len(filtered_labels):
+            final_labels.append(filtered_labels[0])
+        else:
+            final_labels.append("O")
+    return final_labels
+
+
 def _process_ner_annotated_doc(annotated_doc, fake_id):
     temp_sentence_label_pairs = {}
     temp_explanation_triples = {}
@@ -302,28 +349,25 @@ def _process_ner_annotated_doc(annotated_doc, fake_id):
         temp_sentence_label_pairs[temp_fake_id] = _create_ner_iob_label(text, None)
         temp_fake_id += -1
 
-    # for explanation in explanations:
-    #     annotation_id = int(explanation["annotation_id"])
-    #     explanation_text = explanation["text"]
-    #     label = temp_sentence_label_pairs[annotation_id][1]
-    #     if annotation_id in temp_explanation_triples:
-    #         temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
-    #     else:
-    #         temp_explanation_triples[annotation_id] = {
-    #             "text" : text,
-    #             "label" : label,
-    #             "explanation" : [explanation_text]
-    #         }
-
-    final_labels = []
-    final_key = list(temp_sentence_label_pairs.keys())[0]
-    for labels in zip(*map(lambda x: x[1].split(" "), temp_sentence_label_pairs.values())):
-        labels = list(labels)
-        labels.remove("O")
-        if len(labels):
-            final_labels.append(labels[0])
+    for explanation in explanations:
+        annotation_id = int(explanation["annotation_id"])
+        label = temp_sentence_label_pairs[annotation_id][1]
+        _, explanation_text = _create_trigger_label(text, explanation)
+        if annotation_id in temp_explanation_triples:
+            temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
         else:
-            final_labels.append("O")
+            temp_explanation_triples[annotation_id] = {
+                "text": temp_sentence_label_pairs[annotation_id][0],
+                "label": label,
+                "explanation": [explanation_text]
+            }
+
+    for key in temp_explanation_triples.keys():
+        # TODO: don't merge keep separate for each explanation
+        temp_explanation_triples[key]["explanation"] = " ".join(_merge_labels(temp_explanation_triples[key]["explanation"]))
+
+    final_labels = _merge_labels(map(lambda x: x[1], temp_sentence_label_pairs.values()))
+    final_key = list(temp_sentence_label_pairs.keys())[0]
     final_sentence_label_pairs = {
         final_key: (temp_sentence_label_pairs[final_key][0], " ".join(final_labels))
     }
@@ -351,7 +395,9 @@ def _process_annotations(annotated_docs, project_type):
     if project_type == const.LEAN_LIFE_SA_PROJECT:
         processing_func = _process_sa_annotated_doc
     elif project_type == const.LEAN_LIFE_RE_PROJECT:
-        processing_func = _process_re_annotated_doc 
+        processing_func = _process_re_annotated_doc
+    elif project_type == const.LEAN_LIFE_NER_PROJECT:
+        processing_func = _process_ner_annotated_doc
     
     for doc in annotated_docs:
         if processing_func:

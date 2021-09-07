@@ -25,7 +25,7 @@ from internal_api.internal_main import train_next_framework_lean_life, train_nex
     apply_soft_matching, evaluate_next, train_standard_pipeline, \
     train_standard_lean_life, evaluate_standard, predict_next, predict_standard, train_standard_ner_pipeline, \
     train_standard_ner_lean_life, evaluate_standard_ner, predict_standard_ner, train_trigger_soft_match_pipeline, \
-    evaluate_trigger_ner, predict_trigger_ner
+    evaluate_trigger_ner, predict_trigger_ner, train_trigger_soft_match_lean_life
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -294,24 +294,22 @@ async def start_predict_standard_ner(api_payload: schema.PredictStandardNERPaylo
     return schema.NERPredictionOutputs(class_preds=preds)
 
 
-# @app.post("/training/trigger/lean-life/", status_code=status.HTTP_201_CREATED)
-# async def start_trigger_training_lean_life(lean_life_payload: schema.LeanLifeTriggerPayload,
-#                                            background_tasks: BackgroundTasks):
-#     """
-#         Endpoint hit by annotation tool's django api
-#     """
-#     params = lean_life_payload.params
-#     lean_life_data = lean_life_payload.lean_life_data
-#     prepped_data = util_f.prepare_next_data(lean_life_data, project_type=params.project_type)
-#     label_space, unlabeled_docs, explanation_triples, ner_label_space = prepped_data
-#     if len(ner_label_space) == 0:
-#         ner_label_space = None
-#     if len(unlabeled_docs) == 0:
-#         unlabeled_docs = None
-#     if len(explanation_triples) == 0:
-#         explanation_triples = None
-#     background_tasks.add_task(train_next_framework_lean_life, params.__dict__, label_space, unlabeled_docs,
-#                               explanation_triples, ner_label_space)
+@app.post("/training/trigger/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_trigger_training_lean_life(lean_life_payload: schema.LeanLifeTriggerPayload,
+                                           background_tasks: BackgroundTasks):
+    """
+        Endpoint hit by annotation tool's django api
+    """
+    params = lean_life_payload.params
+    lean_life_data = lean_life_payload.lean_life_data
+    prepped_data = util_f.prepare_next_data(lean_life_data, project_type=params.project_type)
+    _, unlabeled_docs, explanation_triples, _ = prepped_data
+    if len(unlabeled_docs) == 0:
+        unlabeled_docs = None
+    if len(explanation_triples) == 0:
+        explanation_triples = None
+    background_tasks.add_task(train_trigger_soft_match_lean_life, params.__dict__,unlabeled_docs,
+                              explanation_triples)
 
 
 @app.post("/training/trigger/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)

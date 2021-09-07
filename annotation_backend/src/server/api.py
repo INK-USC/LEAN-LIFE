@@ -738,12 +738,11 @@ class TrainModelAPIView(APIView):
 		model_meta.save()
 
 		if project.get_task_name() == NAMED_ENTITY_RECOGNITION_VALUE:  # NER
-			# train_standard = True if project.explanation_type != 3 else False
-			# if train_standard:  # standard
-			train_standard = True
-			req_url = "http://localhost:9000/training/standard/ner/lean-life/"
-			# else:
-			#	 req_url = "http://localhost:9000/training/trigger/lean-life/"
+			train_standard = True if project.explanation_type != 3 else False
+			if train_standard:  # standard
+				req_url = "http://localhost:9000/training/standard/ner/lean-life/"
+			else:
+				req_url = "http://localhost:9000/training/trigger/lean-life/"
 		else:  # RE or SA
 			train_standard = True if project.explanation_type != 2 else False
 			if train_standard:  # standard
@@ -807,7 +806,18 @@ class TrainModelAPIView(APIView):
 
 				if ann.get_explanations() is not None:
 					for exp in ann.get_explanations():
-						annotated_row['explanations'].append({"annotation_id": exp.annotation.id, "text": exp.text})
+						if hasattr(exp, 'trigger_id'):
+							annotated_row['explanations'].append({
+								"annotation_id": exp.annotation.id,
+								"trigger_id": exp.trigger_id,
+								"start_offset": exp.start_offset,
+								"end_offset": exp.end_offset,
+							})
+						else:
+							annotated_row['explanations'].append({
+								"annotation_id": exp.annotation.id,
+								"text": exp.text
+							})
 
 			if not doc.annotated:
 				del annotated_row["explanations"]

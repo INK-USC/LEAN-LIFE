@@ -448,6 +448,34 @@ def predict_standard_ner(params):
     return predict_standard_ner_pipeline(params)
 
 
+@lean_life_error_catcher_decorator
+def train_trigger_soft_match_lean_life(params, unlabeled_data=None, explanation_data=None):
+    """
+        Function that transforms converted LEAN-LIFE datastructures into a more standard form for training purposes
+
+        Is called by the `start_trigger_training_lean_life` api function in "main.py"
+
+        This function really just calls the `train_trigger_soft_match_lean_life` after some custom LEAN-LIFE dataprep
+    """
+    # If data is sent, train full pipeline
+    # If data is not sent, just tune downstream classifier
+    if explanation_data is not None:
+        params["build_data"] = True
+    else:
+        params["build_data"] = False
+
+    if params["project_type"] == "Sentiment Analysis":
+        params["task"] = "sa"
+    elif params["project_type"] == "Relation Extraction":
+        params["task"] = "re"
+    elif params["project_type"] == "Named Entity Recognition":
+        params["task"] = "ner"
+
+    params["leanlife"] = True
+
+    return train_trigger_soft_match_pipeline(params, unlabeled_data, explanation_data)
+
+
 def train_trigger_soft_match_pipeline(params, unlabeled_data=None, explanation_data=None):
     # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
     # so more of a double check
@@ -457,6 +485,7 @@ def train_trigger_soft_match_pipeline(params, unlabeled_data=None, explanation_d
             error_msg = "{} not found in params".format(key)
             raise HTTPException(status_code=500, detail=error_msg)
 
+    # this key is only set in `train_standard_ner_pipeline_lean_life()`, so if its not there its not LEAN-LIFE data
     if "leanlife" not in params:
         params["leanlife"] = False
 
