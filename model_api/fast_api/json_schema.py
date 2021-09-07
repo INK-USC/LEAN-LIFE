@@ -1046,6 +1046,7 @@ class PredictStandardClfPayload(BaseModel):
 class StandardNERTrainingApiParams(BaseModel):
     experiment_name: str
     dataset_name: str
+    task: Literal['ner']
     embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
                                  'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
                                  'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
@@ -1224,3 +1225,15 @@ class PredictStandardNERPayload(BaseModel):
                 ]
             }
         }
+
+
+class LeanLifeTriggerPayload(BaseModel):
+    lean_life_data: LeanLifeData
+    params: LeanLifeStandardNERParams
+
+
+class ExplanationTriggerTrainingPayload(BaseModel):
+    params: StandardNERTrainingApiParams
+    explanation_triples: Optional[List[ExplanationTriple]]
+    dev_data: Optional[List[LabeledDoc]]
+    eval_data: Optional[List[LabeledDoc]]

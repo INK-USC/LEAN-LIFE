@@ -9,7 +9,7 @@ TRIG_MODEL_DEFAULTS = {
 }
 
 TRIG_TRAINING_DEFAULTS = {
-    "seed": 42,
+    "seed": 1337,
     "digit2zero": True,
     "optimizer": "sgd",
     "trig_optimizer": "adam",
@@ -20,6 +20,7 @@ TRIG_TRAINING_DEFAULTS = {
     "pre_train_num_epochs": 20,
     "batch_size": 10,
     "lr_decay": 0,
+    "percentage": 100
 }
 
 

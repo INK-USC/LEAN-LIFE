@@ -23,7 +23,8 @@ from internal_api.next_pipelines import pre_train_find_module_pipeline, train_ne
 from internal_api.standard_pipeline import standard_pipeline, evaluate_standard_clf_pipeline, predict_standard_clf_pipeline
 from fast_api.fast_api_util_functions import lean_life_error_catcher_decorator
 from internal_api.trigger_pipelines import standard_ner_pipeline, evaluate_standard_ner_pipeline, \
-        predict_standard_ner_pipeline
+        predict_standard_ner_pipeline, trigger_soft_match_pipeline, evaluate_trigger_ner_pipeline, \
+        predict_trigger_ner_pipeline
 
 
 def _remove_trailing_period(string):
@@ -445,3 +446,37 @@ def evaluate_standard_ner(params):
 def predict_standard_ner(params):
     """Just passes along the payload"""
     return predict_standard_ner_pipeline(params)
+
+
+def train_trigger_soft_match_pipeline(params, unlabeled_data=None, explanation_data=None):
+    # Ensure user sends at least these parameter settings, should already be checked by validators on receiving request
+    # so more of a double check
+    required_keys = ["experiment_name", "build_data", "dataset_name", "task"]
+    for key in required_keys:
+        if key not in params:
+            error_msg = "{} not found in params".format(key)
+            raise HTTPException(status_code=500, detail=error_msg)
+
+    if "leanlife" not in params:
+        params["leanlife"] = False
+
+    build_data = params["build_data"]
+
+    if build_data:
+        if explanation_data is None or len(explanation_data) == 0:
+            error_msg = "explanation_data is required for training"
+            raise HTTPException(status_code=500, detail=error_msg)
+
+        params["labeled_data"] = explanation_data
+
+    return trigger_soft_match_pipeline(params)
+
+
+def evaluate_trigger_ner(params):
+    """Just passes along the payload"""
+    return evaluate_trigger_ner_pipeline(params)
+
+
+def predict_trigger_ner(params):
+    """Just passes along the payload"""
+    return predict_trigger_ner_pipeline(params)

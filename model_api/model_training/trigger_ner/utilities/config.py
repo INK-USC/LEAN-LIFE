@@ -65,13 +65,9 @@ class Config:
         self.use_crf_layer = _check_or_load_defaults(args, TRIG_MODEL_DEFAULTS, "use_crf_layer")
 
         # Data specification
-        # self.percentage = args.percentage
+        self.percentage = _check_or_load_defaults(args, TRIG_TRAINING_DEFAULTS, "percentage")
         self.dataset_name = args["dataset_name"]
         self.experiment_name = args["experiment_name"]
-        # self.train_data = args["labeled_data"]
-        # self.dev_data = args["dev_data"] if "dev_data" in args else None
-        # self.test_file = "dataset/" + self.dataset + "/test.txt"
-        # self.trigger_file = "dataset/" + self.dataset + "/trigger_20.txt"
         self.label2idx = {}
         self.idx2labels = []
         self.label_size = 0
@@ -188,7 +184,7 @@ class Config:
         self.idx2char.append(self.UNK)
 
         # extract char on train, dev, test
-        whole_sets = train_insts
+        whole_sets = [] + train_insts
         if dev_insts is not None:
             whole_sets += dev_insts
         if test_insts is not None:
@@ -244,7 +240,7 @@ class Config:
             for word in self.word2idx:
                 self.word_embedding[self.word2idx[word], :] = np.random.uniform(-scale, scale, [1, self.embedding_dim])
 
-    def dump_label_word_emb_data(self):
+    def dump_label_word_emb_data(self, label_length=None):
         """
             Dump all data calculated by build_label_idx, build_word_idx, build_emb_table to files
         Returns:
@@ -255,6 +251,7 @@ class Config:
             pickle.dump({
                 'label2idx': self.label2idx,
                 'idx2labels': self.idx2labels,
+                'label_length': label_length,
             }, f)
 
         # write wordIdx data to file
@@ -279,6 +276,7 @@ class Config:
             data = pickle.load(f)
             self.label2idx = data['label2idx']
             self.idx2labels = data['idx2labels']
+            label_length = data['label_length']
 
         self.label_size = len(self.label2idx)
         # self.trig_label_size = len(self.triggerlabel)
@@ -303,6 +301,8 @@ class Config:
         path = self.generate_vocab_path("word_embedding")
         with open(path, 'rb') as f:
             self.word_embedding = pickle.load(f)
+
+        return label_length
 
     def map_insts_ids(self, insts: List[Instance], dataset_label: str):
         """

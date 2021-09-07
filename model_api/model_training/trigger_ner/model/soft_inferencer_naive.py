@@ -22,7 +22,7 @@ PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 # sys.path.append(PATH_TO_PARENT)
 # sys.path.append(PATH_TO_PARENT + "../")
 sys.path.append(PATH_TO_PARENT + "../../../")
-from fast_api.fast_api_util_functions import update_model_training, send_model_metadata
+from fast_api.fast_api_util_functions import update_model_training
 
 
 class SoftSequenceNaive(nn.Module):

@@ -413,7 +413,11 @@ def prepare_next_data(json_data, project_type="", lean_life=True):
         label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = _read_lean_life_dataset(json_data, project_type)
     else:
         # training_pairs = json_data.training_pairs
-        label_space = json_data.label_space
+        if hasattr(json_data, "label_space"):
+            label_space = json_data.label_space
+        else:
+            label_space = {}
+
         if hasattr(json_data, "unlabeled_text"):
             unlabeled_docs = json_data.unlabeled_text
         else:
