@@ -5,9 +5,14 @@ import json
 import pathlib
 import requests
 import sys
+import spacy
+
 PATH_TO_PARENT = str(pathlib.Path(__file__).parent.absolute()) + "/"
 sys.path.append(PATH_TO_PARENT)
 import fast_api_constants as const
+
+nlp = spacy.load("en_core_web_sm")
+
 
 def _create_ner_key(start_offset, end_offset):
     """
@@ -248,6 +253,127 @@ def _process_sa_annotated_doc(annotated_doc, fake_id):
 
     return temp_sentence_label_pairs, temp_explanation_triples, temp_fake_id
 
+
+def _create_ner_iob_label(text, annotation=None, tokenizer=nlp):
+    if annotation is None:
+        spacy_tokens = [tok.text for tok in nlp.tokenizer(text)]
+        result = ["O"] * len(spacy_tokens)
+        return " ".join(spacy_tokens), " ".join(result)
+    start_offset = int(annotation["start_offset"])
+    end_offset = int(annotation["end_offset"])
+    label_text = annotation["label_text"]
+
+    tokens = []
+    labels = []
+
+    # text before annotation
+    token, label = _create_ner_iob_label(text[:start_offset])
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    # annotation text
+    spacy_tokens = [tok.text for tok in nlp.tokenizer(text[start_offset:end_offset])]
+    label_tokens = ["B-%s" % label_text] + ["I-%s" % label_text] * (len(spacy_tokens) - 1)
+
+    tokens.append(" ".join(spacy_tokens))
+    labels.append(" ".join(label_tokens))
+
+    # text after annotation
+    token, label = _create_ner_iob_label(text[end_offset:].lstrip())
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    return " ".join(tokens), " ".join(labels)
+
+
+def _create_trigger_label(text, explanation=None, tokenizer=nlp):
+    if explanation is None:
+        spacy_tokens = [tok.text for tok in nlp.tokenizer(text)]
+        result = ["O"] * len(spacy_tokens)
+        return " ".join(spacy_tokens), " ".join(result)
+
+    trigger_id = explanation["trigger_id"]
+    start_offset = int(explanation["start_offset"])
+    end_offset = int(explanation["end_offset"])
+    label_text = "T-%s" % trigger_id
+
+    tokens = []
+    labels = []
+
+    # text before annotation
+    token, label = _create_trigger_label(text[:start_offset])
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    # annotation text
+    spacy_tokens = [tok.text for tok in nlp.tokenizer(text[start_offset:end_offset])]
+    label_tokens = [label_text] * len(spacy_tokens)
+
+    tokens.append(" ".join(spacy_tokens))
+    labels.append(" ".join(label_tokens))
+
+    # text after annotation
+    token, label = _create_trigger_label(text[end_offset:].lstrip())
+    if token != "":
+        tokens.append(token)
+        labels.append(label)
+
+    return " ".join(tokens), " ".join(labels)
+
+
+def _merge_labels(label_arrays):
+    final_labels = []
+    for labels in zip(*map(lambda x: x.split(" "), label_arrays)):
+        filtered_labels = [i for i in labels if i != "O"]
+        if len(filtered_labels):
+            final_labels.append(filtered_labels[0])
+        else:
+            final_labels.append("O")
+    return final_labels
+
+
+def _process_ner_annotated_doc(annotated_doc, fake_id):
+    temp_sentence_label_pairs = {}
+    temp_explanation_triples = {}
+    temp_fake_id = fake_id
+    text = annotated_doc.text
+    explanations = annotated_doc.explanations if hasattr(annotated_doc, 'explanations') else []
+    annotations = annotated_doc.annotations
+    if len(annotations):
+        for annotation in annotations:
+            temp_sentence_label_pairs[int(annotation["id"])] = _create_ner_iob_label(text, annotation)
+    else:
+        temp_sentence_label_pairs[temp_fake_id] = _create_ner_iob_label(text, None)
+        temp_fake_id += -1
+
+    for explanation in explanations:
+        annotation_id = int(explanation["annotation_id"])
+        label = temp_sentence_label_pairs[annotation_id][1]
+        _, explanation_text = _create_trigger_label(text, explanation)
+        if annotation_id in temp_explanation_triples:
+            temp_explanation_triples[annotation_id]["explanation"].append(explanation_text)
+        else:
+            temp_explanation_triples[annotation_id] = {
+                "text": temp_sentence_label_pairs[annotation_id][0],
+                "label": label,
+                "explanation": [explanation_text]
+            }
+
+    for key in temp_explanation_triples.keys():
+        # TODO: don't merge keep separate for each explanation
+        temp_explanation_triples[key]["explanation"] = " ".join(_merge_labels(temp_explanation_triples[key]["explanation"]))
+
+    final_labels = _merge_labels(map(lambda x: x[1], temp_sentence_label_pairs.values()))
+    final_key = list(temp_sentence_label_pairs.keys())[0]
+    final_sentence_label_pairs = {
+        final_key: (temp_sentence_label_pairs[final_key][0], " ".join(final_labels))
+    }
+    return final_sentence_label_pairs, temp_explanation_triples, temp_fake_id
+
+
 def _process_annotations(annotated_docs, project_type):
     """
         Given a list of annotated documents and a project type, this function creates the needed datasets
@@ -269,7 +395,9 @@ def _process_annotations(annotated_docs, project_type):
     if project_type == const.LEAN_LIFE_SA_PROJECT:
         processing_func = _process_sa_annotated_doc
     elif project_type == const.LEAN_LIFE_RE_PROJECT:
-        processing_func = _process_re_annotated_doc 
+        processing_func = _process_re_annotated_doc
+    elif project_type == const.LEAN_LIFE_NER_PROJECT:
+        processing_func = _process_ner_annotated_doc
     
     for doc in annotated_docs:
         if processing_func:
@@ -331,7 +459,11 @@ def prepare_next_data(json_data, project_type="", lean_life=True):
         label_space, unlabeled_docs, explanation_triples, ner_label_space, training_pairs = _read_lean_life_dataset(json_data, project_type)
     else:
         # training_pairs = json_data.training_pairs
-        label_space = json_data.label_space
+        if hasattr(json_data, "label_space"):
+            label_space = json_data.label_space
+        else:
+            label_space = {}
+
         if hasattr(json_data, "unlabeled_text"):
             unlabeled_docs = json_data.unlabeled_text
         else:
@@ -371,6 +503,8 @@ def _process_standard_annotations(annotated_docs, project_type):
         processing_func = _process_sa_annotated_doc
     elif project_type == const.LEAN_LIFE_RE_PROJECT:
         processing_func = _process_re_annotated_doc
+    elif project_type == const.LEAN_LIFE_NER_PROJECT:
+        processing_func = _process_ner_annotated_doc
 
     for doc in annotated_docs:
         if processing_func:
@@ -427,7 +561,10 @@ def prepare_standard_data(json_data, project_type="", lean_life=True):
     if lean_life:
         label_space, labeled_docs, dev_docs, ner_label_space = _read_standard_lean_life_dataset(json_data, project_type)
     else:
-        label_space = json_data.label_space
+        if hasattr(json_data, "label_space"):
+            label_space = json_data.label_space
+        else:
+            label_space = dict()
         if hasattr(json_data, "labeled_data"):
             labeled_docs = json_data.labeled_data
             for i, doc in enumerate(labeled_docs):

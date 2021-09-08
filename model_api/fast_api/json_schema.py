@@ -1041,3 +1041,199 @@ class PredictStandardClfPayload(BaseModel):
                 ]
             }
         }
+
+
+class StandardNERTrainingApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: Literal['ner']
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    content_emb: Optional[Literal['none', 'elmo']]
+    seed: Optional[int]
+    digit2zero: Optional[bool]
+    hidden_dim: Optional[int]
+    dropout: Optional[float]
+    use_char_rnn: Optional[bool]
+    use_crf_layer: Optional[bool]
+    optimizer: Optional[Literal['sgd', 'adam']]
+    trig_optimizer: Optional[Literal['sgd', 'adam']]
+    learning_rate: Optional[float]
+    momentum: Optional[float]
+    l2: Optional[float]
+    num_epochs: Optional[int]
+    pre_train_num_epochs: Optional[int]
+    batch_size: Optional[int]
+    lr_decay: Optional[float]
+    build_data: bool
+
+
+class StandardNERTrainingPayload(BaseModel):
+    params: StandardNERTrainingApiParams
+    labeled_data: List[LabeledDoc]
+    dev_data: Optional[List[LabeledDoc]]
+    eval_data: Optional[List[LabeledDoc]]
+
+
+class LeanLifeStandardNERParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    project_type: str
+    project_id: int
+
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                 'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                 'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+
+    emb_dim: Optional[int]
+    # content_emb: Optional[Literal['none', 'elmo']]
+    seed: Optional[int]
+    digit2zero: Optional[bool]
+    hidden_dim: Optional[int]
+    dropout: Optional[float]
+    use_char_rnn: Optional[bool]
+    use_crf_layer: Optional[bool]
+    # optimizer: Optional[Literal['sgd', 'adam']]
+    # trig_optimizer: Optional[Literal['sgd', 'adam']]
+    learning_rate: Optional[float]
+    momentum: Optional[float]
+    l2: Optional[float]
+    num_epochs: Optional[int]
+    pre_train_num_epochs: Optional[int]
+    batch_size: Optional[int]
+    lr_decay: Optional[float]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "test_experiment_1",
+                "dataset_name": "test_dataset",
+                "project_type": "Named Entity Recognition"
+            }
+        }
+
+
+class LeanLifeStandardNERPayload(BaseModel):
+    lean_life_data: LeanLifeStandardData
+    params: LeanLifeStandardNERParams
+
+
+class StandardNEREvalDataOutput(BaseModel):
+    precision: float
+    recall: float
+    f1: float
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "precision": 0.68117,
+                "recall": 0.7,
+                "f1": 0.6,
+            }
+        }
+
+
+class EvalStandardNERApiParams(BaseModel):
+    experiment_name: str
+    dataset_name: str
+    task: Literal['sa', 're', 'ner']
+
+    batch_size: Optional[int]
+    embeddings: Optional[Literal['charngram.100d', 'fasttext.en.300d', 'fasttext.simple.300d', 'glove.42B.300d',
+                                  'glove.840B.300d', 'glove.twitter.27B.25d', 'glove.twitter.27B.50d', 'glove.twitter.27B.100d',
+                                  'glove.twitter.27B.200d', 'glove.6B.50d', 'glove.6B.100d', 'glove.6B.200d', 'glove.6B.300d']]
+    emb_dim: Optional[int]
+    hidden_dim: Optional[int]
+    seed: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "experiment_name": "conll_ner_standard",
+                "dataset_name": "conll_ner_standard",
+                "task": "ner",
+                "eval_batch_size": 10,
+                "embeddings": "charngram.100d",
+                "emb_dim": 100,
+                "hidden_dim": 100
+            }
+        }
+
+
+class EvalStandardNERPayload(BaseModel):
+    params: EvalStandardNERApiParams
+    eval_data: List[Tuple[str, str]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "params": {
+                    "experiment_name": "conll_ner_standard",
+                    "dataset_name": "conll_ner_standard",
+                    "task": "ner",
+                    "eval_batch_size": 10,
+                    "embeddings": "charngram.100d",
+                    "emb_dim": 100,
+                    "hidden_dim": 200
+                },
+                "eval_data": [
+                    [
+                        "SOCCER - JAPAN GET LUCKY WIN , CHINA IN SURPRISE DEFEAT .",
+                        "O O B-LOC O O O O B-PER O O O O"
+                    ],
+                    [
+                        "Nadim Ladki",
+                        "B-PER I-PER"
+                    ]
+                ]
+            }
+        }
+
+
+class NERPredictionOutputs(BaseModel):
+    class_preds: List[Any]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "class_preds": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            }
+        }
+
+
+class PredictStandardNERPayload(BaseModel):
+    params: EvalStandardNERApiParams
+    prediction_data: List[str]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "params": {
+                    "experiment_name": "conll_ner_standard",
+                    "dataset_name": "conll",
+                    "task": "ner",
+                    "eval_batch_size": 10,
+                    "embeddings": "charngram.100d",
+                    "emb_dim": 100,
+                    "hidden_dim": 100
+                },
+                "prediction_data": [
+                    "SOCCER - JAPAN GET LUCKY WIN , CHINA IN SURPRISE DEFEAT .",
+                    "AL-AIN , United Arab Emirates 1996-12-06"
+                ]
+            }
+        }
+
+
+class LeanLifeTriggerPayload(BaseModel):
+    lean_life_data: LeanLifeData
+    params: LeanLifeStandardNERParams
+
+
+class ExplanationTriggerTrainingPayload(BaseModel):
+    params: StandardNERTrainingApiParams
+    explanation_triples: Optional[List[ExplanationTriple]]
+    dev_data: Optional[List[LabeledDoc]]
+    eval_data: Optional[List[LabeledDoc]]

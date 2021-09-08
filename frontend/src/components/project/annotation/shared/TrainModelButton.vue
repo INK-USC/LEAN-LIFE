@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-button v-if="this.$store.getters.getProjectInfo.task!==2" @click="trainModelDialogVisible=true">Train Model</el-button>
+    <el-button @click="trainModelDialogVisible=true">Train Model</el-button>
     <el-dialog title="Train Model" :visible.sync="trainModelDialogVisible">
       <el-form :model="modelForm" label-width="170px">
         <el-form-item required>
@@ -23,20 +23,20 @@
           <el-input v-model="modelForm.dataset_name"/>
         </el-form-item>
 
-        <el-form-item v-for="(param,index) in Object.keys(modelForm.params)" :key="index" :label="param">
+        <el-form-item v-for="(param,index) in Object.keys(modelParams)" :key="index" :label="param">
           <span slot="label">
             {{ param }}
             <el-popover trigger="hover" :content="paramsExplanations[param]">
               <i class="el-icon-question" slot="reference"/>
             </el-popover>
           </span>
-          <el-select v-if="param==='embeddings'" v-model="modelForm.params[param]" style="width: 100%">
+          <el-select v-if="param==='embeddings'" v-model="modelParams[param]" style="width: 100%">
             <el-option v-for="op of defaultParams[param]" :key="op" :label="op" :value="op"/>
           </el-select>
 
-          <el-switch v-else-if="param==='load_model' || param==='soft_match'" v-model="modelForm.params[param]"/>
+          <el-switch v-else-if="param==='load_model' || param==='soft_match' || param==='digit2zero' || param==='use_char_rnn' || param==='use_crf_layer'" v-model="modelParams[param]"/>
 
-          <el-input v-else v-model="modelForm.params[param]"/>
+          <el-input v-else v-model="modelParams[param]"/>
         </el-form-item>
 
         <el-form-item>
@@ -66,28 +66,62 @@ export default {
   data() {
     return {
       trainModelDialogVisible: false,
+      next_params: {
+        soft_match: true,
+        match_batch_size: 50,
+        unlabeled_batch_size: 100,
+        learning_rate: 0.1,
+        epochs: 20,
+        embeddings: "charngram.100d",
+        gamma: 0.5,
+        hidden_dim: 100,
+        random_state: 42,
+        // load_model: false,
+        start_epoch: 0,
+        pre_train_hidden_dim: 300,
+        pre_train_training_size: 50000,
+      },
+      trigger_params: {
+        embeddings: 'charngram.100d',
+        seed: 42,
+        digit2zero: true,
+        hidden_dim: 200,
+        dropout: 0.5,
+        use_char_rnn: true,
+        use_crf_layer: true,
+        learning_rate: 0.01,
+        momentum: 0.0,
+        l2: 1e-8,
+        num_epochs: 10,
+        pre_train_num_epochs: 20,
+        batch_size: 10,
+        lr_decay: 0,
+      },
       modelForm: {
         experiment_name: "",
         dataset_name: "",
-        params: {
-          soft_match: false,
-          match_batch_size: 50,
-          unlabeled_batch_size: 100,
-          learning_rate: 0.1,
-          epochs: 20,
-          embeddings: "charngram.100d",
-          gamma: 0.5,
-          hidden_dim: 100,
-          random_state: 42,
-          // load_model: false,
-          start_epoch: 0,
-          pre_train_hidden_dim: 300,
-          pre_train_training_size: 50000,
-        },
         "include_documents": true,
       },
-      defaultParams: {
-        soft_match: false,
+      triggerDefaultParams: {
+        embeddings: ["charngram.100d", "fasttext.en.300d", "fasttext.simple.300d", "glove.42B.300d",
+          "glove.840B.300d", "glove.twitter.27B.25d", "glove.twitter.27B.50d", "glove.twitter.27B.100d",
+          "glove.twitter.27B.200d", "glove.6B.50d", "glove.6B.100d", "glove.6B.200d", "glove.6B.300d"],
+        seed: 42,
+        digit2zero: true,
+        hidden_dim: 200,
+        dropout: 0.5,
+        use_char_rnn: true,
+        use_crf_layer: true,
+        learning_rate: 0.01,
+        momentum: 0.0,
+        l2: 1e-8,
+        num_epochs: 10,
+        pre_train_num_epochs: 20,
+        batch_size: 10,
+        lr_decay: 0,
+      },
+      nextDefaultParams: {
+        soft_match: true,
         match_batch_size: 50,
         unlabeled_batch_size: 100,
         learning_rate: 0.1,
@@ -127,10 +161,13 @@ export default {
     // submit parameter to backend
     submitTrainingInfo() {
       // console.log("form", this.modelForm)
-      const embeddingsArr = this.modelForm.params.embeddings.split(".");
-      this.modelForm.params['emb_dim'] = parseInt(embeddingsArr[embeddingsArr.length - 1].replace("d", ""));
+      const embeddingsArr = this.modelParams.embeddings.split(".");
+      this.modelParams['emb_dim'] = parseInt(embeddingsArr[embeddingsArr.length - 1].replace("d", ""));
 
-      this.$http.post(`/projects/${this.$store.getters.getProjectInfo.id}/train_model/`, this.modelForm).then(res => {
+      this.$http.post(`/projects/${this.$store.getters.getProjectInfo.id}/train_model/`, {
+        ...this.modelForm,
+        params: this.modelParams,
+        }).then(res => {
         console.log("train model res", res)
         this.modelNamePopupIsLoading = false
         this.modelNamePopupVisible = false
@@ -156,14 +193,30 @@ export default {
     },
     // reset the parameters
     resetToDefault() {
-      Object.keys(this.modelForm.params).forEach(param => {
-        this.modelForm.params[param] = this.defaultParams[param];
+      Object.keys(this.modelParams).forEach(param => {
+        this.modelParams[param] = this.defaultParams[param];
       })
       this.modelForm.include_documents = true;
     }
 
   },
   created() {
+  },
+  computed: {
+    defaultParams: function(){
+      if(this.$store.getters.getProjectInfo.task!==2) {
+        return this.nextDefaultParams;
+      } else {
+        return this.triggerDefaultParams;
+      }
+    },
+    modelParams: function() {
+      if(this.$store.getters.getProjectInfo.task!==2) {
+        return this.next_params;
+      } else {
+        return this.trigger_params;
+      }
+    }
   }
 }
 </script>

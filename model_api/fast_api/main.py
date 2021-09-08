@@ -23,7 +23,9 @@ import fast_api_util_functions as util_f
 import json_schema as schema
 from internal_api.internal_main import train_next_framework_lean_life, train_next_framework, apply_strict_matching, \
     apply_soft_matching, evaluate_next, train_standard_pipeline, \
-    train_standard_lean_life, evaluate_standard, predict_next, predict_standard
+    train_standard_lean_life, evaluate_standard, predict_next, predict_standard, train_standard_ner_pipeline, \
+    train_standard_ner_lean_life, evaluate_standard_ner, predict_standard_ner, train_trigger_soft_match_pipeline, \
+    evaluate_trigger_ner, predict_trigger_ner, train_trigger_soft_match_lean_life
 
 # We don't have a sophisticated CUDA Management policy, so please make needed changes to fit your needs
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -226,3 +228,145 @@ async def predict_standard_clf(api_payload: schema.PredictStandardClfPayload):
         ner_label_space = None
     probs, preds = predict_standard(params, ner_label_space)
     return schema.PredictionOutputs(class_probs=probs, class_preds=preds)
+
+
+@app.post("/training/standard/ner/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_standard_training_ner_lean_life(lean_life_payload: schema.LeanLifeStandardNERPayload,
+                                            background_tasks: BackgroundTasks):
+    """
+        Endpoint hit by annotation tool's django api
+    """
+    params = lean_life_payload.params
+    lean_life_data = lean_life_payload.lean_life_data
+    prepped_data = util_f.prepare_standard_data(lean_life_data, project_type=params.project_type)
+    _, labeled_docs, dev_docs, _ = prepped_data
+    if len(labeled_docs) == 0:
+        labeled_docs = None
+    if len(dev_docs) == 0:
+        dev_docs = None
+    background_tasks.add_task(train_standard_ner_lean_life, params.dict(), labeled_docs, dev_docs)
+
+
+@app.post("/training/standard/ner/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
+async def start_standard_training_ner_api(api_payload: schema.StandardNERTrainingPayload):
+    """
+        Endpoint used to kick off training of a classifier.
+        Please refer to the docs or `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params
+    prepped_data = util_f.prepare_standard_data(api_payload, lean_life=False)
+    _, labeled_docs, dev_docs, _ = prepped_data
+    if len(labeled_docs) == 0:
+        labeled_docs = None
+    if len(dev_docs) == 0:
+        dev_docs = None
+    if hasattr(api_payload, "eval_data") and api_payload.dev_data is not None:
+        eval_docs = api_payload.eval_data
+        for i, doc in enumerate(eval_docs):
+            eval_docs[i] = doc.dict()
+    else:
+        eval_docs = None
+    return schema.SavePathOutput(
+                    save_path=train_standard_ner_pipeline(params.dict(), labeled_docs, dev_docs, eval_docs))
+
+
+@app.post("/training/standard/ner/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardNEREvalDataOutput)
+async def start_eval_standard_ner(api_payload: schema.EvalStandardNERPayload):
+    """
+        Endpoint used to evaluate a classifier trained via the standard pipeline. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["eval_data"] = api_payload.eval_data
+    precision, recall, f1 = evaluate_standard_ner(params)
+    return schema.StandardNEREvalDataOutput(precision=precision, recall=recall, f1=f1)
+
+
+@app.post("/training/standard/ner/predict", status_code=status.HTTP_200_OK, response_model=schema.NERPredictionOutputs)
+async def start_predict_standard_ner(api_payload: schema.PredictStandardNERPayload):
+    """
+        Endpoint used to predict from a classifier trained via the standard pipeline. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["prediction_data"] = api_payload.prediction_data
+    preds = predict_standard_ner(params)
+    return schema.NERPredictionOutputs(class_preds=preds)
+
+
+@app.post("/training/trigger/lean-life/", status_code=status.HTTP_201_CREATED)
+async def start_trigger_training_lean_life(lean_life_payload: schema.LeanLifeTriggerPayload,
+                                           background_tasks: BackgroundTasks):
+    """
+        Endpoint hit by annotation tool's django api
+    """
+    params = lean_life_payload.params
+    lean_life_data = lean_life_payload.lean_life_data
+    prepped_data = util_f.prepare_next_data(lean_life_data, project_type=params.project_type)
+    _, unlabeled_docs, explanation_triples, _ = prepped_data
+    if len(unlabeled_docs) == 0:
+        unlabeled_docs = None
+    if len(explanation_triples) == 0:
+        explanation_triples = None
+    background_tasks.add_task(train_trigger_soft_match_lean_life, params.__dict__,unlabeled_docs,
+                              explanation_triples)
+
+
+@app.post("/training/trigger/api/", status_code=status.HTTP_200_OK, response_model=schema.SavePathOutput)
+async def start_trigger_training_api(api_payload: schema.ExplanationTriggerTrainingPayload):
+    """
+        Endpoint used to kick off training of a classifier via the trigger framework of learning from
+        explanations. Please refer to the docs or `json_schema.py` to understand both the supported
+        and required parameters.
+    """
+    params = api_payload.params
+    prepped_data = util_f.prepare_next_data(api_payload, lean_life=False)
+    _, unlabeled_docs, explanation_triples, _ = prepped_data
+    data = params.dict()
+    if len(unlabeled_docs) == 0:
+        unlabeled_docs = None
+    if len(explanation_triples) == 0:
+        explanation_triples = None
+
+    if hasattr(api_payload, "dev_data") and api_payload.dev_data is not None:
+        data["dev_data"] = api_payload.dev_data
+        for i, doc in enumerate(data["dev_data"]):
+            data["dev_data"][i] = doc.dict()
+    else:
+        data["dev_data"] = None
+
+    if hasattr(api_payload, "eval_data") and api_payload.dev_data is not None:
+        eval_docs = api_payload.eval_data
+        for i, doc in enumerate(eval_docs):
+            eval_docs[i] = doc.dict()
+    else:
+        eval_docs = []
+
+    data["eval_data"] = eval_docs
+    return schema.SavePathOutput(save_path=train_trigger_soft_match_pipeline(
+                                    data, unlabeled_docs, explanation_triples
+                                ))
+
+
+@app.post("/training/trigger/eval", status_code=status.HTTP_200_OK, response_model=schema.StandardNEREvalDataOutput)
+async def eval_trigger(api_payload: schema.EvalStandardNERPayload):
+    """
+        Endpoint used to evaluate a classifier trained via the trigger framework. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required paramaters.
+    """
+    params = api_payload.params.dict()
+    params["eval_data"] = api_payload.eval_data
+    precision, recall, f1 = evaluate_trigger_ner(params)
+    return schema.StandardNEREvalDataOutput(precision=precision, recall=recall, f1=f1)
+
+
+@app.post("/training/trigger/predict", status_code=status.HTTP_200_OK, response_model=schema.NERPredictionOutputs)
+async def predict_trigger(api_payload: schema.PredictStandardNERPayload):
+    """
+        Endpoint used to predict from a classifier trained via the trigger framework. Please refer to the docs or
+        `json_schema.py` to understand both the supported and required parameters.
+    """
+    params = api_payload.params.dict()
+    params["prediction_data"] = api_payload.prediction_data
+    preds = predict_trigger_ner(params)
+    return schema.NERPredictionOutputs(class_preds=preds)

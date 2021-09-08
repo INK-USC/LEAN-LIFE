@@ -65,6 +65,7 @@ notebook==6.1.4
 numpy==1.18.5
 oauthlib==3.1.0
 opt-einsum==3.3.0
+overrides==2.0
 packaging==20.4
 pandas==1.1.5
 pandocfilters==1.4.2

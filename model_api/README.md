@@ -21,3 +21,7 @@ This directory contains all the code related to model training and exposing it u
    - `next_framework/`
 
      Consists of model training code and helpers required for Natural Language Explanation based training. More details in its [readme](next_framework/readme.md)
+     
+   - `trigger_ner/`
+    
+     Consists of model training code and helpers required for Trigger Explanation based training. Code adapted from [here](https://github.com/INK-USC/TriggerNER/).
