@@ -7,8 +7,10 @@
 
 ---
 
-## Latest release (v1.0) Highlights
+## Latest release (v1.1) Highlights
 
+- Added model training support for Trigger Explanation for Named Entity Recognition task.
+- Added support for uploading labeled dataset.
 - Added new UI for annotation.
 - FastAPI added for asynchronous model training.
 - Added model training support for Natural Language Explanations for Relation Extraction and Sentiment Analysis tasks.
@@ -56,8 +58,6 @@ We strongly encourage community engagement, please refer to our [contribution se
 
 **Next Release's Goals:** 4-6 Weeks
 
-- **NER training**: Include support training of NER task, using triggerNER.
-- **Import & Export**: Add support for importing and exporting of labelled with or without explanations.
 - **Docker**: Add docker files for easier onboarding/setup
 - **Code cleanup** - remove unwanted files of django templates and add more inline documentation/explanations
 - Improve CUDA management policy. Add support for per request modification of gpu device. Currently, set using environment variable.
