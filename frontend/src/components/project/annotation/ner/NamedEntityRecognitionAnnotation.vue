@@ -4,7 +4,7 @@
       <el-tag>Text</el-tag>
     </el-row>
 
-    <el-row style="line-height: 4">
+    <el-row style="line-height: 2">
       <div v-on:mouseup="setSelectedRange">
         <span v-for="(chunk, index) in this.chunks" :key="index"
               :style="{color: id2label[chunk.label] ? id2label[chunk.label].text_color: '',
