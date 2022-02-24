@@ -12,8 +12,8 @@
               padding: '10px 10px 10px 10px', fontSize: '18px',
               borderRadius: id2label[chunk.label]? (id2label[chunk.label].text_color? '8px': 0) : 0}"
         >
-          <span @click="onAnnotationClicked(chunk)">
-            {{ fullText.slice(chunk.start_offset, chunk.end_offset) }}
+          <span @click="onAnnotationClicked(chunk)" v-html="fullText.slice(chunk.start_offset, chunk.end_offset)">
+            <!-- {{ fullText.slice(chunk.start_offset, chunk.end_offset) }} -->
           </span>
           <i v-if="id2label[chunk.label] && id2label[chunk.label].text_color" class="el-icon-delete"
              style="cursor: pointer" @click="removeAnnotation(chunk)"/>
