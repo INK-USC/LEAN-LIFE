@@ -6,6 +6,15 @@
     <el-divider/>
 
     <div style="text-align: initial">
+      <el-row>
+        Label: 
+        <div style="display: flex; align-items: center; width: fit-content">
+          <el-tag class="label-tag" :style="getColorStyle" style="display: flex; align-items: baseline">
+            <b style="font-size: medium"
+              :style="getCursorStyle">{{ labelInfo.text }}</b>
+          </el-tag>
+        </div>
+      </el-row>
       <SentimentAnalysisBrief v-if="this.$store.getters.getProjectInfo.task===1"/>
       <NamedEntityRecognitionBrief v-if="this.$store.getters.getProjectInfo.task===2"/>
       <RelationExtractionBrief v-if="this.$store.getters.getProjectInfo.task===3"/>
@@ -415,6 +424,12 @@ export default {
       } else {
         return true;
       }
+    },
+    labelInfo() {
+      return this.$store.getters["explanation/getSelectedLabelInfo"];
+    },
+    getColorStyle() {
+      return {backgroundColor: this.labelInfo.background_color, color: this.labelInfo.text_color};
     }
   },
 

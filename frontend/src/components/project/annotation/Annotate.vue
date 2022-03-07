@@ -18,9 +18,9 @@
 
     <el-progress :percentage="annotationCompletionPercentage"
                  :format="getProgressBarLabel" type="line" :stroke-width="30" text-inside/>
-    <el-row style="margin-top: 20px">
+    <!-- <el-row style="margin-top: 20px">
       <LabelListRow/>
-    </el-row>
+    </el-row> -->
 
     <SentimentAnalysisAnnotation v-if="this.$store.getters.getProjectInfo.task==1"/>
     <NamedEntityRecognitionAnnotation v-if="this.$store.getters.getProjectInfo.task==2"/>
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import LabelListRow from "@/components/shared/LabelListRow";
+// import LabelListRow from "@/components/shared/LabelListRow";
 import SentimentAnalysisAnnotation from "@/components/project/annotation/sa/SentimentAnalysisAnnotation";
 import NamedEntityRecognitionAnnotation from "@/components/project/annotation/ner/NamedEntityRecognitionAnnotation";
 import RelationExtractionAnnotation from "@/components/project/annotation/re/RelationExtractionAnnotation";
@@ -80,7 +80,7 @@ export default {
     RelationExtractionAnnotation,
     NamedEntityRecognitionAnnotation,
     SentimentAnalysisAnnotation,
-    LabelListRow
+    // LabelListRow
   },
   data() {
     return {}
