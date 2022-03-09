@@ -23,7 +23,7 @@
     </el-row>
 
     <SentimentAnalysisAnnotation v-if="this.$store.getters.getProjectInfo.task==1"/>
-    <NamedEntityRecognitionAnnotation v-if="this.$store.getters.getProjectInfo.task==2"/>
+    <NamedEntityRecognitionAnnotation style="max-height: 70vh; overflow-y: scroll" v-if="this.$store.getters.getProjectInfo.task==2"/>
     <RelationExtractionAnnotation v-if="this.$store.getters.getProjectInfo.task==3"/>
 
     <el-row style="margin-top: 20px">
